@@ -55,7 +55,17 @@ void setup()
     Wire.begin();
     Serial.begin(9600);
 
+    // Set text to show script is running
+    M5.Lcd.setTextColor(YELLOW);
+    M5.Lcd.setTextSize(2);
+    M5.Lcd.setCursor(0,0);
+    M5.Lcd.print("GSR Script Running");
+
+    M5.Lcd.drawLine(39, 20, 39, 221, WHITE);        // Draw y-axis for Graph
+    M5.Lcd.drawLine(39, 221, 320, 221, WHITE);     // Draw x-axis for Graph
+
     for(int i=0; i<280; i++) gsrQueue.push(100);
+
 }
 
 void loop()
@@ -69,21 +79,22 @@ void loop()
     }
     gsr_average = sum / 10;
 
-    M5.Lcd.fillScreen(TFT_BLACK);                   // Clear and reset the screen
-    M5.Lcd.drawLine(40, 0, 40, 200, YELLOW);        // Draw y-axis for Graph
-    M5.Lcd.drawLine(40, 200, 320, 200, YELLOW);     // Draw x-axis for Graph
+
 
     long pos = map(gsr_average, 0, 4095, 200, 0);   // Mapping GSR values to screen height
     int posInt = floor(pos);
     gsrQueue.push(posInt);
 
+    M5.Lcd.fillRect(40, 20, 280, 200, BLACK);                   // Clear and reset the screen
     for(int i=0; i<280; i++)
     {
     int graphPos = gsrQueue.read(i);
-    M5.Lcd.drawPixel(i + 40, graphPos, YELLOW);
+    M5.Lcd.drawPixel(i + 41, graphPos, BLUE);
     }
 
-    M5.Lcd.setTextColor(YELLOW, BLACK);
+    M5.Lcd.fillRect(0, 20, 38, 220, BLACK);
+    M5.Lcd.setTextSize(1);
+    M5.Lcd.setTextColor(RED, BLACK);
     M5.Lcd.setCursor(10, posInt);
     M5.Lcd.print((int)(gsr_average));
 }
