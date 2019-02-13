@@ -11,7 +11,6 @@
 #include <M5Stack.h>
 #include "BluetoothSerial.h"
 
-
 BluetoothSerial ESP_BT;
 
 void setup()
@@ -27,6 +26,7 @@ void setup()
 }
 
 int counter = 0;
+char newByte;
 
 void loop()
 {
@@ -39,12 +39,21 @@ void loop()
 
     if (ESP_BT.available()) //Check if we receive anything from Bluetooth
     {
+        newByte = ESP_BT.read();
+
         Serial.print("Received:");
-        Serial.println(ESP_BT.read());
-        M5.Lcd.print(ESP_BT.read());
+        Serial.println(newByte);
+
+        if (newByte == '\n')
+        {
+            Serial.println("NEW LINE");
+        }
+
+        M5.Lcd.print(newByte);
     }
-    
-    if (counter == 30) {
+
+    if (counter == 30)
+    {
         Serial.println("M5 serial is alive...");
         counter = 0;
     }

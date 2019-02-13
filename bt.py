@@ -8,7 +8,7 @@ with serial.Serial('/dev/cu.ESP32_LED_Control-ESP32', 115200) as ser:
     while i < 100:
         msg = "hello"
         print("Sending message over serial... {}".format(msg), flush=True)
-        ser.write("Hello".encode())
+        ser.write("Hello\n".encode())
         print("Sent.")
         time.sleep(1)
         i+= 0
