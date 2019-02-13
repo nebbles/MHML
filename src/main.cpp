@@ -47,7 +47,7 @@
 // Interrupt pin
 const byte oxiInt = 5; // pin connected to MAX30102 INT
 
-uint32_t elapsedTime,timeStart;
+uint32_t elapsedTime, timeStart;
 
 uint32_t aun_ir_buffer[BUFFER_SIZE]; //infrared LED sensor data
 uint32_t aun_red_buffer[BUFFER_SIZE];  //red LED sensor data
@@ -64,7 +64,7 @@ void setup() {
   M5.Lcd.setTextColor(YELLOW);
   M5.Lcd.setTextSize(2);
   M5.Lcd.setCursor(0, 0);
-  M5.Lcd.print("PPG Script Running");
+  M5.Lcd.print("PPG Script: Started");
 
   // Draw lines for graph
   //M5.Lcd.drawLine(40, 20, 40, 220, WHITE);
@@ -87,6 +87,11 @@ void setup() {
     Serial.println(F("Press any key to start conversion"));
     delay(1000);
   }
+  // Write text to show that Measurement has Started
+  M5.Lcd.setTextColor(YELLOW, BLACK);
+  M5.Lcd.setTextSize(2);
+  M5.Lcd.setCursor(0, 0);
+  M5.Lcd.print("PPG Script: Serial Running");
   uch_dummy=Serial.read();
 #ifdef TEST_MAXIM_ALGORITHM
   Serial.print(F("Time[s]\tSpO2\tHR\tSpO2_MX\tHR_MX\tClock\tRatio\tCorr"));
@@ -126,6 +131,13 @@ void loop() {
   {
     while(digitalRead(oxiInt)==1);  //wait until the interrupt pin asserts
     maxim_max30102_read_fifo((aun_red_buffer+i), (aun_ir_buffer+i));  //read from MAX30102 FIFO
+    Serial.println("Interrupt Loop");
+    Serial.print(aun_red_buffer[i], DEC);
+    Serial.print(F("\n"));
+    float raw_ir = raw_ir_read(aun_ir_buffer, BUFFER_SIZE, aun_red_buffer, &n_spo2, &n_heart_rate);
+    Serial.println((float)(raw_ir));
+    float raw_red = raw_red_read(BUFFER_SIZE, aun_red_buffer, &n_spo2, &n_heart_rate);
+    Serial.println((float)(raw_ir));
 #ifdef DEBUG
     Serial.print(i, DEC);
     Serial.print(F("\t"));
@@ -183,7 +195,6 @@ void loop() {
 #else   // TEST_MAXIM_ALGORITHM
   if(ch_hr_valid && ch_spo2_valid) { 
 #endif // TEST_MAXIM_ALGORITHM
-
     Serial.print(elapsedTime);
     Serial.print("\t");
     Serial.print(n_spo2);

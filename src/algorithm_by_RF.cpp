@@ -102,8 +102,7 @@ void rf_heart_rate_and_oxygen_saturation(uint32_t *pun_ir_buffer, int32_t n_ir_b
     *pn_heart_rate = -999; // unable to calculate because signal looks aperiodic
     *pch_hr_valid  = 0;
     *pn_spo2 =  -999 ; // do not use SPO2 from this corrupt signal
-    *pch_spo2_valid  = 0; 
-    return;
+    *pch_spo2_valid  = 0;
   }
 
   // After trend removal, the mean represents DC level
@@ -113,7 +112,8 @@ void rf_heart_rate_and_oxygen_saturation(uint32_t *pun_ir_buffer, int32_t n_ir_b
     *pch_spo2_valid = 1;
   } else {
     *pn_spo2 =  -999 ; // do not use SPO2 since signal an_ratio is out of range
-    *pch_spo2_valid  = 0; 
+    *pch_spo2_valid  = 0;
+    return; 
   }
 }
 
@@ -241,3 +241,79 @@ float rf_Pcorrelation(float *pn_x, float *pn_y, int32_t n_size)
   return r;
 }
 
+float raw_ir_read(uint32_t *pun_ir_buffer, int32_t n_ir_buffer_length, uint32_t *pun_red_buffer, float *pn_spo2,  
+                int32_t *pn_heart_rate)
+{
+  int32_t k;  
+  static int32_t n_last_peak_interval=INIT_INTERVAL;
+  float f_ir_mean,f_red_mean,f_ir_sumsq,f_red_sumsq;
+  float f_y_ac, f_x_ac, xy_ratio;
+  float beta_ir, beta_red, x;
+  float an_x[BUFFER_SIZE], *ptr_x; //ir
+  float an_y[BUFFER_SIZE], *ptr_y; //red
+
+  // calculates DC mean and subtracts DC from ir and red
+  f_ir_mean=0.0; 
+  f_red_mean=0.0;
+  for (k=0; k<n_ir_buffer_length; ++k) {
+    f_ir_mean += pun_ir_buffer[k];
+  }
+  f_ir_mean=f_ir_mean/n_ir_buffer_length ;
+  
+  // remove DC 
+  for (k=0,ptr_x=an_x; k<n_ir_buffer_length; ++k,++ptr_x) {
+    *ptr_x = pun_ir_buffer[k] - f_ir_mean;
+  }
+
+  // RF, remove linear trend (baseline leveling)
+  beta_ir = rf_linear_regression_beta(an_x, mean_X, sum_X2);
+  beta_red = rf_linear_regression_beta(an_y, mean_X, sum_X2);
+  for(k=0,x=-mean_X,ptr_x=an_x; k<n_ir_buffer_length; ++k,++x,++ptr_x,++ptr_y) {
+    *ptr_x -= beta_ir*x;
+  }
+
+  return an_x[0];
+  
+    // For SpO2 calculate RMS of both AC signals. In addition, pulse detector needs raw sum of squares for IR
+  f_y_ac=rf_rms(an_y,n_ir_buffer_length,&f_red_sumsq);
+  f_x_ac=rf_rms(an_x,n_ir_buffer_length,&f_ir_sumsq);
+
+}
+
+float raw_red_read(int32_t n_red_buffer_length, uint32_t *pun_red_buffer, float *pn_spo2,  
+                int32_t *pn_heart_rate)
+{
+  int32_t k;  
+  static int32_t n_last_peak_interval=INIT_INTERVAL;
+  float f_ir_mean,f_red_mean,f_ir_sumsq,f_red_sumsq;
+  float f_y_ac, f_x_ac, xy_ratio;
+  float beta_ir, beta_red, x;
+  float an_x[BUFFER_SIZE], *ptr_x; //ir
+  float an_y[BUFFER_SIZE], *ptr_y; //red
+
+  // calculates DC mean and subtracts DC from ir and red
+  f_red_mean=0.0;
+  for (k=0; k<n_red_buffer_length; ++k) {
+    f_red_mean += pun_red_buffer[k];
+  }
+  f_red_mean=f_red_mean/n_red_buffer_length ;
+  
+  // remove DC 
+  for (k=0,ptr_y=an_y; k<n_red_buffer_length; ++k,++ptr_y) {
+    *ptr_y = pun_red_buffer[k] - f_red_mean;
+  }
+
+  // RF, remove linear trend (baseline leveling)
+  beta_ir = rf_linear_regression_beta(an_x, mean_X, sum_X2);
+  beta_red = rf_linear_regression_beta(an_y, mean_X, sum_X2);
+  for(k=0,x=-mean_X,ptr_y=an_y; k<n_red_buffer_length; ++k,++x,++ptr_y) {
+    *ptr_y -= beta_red*x;
+  }
+
+  return an_x[0];
+  
+    // For SpO2 calculate RMS of both AC signals. In addition, pulse detector needs raw sum of squares for IR
+  f_y_ac=rf_rms(an_y,n_red_buffer_length,&f_red_sumsq);
+  f_x_ac=rf_rms(an_x,n_red_buffer_length,&f_ir_sumsq);
+
+}

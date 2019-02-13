@@ -81,6 +81,9 @@ float rf_autocorrelation(float *pn_x, int32_t n_size, int32_t n_lag);
 float rf_rms(float *pn_x, int32_t n_size, float *sumsq);
 float rf_Pcorrelation(float *pn_x, float *pn_y, int32_t n_size);
 void rf_signal_periodicity(float *pn_x, int32_t n_size, int32_t *p_last_periodicity, int32_t n_min_distance, int32_t n_max_distance, float min_aut_ratio, float aut_lag0, float *ratio);
-
+float raw_ir_read(uint32_t *pun_ir_buffer, int32_t n_ir_buffer_length, uint32_t *pun_red_buffer, float *pn_spo2,  
+                int32_t *pn_heart_rate);
+float raw_red_read(int32_t n_red_buffer_length, uint32_t *pun_red_buffer, float *pn_spo2,  
+                int32_t *pn_heart_rate);
 #endif /* ALGORITHM_BY_RF_H_ */
 
