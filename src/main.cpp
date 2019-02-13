@@ -47,13 +47,14 @@ public:
 const int GSR = 35;
 int sensorValue = 0;
 int gsr_average = 0;
+int elapsedTime, timeStart, timeDelay;
 Deque gsrQueue;
 
 void setup()
 {
     M5.begin();
     Wire.begin();
-    Serial.begin(9600);
+    Serial.begin(115200);
 
     // Set text to show script is running
     M5.Lcd.setTextColor(YELLOW);
@@ -70,6 +71,8 @@ void setup()
 
 void loop()
 {
+
+    timeStart = millis();
     long sum = 0;
     for (int i = 0; i < 10; i++) //Average the 10 measurements to remove the glitch
     {
@@ -97,4 +100,9 @@ void loop()
     M5.Lcd.setTextColor(RED, BLACK);
     M5.Lcd.setCursor(10, posInt);
     M5.Lcd.print((int)(gsr_average));
+
+    elapsedTime = millis() - timeStart;
+    timeDelay = 200 - elapsedTime;
+    Serial.println((int)(timeDelay));
+    //delay(timeDelay);
 }
