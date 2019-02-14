@@ -1,63 +1,37 @@
 /* 
-  M5Stack Fire
-    
-  MPU9250 Basic Example Code
-  
-  Demonstrate basic MPU-9250 functionality including parameterizing the register
-  addresses, initializing the sensor, getting properly scaled accelerometer,
-  gyroscope, and magnetometer data out. Added display functions to allow display
-  to on breadboard monitor.
+  Project firmware for M5Stack Fire
+  Authors: Ben Greenberg & Scott Bunting
+  February 2019
+
+  The project is available on GitHub: https://github.com/nebbles/MHML
+  Mobile Healthcare & Machine Learning,
+  Imperial College London
+
+  Utilises PPG and GSR sensors on body to measure key metrics. Information 
+  is hosted and transmitted from a BLE server running on device. Data is
+  also displayed on device LCD for convenience.
 */
 #include <M5Stack.h>
-#include "BluetoothSerial.h"
-
-BluetoothSerial ESP_BT;
+#include "ble.h"
 
 void setup()
 {
+    Serial.begin(115200);
     M5.begin();
     Wire.begin();
-    Serial.begin(115200);
-
-    ESP_BT.begin("ESP32_LED_Control"); //Name of your Bluetooth Signal
-    Serial.println("Bluetooth Device is Ready to Pair");
-
     M5.Speaker.mute();
-}
 
-int counter = 0;
-char newByte;
+    bleInit();
 
-void loop()
-{
     M5.Lcd.fillScreen(BLACK);
     M5.Lcd.setTextColor(GREEN, BLACK);
     M5.Lcd.setTextSize(2);
     M5.Lcd.setCursor(0, 0);
-    M5.Lcd.print("MPU9250/AK8963");
-    M5.Lcd.setCursor(0, 32);
+    M5.Lcd.print("MHML M5");
+}
 
-    if (ESP_BT.available()) //Check if we receive anything from Bluetooth
-    {
-        newByte = ESP_BT.read();
-
-        Serial.print("Received:");
-        Serial.println(newByte);
-
-        if (newByte == '\n')
-        {
-            Serial.println("NEW LINE");
-        }
-
-        M5.Lcd.print(newByte);
-    }
-
-    if (counter == 30)
-    {
-        Serial.println("M5 serial is alive...");
-        counter = 0;
-    }
-    counter++;
-
-    delay(100);
+void loop()
+{
+    // M5.Lcd.drawRect(0, 0, 100, 30, BLACK);
+    bleRun();
 }
