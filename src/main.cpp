@@ -42,8 +42,6 @@ public:
 
 #include <M5Stack.h>
 
-#define TFT_GREY 0x7BEF
-
 const int GSR = 35;
 int sensorValue = 0;
 int gsr_average = 0;
@@ -62,10 +60,10 @@ void setup()
     M5.Lcd.setCursor(0,0);
     M5.Lcd.print("GSR Script Running");
 
-    M5.Lcd.drawLine(39, 20, 39, 221, WHITE);        // Draw y-axis for Graph
-    M5.Lcd.drawLine(39, 221, 320, 221, WHITE);     // Draw x-axis for Graph
+    M5.Lcd.drawLine(40, 20, 40, 220, WHITE);        // Draw y-axis for Graph
+    M5.Lcd.drawLine(40, 220, 320, 220, WHITE);     // Draw x-axis for Graph
 
-    for(int i=0; i<280; i++) gsrQueue.push(100);
+    for(int i=0; i<560; i++) gsrQueue.push(100);
 
 }
 
@@ -88,11 +86,11 @@ void loop()
     int posInt = floor(pos);
     gsrQueue.push(posInt);
 
-    M5.Lcd.fillRect(40, 20, 280, 200, BLACK);                   // Clear and reset the screen
+    M5.Lcd.fillRect(41, 20, 280, 200, BLACK);                   // Clear and reset the screen
     for(int i=0; i<280; i++)
     {
     int graphPos = gsrQueue.read(i);
-    M5.Lcd.drawPixel(i + 41, graphPos, BLUE);
+    if (graphPos > 20 && graphPos < 220) M5.Lcd.drawPixel(i + 41, graphPos, BLUE);  //Temp fix to prevent diagonal line from being drawn
     }
 
     M5.Lcd.fillRect(0, 20, 38, 220, BLACK);
@@ -104,5 +102,5 @@ void loop()
     elapsedTime = millis() - timeStart;
     timeDelay = 200 - elapsedTime;
     Serial.println((int)(timeDelay));
-    //delay(timeDelay);
+    delay(timeDelay);
 }
