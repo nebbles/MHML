@@ -9,17 +9,22 @@
 
 BLEServer *pServer = NULL;
 BLECharacteristic *pCharacteristic = NULL;
+BLECharacteristic *pBSLC = NULL;
 bool deviceConnected = false;
 bool oldDeviceConnected = false;
 uint32_t value = 0;
 
-// See the following for generating UUIDs: https://www.uuidgenerator.net/
+// UUIDs specified by the Bluetooth GATT Specification: https://www.bluetooth.com/specifications/gatt
+#define SERVICE_UUID_DEVICE_INFORMATION "0000180A-0000-1000-8000-00805f9b34fb" // Device Information Service (official)
+#define CHARACTERISTIC_UUID_HR "00002A37-0000-1000-8000-00805f9b34fb"          // Heart Rate Measurement (official) 
+#define CHARACTERISTIC_UUID_BSL "00002A38-0000-1000-8000-00805f9b34fb"          // Body Sensor Location (official)
+
+// For custom UUIDs, see the following for generating: https://www.uuidgenerator.net/
 #define SERVICE_UUID_PPG "1a632076-8702-41b9-bcff-ea119ae68a69"       // PPG Sensor (custom)
-#define CHARACTERISTIC_UUID_HR "6bb32e9e-41fd-4abc-8089-f24dbe18aa61" // Heart rate in BPM (custom)
+// #define CHARACTERISTIC_UUID_HR "6bb32e9e-41fd-4abc-8089-f24dbe18aa61" // Heart rate in BPM (custom)
 #define CHARACTERISTIC_UUID_O2 "ef4684bb-c958-40df-90be-5eaa65e07948" // Oxygen level of blood (custom)
 #define SERVICE_UUID_GSR "720f8954-ace5-41f7-acec-113b274bc54f"       // GSR sensor (custom)
 #define CHARACTERISTIC_UUID_SR "3f18d911-bffd-4236-b5fc-94c9bf27d0e8" // Skin resistance level (custom)
-// #define SERVICE_UUID_HEART_RATE "0000180A-0000-1000-8000-00805f9b34fb" // Device Information Service (official)
 
 class MyServerCallbacks : public BLEServerCallbacks
 {
@@ -58,6 +63,10 @@ void bleInit()
     // Create a BLE Descriptor
     pCharacteristic->addDescriptor(new BLE2902());
 
+    pBSLC = pService->createCharacteristic(
+        CHARACTERISTIC_UUID_BSL,
+        BLECharacteristic::PROPERTY_READ);
+
     // Start the service
     pService->start();
 
@@ -80,6 +89,8 @@ void bleRun()
     // notify changed value
     if (deviceConnected)
     {
+        int bsl = 1;
+        pBSLC->setValue((uint8_t *)&bsl, 4);
         pCharacteristic->setValue((uint8_t *)&value, 4);
         pCharacteristic->notify();
         value++;
