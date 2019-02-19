@@ -42,8 +42,8 @@ Deque ppgQueue;
 
 // #define DEBUG // Uncomment for debug output to the Serial stream
 #define TEST_MAXIM_ALGORITHM // Uncomment if you want to include results returned by the original MAXIM algorithm
-#define showRed
-// #define showIR
+// #define showRed
+#define showIR
 
 #ifdef TEST_MAXIM_ALGORITHM
   #include "algorithm.h" 
@@ -90,14 +90,8 @@ delay(1000);
   for(int i=0; i<280; i++) ppgQueue.push(100);
 }
 
-void ppgRun()
+void ppgInter()
 {
-     
-  //buffer length of BUFFER_SIZE stores ST seconds of samples running at FS sps
-  //read BUFFER_SIZE samples, and determine the signal range
-  for(i=0;i<BUFFER_SIZE;i++)
-  {
-    while(digitalRead(oxiInt)==1);  //wait until the interrupt pin asserts
     maxim_max30102_read_fifo((aun_red_buffer+i), (aun_ir_buffer+i));  //read from MAX30102 FIFO
     float raw_ir = raw_ir_read(aun_ir_buffer, BUFFER_SIZE, aun_red_buffer, &n_spo2, &n_heart_rate);
     float raw_red = raw_red_read(BUFFER_SIZE, aun_red_buffer, &n_spo2, &n_heart_rate);
@@ -117,8 +111,10 @@ void ppgRun()
     Serial.print(aun_ir_buffer[i], DEC);    
     Serial.println("");
 #endif // DEBUG
-  }
+}
 
+void ppgCalc()
+{
   //calculate heart rate and SpO2 after BUFFER_SIZE samples (ST seconds of samples) using Robert's method
   rf_heart_rate_and_oxygen_saturation(aun_ir_buffer, BUFFER_SIZE, aun_red_buffer, &n_spo2, &ch_spo2_valid, &n_heart_rate, &ch_hr_valid, &ratio, &correl);
   // millis_to_hours(elapsedTime,hr_str); // Time in hh:mm:ss format
