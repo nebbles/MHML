@@ -29,11 +29,44 @@
 *
 * ------------------------------------------------------------------------- */
 
+class Deque {
+private:
+    int theList[280] = {};
+    int headIdx = 0;
+    void incrementHead()
+    {
+        if (headIdx == 280)
+            headIdx = 0;
+        else
+            headIdx++;
+    }
+
+public:
+
+    void push(int newVal)
+    {
+        theList[headIdx] = newVal;
+        incrementHead();
+    }
+
+    int read(int idx)
+    {
+        int readVal;
+        int x = headIdx + idx;
+        if (x > 280) x = x - 280;
+
+        readVal = theList[x];
+        return readVal;
+    }
+
+};
+
 #include <M5Stack.h>
 #include <Wire.h>
 #include <SPI.h>
 #include "algorithm_by_RF.h"
 #include "max30102.h"
+Deque ppgQueue;
 
 // #define DEBUG // Uncomment for debug output to the Serial stream
 //#define SCREEN //Uncomment to show debug data on M5 Stack Screen
@@ -114,6 +147,9 @@ void setup() {
   Serial.println("");
     
   timeStart=millis();
+
+
+for(int i=0; i<280; i++) ppgQueue.push(100);
 }
 
 //Continuously taking samples from MAX30102.  Heart rate and SpO2 are calculated every ST seconds
@@ -136,6 +172,19 @@ void loop() {
     Serial.print(F("\n"));
     float raw_ir = raw_ir_read(aun_ir_buffer, BUFFER_SIZE, aun_red_buffer, &n_spo2, &n_heart_rate);
     Serial.println((float)(raw_ir));
+    if(raw_ir < 1000 && raw_ir > -1000)
+    {
+        long graphPos = map(raw_ir, -1000, 1000, 200, 0);
+        graphPos = floor(graphPos);
+        ppgQueue.push(graphPos);
+    }
+
+    M5.Lcd.fillRect(41, 20, 280, 200, BLACK);                   // Clear and reset the screen
+    for(int i=0; i<280; i++)
+    {
+    int graphPos = ppgQueue.read(i);
+    if (graphPos > 20 && graphPos < 220) M5.Lcd.drawPixel(i + 41, graphPos, BLUE);  //Temp fix to prevent diagonal line from being drawn
+    }
     float raw_red = raw_red_read(BUFFER_SIZE, aun_red_buffer, &n_spo2, &n_heart_rate);
     Serial.println((float)(raw_ir));
 #ifdef DEBUG
