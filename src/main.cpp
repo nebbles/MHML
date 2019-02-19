@@ -65,9 +65,6 @@ ppgInit();
   M5.Lcd.setTextSize(2);
   M5.Lcd.setCursor(0, 0);
   M5.Lcd.print("PPG Script: Serial Running");
-
-    
-  timeStart=millis();
 }
 
 //Continuously taking samples from MAX30102.  Heart rate and SpO2 are calculated every ST seconds
@@ -81,19 +78,6 @@ for(i=0;i<BUFFER_SIZE;i++)
     while(digitalRead(oxiInt)==1);  //wait until the interrupt pin asserts
     ppgInter();
 
-    float raw_ir = raw_ir_read(aun_ir_buffer, BUFFER_SIZE, aun_red_buffer, &n_spo2, &n_heart_rate);
-    float raw_red = raw_red_read(BUFFER_SIZE, aun_red_buffer, &n_spo2, &n_heart_rate);
-
-    int bound = 500;
-    #ifdef showIR
-    if(raw_ir < bound && raw_ir > -bound) // If IR reflectance values are consistent with HR variance
-    {
-        long graphPos = map(raw_ir, -bound, bound, 200, 0);
-        graphPos = floor(graphPos);
-        ppgQueue.push(graphPos);
-    }
-    #endif // showIR
-
     #ifdef showRed
     if(raw_red < bound && raw_red > -bound) // If IR reflectance values are consistent with HR variance
     {
@@ -101,9 +85,16 @@ for(i=0;i<BUFFER_SIZE;i++)
         graphPos = floor(graphPos);
         ppgQueue.push(graphPos);
     }
-    #endif // showRed
+    #else // showRed
+    if(raw_ir < bound && raw_ir > -bound) // If IR reflectance values are consistent with HR variance
+    {
+        graphPos = map(raw_ir, -bound, bound, 200, 0);
+        graphPos = floor(graphPos);
+        ppgQueue.push(graphPos);
+    }
+    #endif //showRed
 
-    M5.Lcd.fillRect(0, 20, 39, 240, BLACK); // Moving value for IR reflectance
+    M5.Lcd.fillRect(0, 20, 39, 200, BLACK); // Moving value for IR reflectance
     M5.Lcd.setCursor(0, graphPos);
     M5.Lcd.print((int)(graphPos));
     M5.Lcd.fillRect(41, 20, 280, 200, BLACK);                   // Clear and reset the screen
@@ -114,25 +105,20 @@ for(i=0;i<BUFFER_SIZE;i++)
     }
 }
 
-ppgCalc();
+ppgCalc(); //this calculates the heart rate and prints via Serial
+
+M5.Lcd.setCursor(0, 230);
+M5.Lcd.setTextSize(1);
+M5.Lcd.print("Heart Rate (BPM):");
+
+M5.Lcd.setCursor(100, 230);
+M5.Lcd.print((int)(n_heart_rate));
+
+M5.Lcd.setCursor(140, 230);
+M5.Lcd.setTextSize(1);
+M5.Lcd.print("Blood Oxygen (SpO2):");
+
+M5.Lcd.setCursor(260, 230);
+M5.Lcd.print((float)(n_spo2));
 
 }
-
-void millis_to_hours(uint32_t ms, char* hr_str)
-{
-  char istr[6];
-  uint32_t secs,mins,hrs;
-  secs=ms/1000; // time in seconds
-  mins=secs/60; // time in minutes
-  secs-=60*mins; // leftover seconds
-  hrs=mins/60; // time in hours
-  mins-=60*hrs; // leftover minutes
-  itoa(hrs,hr_str,10);
-  strcat(hr_str,":");
-  itoa(mins,istr,10);
-  strcat(hr_str,istr);
-  strcat(hr_str,":");
-  itoa(secs,istr,10);
-  strcat(hr_str,istr);
-}
-

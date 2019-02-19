@@ -43,7 +43,6 @@ Deque ppgQueue;
 // #define DEBUG // Uncomment for debug output to the Serial stream
 #define TEST_MAXIM_ALGORITHM // Uncomment if you want to include results returned by the original MAXIM algorithm
 // #define showRed
-#define showIR
 
 #ifdef TEST_MAXIM_ALGORITHM
   #include "algorithm.h" 
@@ -57,6 +56,7 @@ uint32_t aun_ir_buffer[BUFFER_SIZE]; //infrared LED sensor data
 uint32_t aun_red_buffer[BUFFER_SIZE];  //red LED sensor data
 float old_n_spo2;  // Previous SPO2 value
 uint8_t uch_dummy,k;
+int bound = 500;
 
 // Variables from previous loop function
 float n_spo2,ratio,correl;  //SPO2 value
@@ -66,6 +66,7 @@ int8_t  ch_hr_valid;  //indicator to show if the heart rate calculation is valid
 int32_t i;
 char hr_str[10];
 long graphPos;
+float raw_ir, raw_red;
 
 void ppgInit()
 {
@@ -93,8 +94,8 @@ delay(1000);
 void ppgInter()
 {
     maxim_max30102_read_fifo((aun_red_buffer+i), (aun_ir_buffer+i));  //read from MAX30102 FIFO
-    float raw_ir = raw_ir_read(aun_ir_buffer, BUFFER_SIZE, aun_red_buffer, &n_spo2, &n_heart_rate);
-    float raw_red = raw_red_read(BUFFER_SIZE, aun_red_buffer, &n_spo2, &n_heart_rate);
+    raw_ir = raw_ir_read(aun_ir_buffer, BUFFER_SIZE, aun_red_buffer, &n_spo2, &n_heart_rate);
+    raw_red = raw_red_read(BUFFER_SIZE, aun_red_buffer, &n_spo2, &n_heart_rate);
 
 #ifdef DEBUG
     Serial.println("Interrupt Loop");
