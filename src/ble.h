@@ -118,7 +118,16 @@ void bleRun()
 {
     M5.Lcd.setTextColor(GREEN, BLACK);
     M5.Lcd.setTextSize(2); // 20 px high
-    M5.Lcd.setCursor(0, 32);
+    
+    M5.Lcd.setCursor(0, 30);
+    if (deviceConnected) 
+        M5.Lcd.print("Device connected.");
+    else
+        M5.Lcd.print("No BLE connection.");
+    
+    M5.Lcd.setCursor(0, 50);
+    M5.Lcd.print("Heart rate: ");
+    M5.Lcd.setCursor(0, 70);
     M5.Lcd.print(dummyHeartRate);
 
     // notify changed dummyHeartRate
