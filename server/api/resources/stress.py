@@ -13,7 +13,6 @@ class Stress(Resource):
         for doc in docs:
             results_list.append(doc.to_dict())
         results['get'] = results_list
-        print('deleted')
         return results
 
     def post(self):
