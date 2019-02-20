@@ -1,4 +1,8 @@
-venv/
 __pycache__/
 .DS_Store
 server.api/mhml_key.json
+.pioenvs/
+.vscode/
+*.pyc
+server/backend_venv/
+server/api/mhml_key.json

@@ -44,11 +44,18 @@
 
 ```
 MHML/
-  ├─ .github/      GitHub configuration
-  ├─ app/          Unity app development is stored
-  ├─ hardware/     Firmware development for M5Stack Fire 
-  ├─ server.api/   Flask application for server API
-  ├─ server.ml/    Development of machine learning models
+  ├─ .github/               GitHub configuration
+  ├─ app/                   Unity app development is stored
+  ├─ hardware/              Firmware development for M5Stack Fire 
+  │    └─ src/              
+  │         ├─ ble.h        BLE server development
+  │         ├─ gsr.h        GSR sensor development
+  │         ├─ ppg.h        PPG sensor development
+  │         └─ main.cpp     
+  ├─ server/
+  │    ├─ api/              Flask application for server API
+  │    ├─ ml/               Development of machine learning models
+  │    └─ main.py     
   ├─ LICENSE
   └─ README
 ```
