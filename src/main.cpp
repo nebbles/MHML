@@ -52,11 +52,11 @@ void setup() {
   M5.Lcd.drawLine(40, 20, 40, 220, WHITE);
   M5.Lcd.drawLine(40, 220, 320, 220, WHITE);
 
-  while(Serial.available()==0)  //wait until user presses a key
-  {
-    Serial.println(F("Press any key to start conversion"));
-    delay(1000);
-  }
+//   while(Serial.available()==0)  //wait until user presses a key
+//   {
+//     Serial.println(F("Press any key to start conversion"));
+//     delay(1000);
+//   }
 
 ppgInit();
 
