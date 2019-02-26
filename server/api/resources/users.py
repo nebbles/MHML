@@ -45,7 +45,7 @@ class User(Resource):
         user = user_ref.get()
         if user.exists:
             user_ref.delete()
-            return "DELETED USER WITH USERNAME " + username, 200 
+            return "DELETED USER WITH USERNAME " + username, 204 
         else:
             return "ERROR NO USER WITH USERNAME " + username, 404
 
