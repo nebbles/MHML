@@ -21,9 +21,14 @@ class Users(Resource):
         parser.add_argument('Age',  type=int, help="Invalid type for Age field")
         parser.add_argument('Gender', type=bool, help="Invalid type for Gender field")
         args = dict(parser.parse_args())
-        data = {k: v for k, v in args.items() if v is not None}
-        users_ref.document(args['Username']).set(data)
-        return {"created": data}, 201
+
+        username = args['Username']
+        if not users_ref.document(username).get().exists:
+            data = {k: v for k, v in args.items() if v is not None}
+            users_ref.document(args['Username']).set(data)
+            return {"created": data}, 201
+        else:
+            return "CONFLICT, USER WITH USERNAME " + username + " ALREADY EXISTS", 409
 
 class User(Resource):
 
@@ -33,7 +38,7 @@ class User(Resource):
         if user.exists:
             return user.to_dict(), 200
         else:
-            return "ERROR NOT FOUND", 404
+            return "ERROR NO USER WITH USERNAME " + username, 404
 
     def delete(self, username):
         user_ref = users_ref.document(username)
@@ -42,7 +47,7 @@ class User(Resource):
             user_ref.delete()
             return "DELETED USER WITH USERNAME " + username, 200 
         else:
-            return "ERROR NOT FOUND", 404
+            return "ERROR NO USER WITH USERNAME " + username, 404
 
 
 
