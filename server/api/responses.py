@@ -29,7 +29,7 @@ class Response:
         if session is None:
             return {"new user": user}, 201
         else:
-            return {"user": user, "new session_id": session}, 201
+            return {"user": user, "new session": session}, 201
 
     def CONFLICT(user, session=None):
         if session is None:
