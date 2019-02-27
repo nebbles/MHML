@@ -1,8 +1,7 @@
 from api.firestore import database
 from flask_restful import Resource, reqparse
 from flask import request
-
-#sessions_ref = database.collection(u'reports')
+from api.responses import Response as res
 
 class Sessions(Resource):
     
@@ -17,10 +16,9 @@ class Sessions(Resource):
             session_ids = []
             for session in sessions:
                 session_ids.append(session.id)
-
-            return {"session_ids": session_ids}, 200
+            return res.OK(username, session_ids)
         else:
-            return {"error": "User '" + username + "' not found"}, 404
+            return res.NOT_FOUND(username)
 
   
     def post(self, username):
@@ -47,11 +45,11 @@ class Sessions(Resource):
             if not session.exists:
                 data = {k: v for k, v in args.items() if k is not 'session_id'}
                 session_ref.set(data)
-                return {"user": username, "new session_id": data}, 201
+                return res.CREATED(username, data)
             else:
-                return {"error": "Session ID '" + session_id + "' for user '" + username + "' already exists"}, 409
+                return res.CONFLICT(username, session_id)
         else:
-            return {"error": "User '" + username + "' not found"}, 404
+            return res.NOT_FOUND(username)
 
 
 
@@ -66,11 +64,11 @@ class Session(Resource):
             session_ref = sessions_ref.document(session_id)
             session = session_ref.get()
             if session.exists:
-                return session.to_dict(), 200
+                return res.OK(username, session.to_dict())
             else:
-                return {"error": "Session ID '" + session_id + "' for user '" + username + "' not found"}, 404
+                return res.NOT_FOUND(username, session_id)
         else:
-            return {"error": "User '" + username + "' not found"}, 404
+            return res.NOT_FOUND(username)
 
 
 
@@ -100,15 +98,15 @@ class Session(Resource):
                     session_ref = sessions_ref.document(session_id)
                     data = {k: v for k, v in args.items() if k is not 'session_id'}
                     session_ref.set(data)
-                    return {"user": username, "session_id": session_id, "updated": data}, 200
+                    return res.OK(username, session_id, update=True)
                 
                 else:
-                    return {"error": "Session ID argument '" + session.id + "' does not match with URL session ID '" + args['session_id'] + "'"}, 400
+                    return res.BAD_REQUEST(args['session_id'], session_id)
                 
             else:
-                return {"error": "Session ID '" + session_id + "' for user '" + username + "' not found"}, 404
+                return res.NOT_FOUND(username, session_id)
         else:
-            return {"error": "User '" + username + "' not found"}, 404
+            return res.NOT_FOUND(username)
 
         
 

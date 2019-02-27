@@ -1,19 +1,25 @@
 from api.firestore import database
 from flask_restful import Resource, reqparse
 from flask import request
+from api.responses import Response as res
+
 
 users_ref = database.collection(u'users')
 
 class Users(Resource):
     
     def get(self):
+
         users = users_ref.get()
         usernames = []
+
         for user in users:
             username = user.to_dict()['Username']
             usernames.append(username)
-        return {"usernames": usernames}, 200
+
+        return res.OK(usernames)
     
+
     def post(self):
         parser = reqparse.RequestParser(bundle_errors=True)
         parser.add_argument('Username', required=True, help="Missing entry for 'Username' field")
@@ -32,9 +38,10 @@ class Users(Resource):
         if not user.exists:
             data = {k: v for k, v in args.items() if v is not None}
             user_ref.set(data)
-            return {"new user": data}, 201
+            return res.CREATED(data)
+
         else:
-            return {"error": "User '" + username + "' already exists"}, 409
+            return res.CONFLICT(username)
 
 class User(Resource):
 
@@ -56,7 +63,7 @@ class User(Resource):
         if user.exists:
             return user.to_dict(), 200
         else:
-            return {"error": "User '" + username + "' not found"}, 404
+            return res.NOT_FOUND(username)
 
     def delete(self, username):
         user_ref = users_ref.document(username)
@@ -65,9 +72,9 @@ class User(Resource):
             user_sessions_ref = database.collection(u'users/'+username+'/self_reports')
             user_ref.delete()
             self.delete_collection(user_sessions_ref, 10)
-            return {"deleted": username}, 204 
+            return res.NO_CONTENT(username)
         else:
-            return {"error": "User '" + username + "' not found"}, 404
+            return res.NOT_FOUND(username)
 
 
 
