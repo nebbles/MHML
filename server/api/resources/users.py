@@ -26,14 +26,29 @@ class Users(Resource):
         args = dict(parser.parse_args())
 
         username = args['Username']
-        if not users_ref.document(username).get().exists:
+        user_ref = users_ref.document(username)
+        user = user_ref.get()
+
+        if not user.exists:
             data = {k: v for k, v in args.items() if v is not None}
-            users_ref.document(args['Username']).set(data)
+            user_ref.set(data)
             return {"new user": data}, 201
         else:
-            return {"error": "CONFLICT, USER " + username + " ALREADY EXISTS"}, 409
+            return {"error": "User '" + username + "' already exists"}, 409
 
 class User(Resource):
+
+    def delete_collection(self, coll_ref, batch_size):
+        docs = coll_ref.limit(10).get()
+        deleted = 0
+
+        for doc in docs:
+            print(u'Deleting doc {} => {}'.format(doc.id, doc.to_dict()))
+            doc.reference.delete()
+            deleted = deleted + 1
+
+        if deleted >= batch_size:
+            return delete_collection(coll_ref, batch_size)
 
     def get(self, username):
         user_ref = users_ref.document(username)
@@ -41,16 +56,18 @@ class User(Resource):
         if user.exists:
             return user.to_dict(), 200
         else:
-            return {"error": "NO USER FOUND FOR " + username}, 404
+            return {"error": "User '" + username + "' not found"}, 404
 
     def delete(self, username):
         user_ref = users_ref.document(username)
         user = user_ref.get()
         if user.exists:
+            user_sessions_ref = database.collection(u'users/'+username+'/self_reports')
             user_ref.delete()
-            return "DELETED USER WITH USERNAME " + username, 204 
+            self.delete_collection(user_sessions_ref, 10)
+            return {"deleted": username}, 204 
         else:
-            return {"error":  "NO USER FOUND FOR " + username}, 404
+            return {"error": "User '" + username + "' not found"}, 404
 
 
 
