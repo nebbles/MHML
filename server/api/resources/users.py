@@ -16,10 +16,13 @@ class Users(Resource):
     
     def post(self):
         parser = reqparse.RequestParser(bundle_errors=True)
-        parser.add_argument('Username', required=True, help="Missing entry for Username field")
-        parser.add_argument('Name', type=str, help="Invalid type for Name field")
-        parser.add_argument('Age',  type=int, help="Invalid type for Age field")
-        parser.add_argument('Gender', type=bool, help="Invalid type for Gender field")
+        parser.add_argument('Username', required=True, help="Missing entry for 'Username' field")
+        parser.add_argument('Name', type=str, help="Invalid type for 'Name' field")
+        parser.add_argument('Age',  type=int, help="Invalid type for 'Age' field")
+        parser.add_argument('Gender', type=bool, help="Invalid type for 'Gender' field")
+        parser.add_argument('Ethnicity', type=str, help="Invalid type for 'Ethnicity' field")
+        parser.add_argument('Location', type=str, help="Invalid type for 'Location' field")
+        parser.add_argument('Occupation', type=str, help="Invalid type for 'Occupation' field")
         args = dict(parser.parse_args())
 
         username = args['Username']
