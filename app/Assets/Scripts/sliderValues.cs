@@ -5,18 +5,18 @@ using UnityEngine.UI; // Required when Using UI elements.
 
 public class sliderValues : MonoBehaviour
 {
-	public Slider Anxious;
-	public Slider Stressed; 
-	public Slider Tired;
-	public Slider Productivity;
-
+	public Slider productivity;
+	public Slider stress; 
+	public Slider fatigue;
+	public Slider anxiety;
 
 
 	//Invoked when a submit button is clicked.
 	public void SubmitSliderSetting()
 	{
 		//Displays the value of the slider in the console.
-		Debug.Log(Anxious.value);
-		//return JsonUtility.ToJson(this);
+		Debug.Log(anxiety.value);
+		JsonUtility.ToJson(this);
+
 	}
 }
