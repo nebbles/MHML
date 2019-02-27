@@ -4,6 +4,8 @@ from flask import request
 from api.responses import Response as res
 
 class Sessions(Resource):
+    def __init__(self):
+        self.arguments = [('session_id', str), ('Anxiety', float), ('Stress', float), ('Fatigue', float), ('Productivity', float)]
     
     def get(self, username):
         user_ref = database.document(u'users/'+username)
@@ -30,11 +32,9 @@ class Sessions(Resource):
             sessions_ref = user_ref.collection(u'self_reports')
 
             parser = reqparse.RequestParser(bundle_errors=True)
-            parser.add_argument('session_id', type=str, required=True, help="Wrong or missing entry")
-            parser.add_argument('Anxiety',type=float, required=True, help="Wrong or missing entry")
-            parser.add_argument('Stress',  type=float, required=True, help="Wrong or missing entry")
-            parser.add_argument('Fatigue', type=float, required=True, help="Wrong or missing entry")
-            parser.add_argument('Productivity', type=float, required=True, help="Wrong or missing entry")
+            for (n, t) in self.arguments:
+                parser.add_argument(n, type=t, required=True, help= "Wrong or missing entry")
+            
             args = dict(parser.parse_args())
 
             session_id = args['session_id']
@@ -53,7 +53,7 @@ class Sessions(Resource):
 
 
 
-class Session(Resource):
+class Session(Sessions):
 
     def get(self, username, session_id):
         user_ref = database.document(u'users/'+username)
@@ -86,11 +86,8 @@ class Session(Resource):
             if session.exists:
 
                 parser = reqparse.RequestParser(bundle_errors=True)
-                parser.add_argument('session_id', type=str, required=True, help="Wrong or missing entry")
-                parser.add_argument('Anxiety',type=float, required=True, help="Wrong or missing entry")
-                parser.add_argument('Stress',  type=float, required=True, help="Wrong or missing entry")
-                parser.add_argument('Fatigue', type=float, required=True, help="Wrong or missing entry")
-                parser.add_argument('Productivity', type=float, required=True, help="Wrong or missing entry")
+                for (n, t) in self.arguments:
+                    parser.add_argument(n, type=t, required=True, help= "Wrong or missing entry")
                 args = dict(parser.parse_args())
 
                 if session_id == args['session_id']:
@@ -98,7 +95,7 @@ class Session(Resource):
                     session_ref = sessions_ref.document(session_id)
                     data = {k: v for k, v in args.items() if k is not 'session_id'}
                     session_ref.set(data)
-                    return res.OK(username, session_id, update=True)
+                    return res.OK(username, session_id, update=data)
                 
                 else:
                     return res.BAD_REQUEST(args['session_id'], session_id)
