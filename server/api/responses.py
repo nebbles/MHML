@@ -9,14 +9,14 @@ class Response:
         else:
             return {"error": "Session ID '" + session + "' for user '" + user + "' not found"}, 404
     
-    def OK(user, session=None, update=False):
+    def OK(user, session=None, update=None):
         if session is None:
             if isinstance(user, list):
                 return {"usernames": user}, 200
             elif isinstance(user, dict):
                 return user, 200
         else:
-            if not update:
+            if update is None:
                 if isinstance(session, list):
                     return {"session_ids": session}, 200
                 elif isinstance(session, dict):
