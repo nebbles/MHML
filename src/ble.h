@@ -3,17 +3,20 @@
 #include <BLEServer.h>
 #include <BLEUtils.h>
 #include <BLE2902.h>
+#include "data.h"
 
 #ifndef ble_h
 #define ble_h
 
-String firmwareRevision = "0.1.0";
-
 // UUIDs specified by the Bluetooth GATT Specification: https://www.bluetooth.com/specifications/gatt
-#define SERVICE_UUID_DEVICE_INFORMATION "0000180A-0000-1000-8000-00805f9b34fb"  // Device Information Service (official)
-#define CHARACTERISTIC_UUID_FIRMWARE_REV "00002A26-0000-1000-8000-00805f9b34fb" // Firmware Revision (official)
-#define CHARACTERISTIC_UUID_HR "00002A37-0000-1000-8000-00805f9b34fb"           // Heart Rate Measurement (official)
-#define CHARACTERISTIC_UUID_BSL "00002A38-0000-1000-8000-00805f9b34fb"          // Body Sensor Location (official)
+// Device Information Service (official)
+#define SERVICE_UUID_DEVICE_INFORMATION "0000180A-0000-1000-8000-00805f9b34fb"
+// Firmware Revision (official)
+#define CHARACTERISTIC_UUID_FIRMWARE_REV "00002A26-0000-1000-8000-00805f9b34fb"
+// Heart Rate Measurement (official)
+#define CHARACTERISTIC_UUID_HR "00002A37-0000-1000-8000-00805f9b34fb"
+// Body Sensor Location(official)
+#define CHARACTERISTIC_UUID_BSL "00002A38-0000-1000-8000-00805f9b34fb"
 
 // For custom UUIDs, see the following for generating: https://www.uuidgenerator.net/
 #define SERVICE_UUID_PPG "1a632076-8702-41b9-bcff-ea119ae68a69"       // PPG Sensor (custom)
@@ -34,7 +37,6 @@ BLECharacteristic *pCharacteristicGSR_BSL = NULL;
 BLECharacteristic *pCharacteristicFR = NULL;
 bool deviceConnected = false;
 bool oldDeviceConnected = false;
-uint32_t dummyHeartRate = 0;
 
 class customServerCallbacks : public BLEServerCallbacks
 {
@@ -49,10 +51,12 @@ class customServerCallbacks : public BLEServerCallbacks
     }
 };
 
-void bleInit()
+void bleInit(String firmwareRevision)
 {
     // Create the BLE Device
-    BLEDevice::init("MHML M5");
+    // String deviceName = "MHML M5 v" + firmwareRevision;
+    String deviceName = "MHML M5";
+    BLEDevice::init(deviceName.c_str());
 
     // Create the BLE Server
     pServer = BLEDevice::createServer();
@@ -101,6 +105,9 @@ void bleInit()
     pCharacteristicPPG_SPO2->addDescriptor(new BLE2902());
     pCharacteristicGSR_SR->addDescriptor(new BLE2902());
 
+    // Set some initial characteristic values
+    pCharacteristicFR->setValue(firmwareRevision.c_str());
+
     // Start the service and then advertise
     pServicePPG->start();
     pServiceGSR->start();
@@ -109,52 +116,51 @@ void bleInit()
     BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
     pAdvertising->addServiceUUID(SERVICE_UUID_PPG);
     pAdvertising->setScanResponse(false);
-    pAdvertising->setMinPreferred(0x0); // set dummyHeartRate to 0x00 to not advertise this parameter
+    pAdvertising->setMinPreferred(0x0); // set to 0x00 to not advertise this parameter
     BLEDevice::startAdvertising();
     Serial.println("Waiting for a client connection to notify...");
 }
 
-void bleRun()
+void bleLCD()
 {
     M5.Lcd.setTextColor(GREEN, BLACK);
     M5.Lcd.setTextSize(2); // 20 px high
-    
+
     M5.Lcd.setCursor(0, 30);
-    if (deviceConnected) 
+    if (deviceConnected)
         M5.Lcd.print("Device connected.");
     else
         M5.Lcd.print("No BLE connection.");
-    
+
     M5.Lcd.setCursor(0, 50);
     M5.Lcd.print("Heart rate: ");
     M5.Lcd.setCursor(0, 70);
-    M5.Lcd.print(dummyHeartRate);
+    M5.Lcd.print(DATA.heartRate);
+}
 
-    // notify changed dummyHeartRate
+void bleRun()
+{
     if (deviceConnected)
     {
-        int bsl = 1;
-        pCharacteristicPPG_BSL->setValue((uint8_t *)&bsl, 4);
-        pCharacteristicFR->setValue(firmwareRevision.c_str());
-        pCharacteristicPPG_HR->setValue((uint8_t *)&dummyHeartRate, 4);
-        pCharacteristicPPG_HR->notify();
-        dummyHeartRate++;
-        delay(5); // bluetooth stack will go into congestion if too many packets are sent; ensure loop is delayed
+        pCharacteristicPPG_BSL->setValue(&DATA.ppgBSL, 4);
 
-        Serial.print("Dummy Heart Rate: 0x");
-        Serial.println(dummyHeartRate, HEX);
-        delay(1000);
+        pCharacteristicPPG_HR->setValue(&DATA.heartRate, 4);
+        pCharacteristicPPG_HR->notify();
+        DATA.heartRate++;
+
+        // bluetooth stack will go into congestion if too many packets are sent.
+        delay(5); // ensures loop is delayed.
     }
-    // disconnecting
-    if (!deviceConnected && oldDeviceConnected)
+
+    if (!deviceConnected && oldDeviceConnected) // disconnecting
     {
         delay(500);                  // give the bluetooth stack the chance to get things ready
         pServer->startAdvertising(); // restart advertising
-        Serial.println("start advertising");
+        Serial.println("BLE: start advertising");
         oldDeviceConnected = deviceConnected;
     }
-    // connecting
-    if (deviceConnected && !oldDeviceConnected)
+
+    if (deviceConnected && !oldDeviceConnected) // connecting
     {
         // do stuff here on connecting
         oldDeviceConnected = deviceConnected;
