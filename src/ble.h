@@ -8,22 +8,39 @@
 #ifndef ble_h
 #define ble_h
 
-// UUIDs specified by the Bluetooth GATT Specification: https://www.bluetooth.com/specifications/gatt
+/*
+    UUIDs specified by the Bluetooth GATT Specification: 
+    https://www.bluetooth.com/specifications/gatt
+
+    For custom UUIDs, see the following for generating: 
+    https://www.uuidgenerator.net/
+*/
 // Device Information Service (official)
 #define SERVICE_UUID_DEVICE_INFORMATION "0000180A-0000-1000-8000-00805f9b34fb"
 // Firmware Revision (official)
 #define CHARACTERISTIC_UUID_FIRMWARE_REV "00002A26-0000-1000-8000-00805f9b34fb"
-// Heart Rate Measurement (official)
-#define CHARACTERISTIC_UUID_HR "00002A37-0000-1000-8000-00805f9b34fb"
+
+// PPG Sensor (custom)
+#define SERVICE_UUID_PPG "1a632076-8702-41b9-bcff-ea119ae68a69"
 // Body Sensor Location(official)
 #define CHARACTERISTIC_UUID_BSL "00002A38-0000-1000-8000-00805f9b34fb"
+// Heart Rate Measurement (official)
+#define CHARACTERISTIC_UUID_HR "00002A37-0000-1000-8000-00805f9b34fb"
+// Heart Rate Variability (custom)
+#define CHARACTERISTIC_UUID_HRV "7d7ca8d5-e2b0-40f2-8d84-eb05a1773bfa"
+// Interbeat Interval (custom)
+#define CHARACTERISTIC_UUID_IBI "847dc27a-00f2-4c99-aebf-5eacea5474b4"
+// SpO2 level of blood (custom)
+#define CHARACTERISTIC_UUID_O2 "ef4684bb-c958-40df-90be-5eaa65e07948"
 
-// For custom UUIDs, see the following for generating: https://www.uuidgenerator.net/
-#define SERVICE_UUID_PPG "1a632076-8702-41b9-bcff-ea119ae68a69"       // PPG Sensor (custom)
-#define SERVICE_UUID_GSR "720f8954-ace5-41f7-acec-113b274bc54f"       // GSR sensor (custom)
-#define CHARACTERISTIC_UUID_O2 "ef4684bb-c958-40df-90be-5eaa65e07948" // Oxygen level of blood (custom)
-#define CHARACTERISTIC_UUID_SR "3f18d911-bffd-4236-b5fc-94c9bf27d0e8" // Skin resistance level (custom)
-// #define CHARACTERISTIC_UUID_OTHER "6bb32e9e-41fd-4abc-8089-f24dbe18aa61" //  (custom)
+// GSR sensor (custom)
+#define SERVICE_UUID_GSR "720f8954-ace5-41f7-acec-113b274bc54f"
+// Skin Conductance Level (custom)
+#define CHARACTERISTIC_UUID_SCL "3f18d911-bffd-4236-b5fc-94c9bf27d0e8"
+// Non-specific Skin Conductance Response (custom)
+#define CHARACTERISTIC_UUID_NSSCR "6bb32e9e-41fd-4abc-8089-f24dbe18aa61"
+// Event-related Skin Conductance Response (custom)
+#define CHARACTERISTIC_UUID_ERSCR "12d786f3-8528-43e4-b5f9-f7115db16004"
 
 BLEServer *pServer = NULL;
 BLEService *pServicePPG = NULL;
@@ -85,7 +102,7 @@ void bleInit(String firmwareRevision)
         BLECharacteristic::PROPERTY_READ);
 
     pCharacteristicGSR_SR = pServiceGSR->createCharacteristic(
-        CHARACTERISTIC_UUID_SR,
+        CHARACTERISTIC_UUID_SCL,
         BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
 
     pCharacteristicGSR_BSL = pServiceGSR->createCharacteristic(
@@ -97,7 +114,8 @@ void bleInit(String firmwareRevision)
         BLECharacteristic::PROPERTY_READ);
 
     /*
-    All characterstics with the the Notify property must also have the CCC (Client Characteristic Configuration) descriptor.
+    All characterstics with the the Notify property must also have the CCC 
+    (Client Characteristic Configuration) descriptor.
 
     https://www.bluetooth.com/specifications/gatt/viewer?attributeXmlFile=org.bluetooth.descriptor.gatt.client_characteristic_configuration.xml
     */

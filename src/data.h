@@ -3,7 +3,8 @@
     Author: Benedict Greenberg (https://github.com/nebbles)
     Date: 28 February 2019
     
-    Defines central data structure for processed data that is handled by BLE module.
+    Defines central data structure for processed data that is handled by BLE 
+    module.
 */
 #include <M5Stack.h>
 
