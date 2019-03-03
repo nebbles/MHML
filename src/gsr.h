@@ -4,40 +4,11 @@
 #include <M5Stack.h>
 #include "Deque.h"
 
-// class Deque
-// {
-//   private:
-//     int theList[280] = {};
-//     int headIdx = 0;
-//     void incrementHead()
-//     {
-//         if (headIdx == 280)
-//             headIdx = 0;
-//         else
-//             headIdx++;
-//     }
-
-//   public:
-//     void push(int newVal)
-//     {
-//         theList[headIdx] = newVal;
-//         incrementHead();
-//     }
-//     int read(int idx)
-//     {
-//         int readVal;
-//         int x = headIdx + idx;
-//         if (x > 280)
-//             x = x - 280;
-//         readVal = theList[x];
-//         return readVal;
-//     }
-// };
-
 const int GSR = 35;
 int sensorValue = 0;
 int gsr_average = 0;
 int elapsedTime, timeStart, timeDelay;
+int posInt;
 Deque<int> gsrQueue;
 
 void gsrInit()
@@ -57,6 +28,11 @@ void gsrRun()
         delay(5);
     }
     gsr_average = sum / 10;
+
+    long pos = map(gsr_average, 0, 4095, 200, 0); // Mapping GSR values to screen height
+    posInt = floor(pos);
+    gsrQueue.popHead();
+    gsrQueue.pushTail(posInt);
 }
 
 #endif
