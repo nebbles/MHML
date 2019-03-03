@@ -26,12 +26,10 @@
 #define CHARACTERISTIC_UUID_BSL "00002A38-0000-1000-8000-00805f9b34fb"
 // Heart Rate Measurement (official)
 #define CHARACTERISTIC_UUID_HR "00002A37-0000-1000-8000-00805f9b34fb"
-// Heart Rate Variability (custom)
-#define CHARACTERISTIC_UUID_HRV "7d7ca8d5-e2b0-40f2-8d84-eb05a1773bfa"
 // Interbeat Interval (custom)
 #define CHARACTERISTIC_UUID_IBI "847dc27a-00f2-4c99-aebf-5eacea5474b4"
 // SpO2 level of blood (custom)
-#define CHARACTERISTIC_UUID_O2 "ef4684bb-c958-40df-90be-5eaa65e07948"
+#define CHARACTERISTIC_UUID_SPO2 "ef4684bb-c958-40df-90be-5eaa65e07948"
 
 // GSR sensor (custom)
 #define SERVICE_UUID_GSR "720f8954-ace5-41f7-acec-113b274bc54f"
@@ -42,14 +40,19 @@
 // Event-related Skin Conductance Response (custom)
 #define CHARACTERISTIC_UUID_ERSCR "12d786f3-8528-43e4-b5f9-f7115db16004"
 
+
+
+// #define  "7d7ca8d5-e2b0-40f2-8d84-eb05a1773bfa"
+
 BLEServer *pServer = NULL;
 BLEService *pServicePPG = NULL;
 BLEService *pServiceGSR = NULL;
 BLEService *pServiceDevInfo = NULL;
 BLECharacteristic *pCharacteristicPPG_HR = NULL;
+BLECharacteristic *pCharacteristicPPG_IBI = NULL;
 BLECharacteristic *pCharacteristicPPG_SPO2 = NULL;
 BLECharacteristic *pCharacteristicPPG_BSL = NULL;
-BLECharacteristic *pCharacteristicGSR_SR = NULL;
+BLECharacteristic *pCharacteristicGSR_SCL = NULL;
 BLECharacteristic *pCharacteristicGSR_BSL = NULL;
 BLECharacteristic *pCharacteristicFR = NULL;
 bool deviceConnected = false;
@@ -93,15 +96,19 @@ void bleInit(String firmwareRevision)
         CHARACTERISTIC_UUID_HR,
         BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
 
+    pCharacteristicPPG_IBI = pServicePPG->createCharacteristic(
+        CHARACTERISTIC_UUID_IBI,
+        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
+
     pCharacteristicPPG_SPO2 = pServicePPG->createCharacteristic(
-        CHARACTERISTIC_UUID_O2,
+        CHARACTERISTIC_UUID_SPO2,
         BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
 
     pCharacteristicPPG_BSL = pServicePPG->createCharacteristic(
         CHARACTERISTIC_UUID_BSL,
         BLECharacteristic::PROPERTY_READ);
 
-    pCharacteristicGSR_SR = pServiceGSR->createCharacteristic(
+    pCharacteristicGSR_SCL = pServiceGSR->createCharacteristic(
         CHARACTERISTIC_UUID_SCL,
         BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
 
@@ -120,8 +127,9 @@ void bleInit(String firmwareRevision)
     https://www.bluetooth.com/specifications/gatt/viewer?attributeXmlFile=org.bluetooth.descriptor.gatt.client_characteristic_configuration.xml
     */
     pCharacteristicPPG_HR->addDescriptor(new BLE2902());
+    pCharacteristicPPG_IBI->addDescriptor(new BLE2902());
     pCharacteristicPPG_SPO2->addDescriptor(new BLE2902());
-    pCharacteristicGSR_SR->addDescriptor(new BLE2902());
+    pCharacteristicGSR_SCL->addDescriptor(new BLE2902());
 
     // Set some initial characteristic values
     pCharacteristicFR->setValue(firmwareRevision.c_str());
@@ -152,7 +160,7 @@ void bleLCD()
 
     M5.Lcd.setCursor(0, 50);
     M5.Lcd.print("Heart rate: ");
-    M5.Lcd.setCursor(0, 70);
+    M5.Lcd.setCursor(140, 50);
     M5.Lcd.print(DATA.heartRate);
 }
 
@@ -160,11 +168,25 @@ void bleRun()
 {
     if (deviceConnected)
     {
-        pCharacteristicPPG_BSL->setValue(&DATA.ppgBSL, 4);
+        pCharacteristicPPG_BSL->setValue(&DATA.ppgBSL, 2);
+        pCharacteristicGSR_BSL->setValue(&DATA.ppgBSL, 2);
 
-        pCharacteristicPPG_HR->setValue(&DATA.heartRate, 4);
+        pCharacteristicPPG_HR->setValue(&DATA.heartRate, 2);
         pCharacteristicPPG_HR->notify();
+
+        pCharacteristicPPG_IBI->setValue(DATA.interbeatInterval);
+        pCharacteristicPPG_IBI->notify();
+
+        pCharacteristicPPG_SPO2->setValue(DATA.spo2);
+        pCharacteristicPPG_SPO2->notify();
+
+        pCharacteristicGSR_SCL->setValue(&DATA.scl, 2);
+        pCharacteristicGSR_SCL->notify();
+
         DATA.heartRate++;
+        DATA.interbeatInterval++;
+        DATA.spo2++;
+        DATA.scl++;
 
         // bluetooth stack will go into congestion if too many packets are sent.
         delay(5); // ensures loop is delayed.
