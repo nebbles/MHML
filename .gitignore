@@ -1,7 +1,4 @@
-/hardware/.pio
-/hardware/.pioenvs
-/hardware/.piolibdeps
-/hardware/.vscode/.browse.c_cpp.db*
-/hardware/.vscode/c_cpp_properties.json
-/hardware/.vscode/launch.json
-/hardware/.vscode/settings.json
+.pio
+.pioenvs
+.piolibdeps
+.vscode
