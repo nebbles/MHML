@@ -5,65 +5,41 @@ void setup() {
 
   M5.begin();
   Wire.begin();
-
-#if defined(DEBUG) || !defined(USE_ADALOGGER)
-  // initialize serial communication at 115200 bits per second:
   Serial.begin(115200);
-#endif
 
-  // Write text to show that PPG Script is Running
   M5.Lcd.setTextColor(YELLOW);
   M5.Lcd.setTextSize(2);
   M5.Lcd.setCursor(0, 0);
   M5.Lcd.print("PPG Script: Started");
+  M5.Lcd.setCursor(0, 20);
+  M5.Lcd.print("Press Any Button");
 
-  //Draw lines for graph
-  M5.Lcd.drawLine(40, 20, 40, 220, WHITE);
-  M5.Lcd.drawLine(40, 220, 320, 220, WHITE);
+  while (true)
+  {
+  if (M5.BtnA.wasPressed() || M5.BtnB.wasPressed() || M5.BtnC.wasPressed()) break;
+  M5.update();
+  }
 
-//   while(Serial.available()==0)  //wait until user presses a key
-//   {
-//     Serial.println(F("Press any key to start conversion"));
-//     delay(1000);
-//   }
-
-ppgInit();
+  ppgInit();
 
   // Write text to show that Measurement has Started
   M5.Lcd.setTextColor(YELLOW, BLACK);
   M5.Lcd.setTextSize(2);
   M5.Lcd.setCursor(0, 0);
   M5.Lcd.print("PPG Script: Serial Running");
+
+  M5.Lcd.drawLine(40, 20, 40, 220, WHITE);
+  M5.Lcd.drawLine(40, 220, 320, 220, WHITE);
 }
 
-//Continuously taking samples from MAX30102.  Heart rate and SpO2 are calculated every ST seconds
-void loop() 
+void loop() //Continuously taking samples from MAX30102.  Heart rate and SpO2 are calculated every ST seconds
 {
-
 //buffer length of BUFFER_SIZE stores ST seconds of samples running at FS sps
 //read BUFFER_SIZE samples, and determine the signal range
 for(i=0;i<BUFFER_SIZE;i++)
 {
     while(digitalRead(oxiInt)==1);  //wait until the interrupt pin asserts
     ppgInter();
-
-    #ifdef showRed
-    if(raw_red < bound && raw_red > -bound) // If IR reflectance values are consistent with HR variance
-    {
-        graphPos = map(raw_red, -bound, bound, 200, 0);
-        graphPos = floor(graphPos);
-        ppgQueue.popHead();
-        ppgQueue.pushTail(graphPos);
-    }
-    #else // showRed
-    if(raw_ir < bound && raw_ir > -bound) // If IR reflectance values are consistent with HR variance
-    {
-        graphPos = map(raw_ir, -bound, bound, 200, 0);
-        graphPos = floor(graphPos);
-        ppgQueue.popHead();
-        ppgQueue.pushTail(graphPos);
-    }
-    #endif //showRed
 
     M5.Lcd.fillRect(0, 20, 39, 200, BLACK); // Moving value for IR reflectance
     M5.Lcd.setCursor(0, graphPos);
@@ -77,6 +53,9 @@ for(i=0;i<BUFFER_SIZE;i++)
 }
 
 ppgCalc(); //this calculates the heart rate and prints via Serial
+
+
+M5.Lcd.fillRect(0, 221, 320, 240, BLACK);  
 
 M5.Lcd.setCursor(0, 230);
 M5.Lcd.setTextSize(1);

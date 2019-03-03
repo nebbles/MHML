@@ -32,38 +32,6 @@
 #ifndef ppg_h
 #define ppg_h
 
-// class Deque {
-// private:
-//     int theList[280] = {};
-//     int headIdx = 0;
-//     void incrementHead()
-//     {
-//         if (headIdx == 280)
-//             headIdx = 0;
-//         else
-//             headIdx++;
-//     }
-
-// public:
-
-//     void push(int newVal)
-//     {
-//         theList[headIdx] = newVal;
-//         incrementHead();
-//     }
-
-//     int read(int idx)
-//     {
-//         int readVal;
-//         int x = headIdx + idx;
-//         if (x > 280) x = x - 280;
-
-//         readVal = theList[x];
-//         return readVal;
-//     }
-
-// };
-
 #include <M5Stack.h>
 #include <Wire.h>
 #include <SPI.h>
@@ -129,7 +97,24 @@ void ppgInter()
     maxim_max30102_read_fifo((aun_red_buffer+i), (aun_ir_buffer+i));  //read from MAX30102 FIFO
     raw_ir = raw_ir_read(aun_ir_buffer, BUFFER_SIZE, aun_red_buffer, &n_spo2, &n_heart_rate);
     raw_red = raw_red_read(BUFFER_SIZE, aun_red_buffer, &n_spo2, &n_heart_rate);
-
+    
+    #ifdef showRed
+    if(raw_red < bound && raw_red > -bound) // If IR reflectance values are consistent with HR variance
+    {
+        graphPos = map(raw_red, -bound, bound, 200, 0);
+        graphPos = floor(graphPos);
+        ppgQueue.popHead();
+        ppgQueue.pushTail(graphPos);
+    }
+    #else // showRed
+    if(raw_ir < bound && raw_ir > -bound) // If IR reflectance values are consistent with HR range
+    {
+        graphPos = map(raw_ir, -bound, bound, 200, 0);
+        graphPos = floor(graphPos);
+        ppgQueue.popHead();
+        ppgQueue.pushTail(graphPos);
+    }
+    #endif //showRed
 #ifdef DEBUG
     Serial.println("Interrupt Loop");
     Serial.print(aun_red_buffer[i], DEC);
