@@ -42,12 +42,7 @@
 Deque<int> ppgQueue;
 
 // #define DEBUG // Uncomment for debug output to the Serial stream
-#define TEST_MAXIM_ALGORITHM // Uncomment if you want to include results returned by the original MAXIM algorithm
 // #define showRed
-
-#ifdef TEST_MAXIM_ALGORITHM
-  #include "algorithm.h" 
-#endif
 
 // Interrupt pin
 const byte oxiInt = 5; // pin connected to MAX30102 INT
@@ -75,21 +70,17 @@ pinMode(oxiInt, INPUT);  //pin G5 connects to the interrupt output pin of the MA
 maxim_max30102_reset(); //resets the MAX30102
 delay(1000);
 
-  maxim_max30102_read_reg(REG_INTR_STATUS_1,&uch_dummy);  //Reads/clears the interrupt status register
-  maxim_max30102_init();  //initialize the MAX30102
-  old_n_spo2=0.0;
+maxim_max30102_read_reg(REG_INTR_STATUS_1,&uch_dummy);  //Reads/clears the interrupt status register
+maxim_max30102_init();  //initialize the MAX30102
+old_n_spo2=0.0;
 
-  uch_dummy=Serial.read();
+uch_dummy=Serial.read();
   
-#ifdef TEST_MAXIM_ALGORITHM
-  Serial.print(F("Time[s]\tSpO2\tHR\tSpO2_MX\tHR_MX\tClock\tRatio\tCorr"));
-#else // TEST_MAXIM_ALGORITHM
-  Serial.print(F("Time[s]\tSpO2\tHR\tClock\tRatio\tCorr"));
-#endif // TEST_MAXIM_ALGORITHM
+Serial.print(F("Time[s]\tSpO2\tHR\tClock\tRatio\tCorr"));
+Serial.println("");
 
-  Serial.println("");
-  ppgQueue.setLimit(280);
-  for(int i=0; i<280; i++) ppgQueue.pushTail(100);
+ppgQueue.setLimit(280);
+for(int i=0; i<280; i++) ppgQueue.pushTail(100);
 }
 
 void ppgInter()
@@ -152,44 +143,16 @@ void ppgCalc()
   Serial.println("------");
 #endif // DEBUG
 
-#ifdef TEST_MAXIM_ALGORITHM
-  //calculate heart rate and SpO2 after BUFFER_SIZE samples (ST seconds of samples) using MAXIM's method
-  float n_spo2_maxim;  //SPO2 value
-  int8_t ch_spo2_valid_maxim;  //indicator to show if the SPO2 calculation is valid
-  int32_t n_heart_rate_maxim; //heart rate value
-  int8_t  ch_hr_valid_maxim;  //indicator to show if the heart rate calculation is valid
-  maxim_heart_rate_and_oxygen_saturation(aun_ir_buffer, BUFFER_SIZE, aun_red_buffer, &n_spo2_maxim, &ch_spo2_valid_maxim, &n_heart_rate_maxim, &ch_hr_valid_maxim); 
-#ifdef DEBUG
-  Serial.println("--MX--");
-  Serial.print(elapsedTime);
-  Serial.print("\t");
-  Serial.print(n_spo2_maxim);
-  Serial.print("\t");
-  Serial.print(n_heart_rate_maxim, DEC);
-  Serial.print("\t");
-  Serial.println(hr_str);
-  Serial.println("------");
-#endif // DEBUG
-#endif // TEST_MAXIM_ALGORITHM
 
-  //save samples and calculation result to SD card
-#ifdef TEST_MAXIM_ALGORITHM
-  if(ch_hr_valid && ch_spo2_valid || ch_hr_valid_maxim && ch_spo2_valid_maxim) {
-#else   // TEST_MAXIM_ALGORITHM
+
   if(ch_hr_valid && ch_spo2_valid) { 
-#endif // TEST_MAXIM_ALGORITHM
     Serial.print(elapsedTime);
     Serial.print("\t");
     Serial.print(n_spo2);
     Serial.print("\t");
     Serial.print(n_heart_rate, DEC);
     Serial.print("\t");
-#ifdef TEST_MAXIM_ALGORITHM
-    Serial.print(n_spo2_maxim);
-    Serial.print("\t");
-    Serial.print(n_heart_rate_maxim, DEC);
-    Serial.print("\t");
-#endif //TEST_MAXIM_ALGORITHM
+
     Serial.print(hr_str);
     Serial.print("\t");
     Serial.print(ratio);
