@@ -1,34 +1,3 @@
-/********************************************************
-*
-* Project: MAXREFDES117#
-* Filename: RD117_ARDUINO.ino
-* Description: This module contains the Main application for the MAXREFDES117 example program.
-*
-* Revision History:
-*\n 1-18-2016 Rev 01.00 GL Initial release.
-*\n 12-22-2017 Rev 02.00 Significantlly modified by Robert Fraczkiewicz
-*\n 08-22-2018 Rev 02.01 Added conditional compilation of the code related to ADALOGGER SD card operations
-*
-* --------------------------------------------------------------------
-*
-* This code follows the naming conventions:
-*
-* char              ch_pmod_value
-* char (array)      s_pmod_s_string[16]
-* float             f_pmod_value
-* int32_t           n_pmod_value
-* int32_t (array)   an_pmod_value[16]
-* int16_t           w_pmod_value
-* int16_t (array)   aw_pmod_value[16]
-* uint16_t          uw_pmod_value
-* uint16_t (array)  auw_pmod_value[16]
-* uint8_t           uch_pmod_value
-* uint8_t (array)   auch_pmod_buffer[16]
-* uint32_t          un_pmod_value
-* int32_t *         pn_pmod_value
-*
-* ------------------------------------------------------------------------- */
-
 #include <M5Stack.h>
 #include "ppg.h"
 
@@ -83,14 +52,16 @@ for(i=0;i<BUFFER_SIZE;i++)
     {
         graphPos = map(raw_red, -bound, bound, 200, 0);
         graphPos = floor(graphPos);
-        ppgQueue.push(graphPos);
+        ppgQueue.popHead();
+        ppgQueue.pushTail(graphPos);
     }
     #else // showRed
     if(raw_ir < bound && raw_ir > -bound) // If IR reflectance values are consistent with HR variance
     {
         graphPos = map(raw_ir, -bound, bound, 200, 0);
         graphPos = floor(graphPos);
-        ppgQueue.push(graphPos);
+        ppgQueue.popHead();
+        ppgQueue.pushTail(graphPos);
     }
     #endif //showRed
 
@@ -100,7 +71,7 @@ for(i=0;i<BUFFER_SIZE;i++)
     M5.Lcd.fillRect(41, 20, 280, 200, BLACK);                   // Clear and reset the screen
     for(int i=0; i<280; i++)
     {
-    int graphPos = ppgQueue.read(i);
+    int graphPos = ppgQueue[i];
     if (graphPos > 20 && graphPos < 220) M5.Lcd.drawPixel(i + 41, graphPos, BLUE);  //Temp fix to prevent diagonal line from being drawn
     }
 }
