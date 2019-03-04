@@ -25,12 +25,20 @@ struct DataStruct
     // Body Sensor Location of PPG. 0=Other, 1=Chest, 2=Wrist, 3=Finger, 4=Hand, 5=Ear Lobe, 6=Foot.
     uint8_t gsrBSL = 0;
     // Value 0-255 in ??units
-    uint8_t scl = 0;
-    // Value 0-255 in ??units
-    uint8_t ns_scr = 0;
-    // Value 0-255 in ??units
-    uint8_t er_scr = 0;
+    uint16_t scl = 0;
+    // // Value 0-255 in ??units
+    // uint8_t ns_scr = 0;
+    // // Value 0-255 in ??units
+    // uint8_t er_scr = 0;
 };
 struct DataStruct DATA; // global data object
+
+void incrementDataDummy()
+{
+    DATA.heartRate++;
+    DATA.interbeatInterval++;
+    DATA.spo2 += 0.1;
+    DATA.scl++;
+}
 
 #endif

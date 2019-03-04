@@ -14,7 +14,7 @@
 #include <M5Stack.h>
 #include "ble.h"
 
-String FIRMWARE_REVISION = "0.2.0";
+String FIRMWARE_REVISION = "0.2.1";
 
 void setup()
 {
@@ -41,6 +41,11 @@ void loop()
   // M5.Lcd.drawRect(0, 0, 100, 30, BLACK);
   bleLCD();
   bleRun();
+  
+  if (deviceConnected) {
+    incrementDataDummy();
+  }
+
   Serial.print("BLE: Heart Rate: 0x");
   Serial.println(DATA.heartRate, HEX);
   delay(1000);

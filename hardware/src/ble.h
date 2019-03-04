@@ -3,18 +3,19 @@
 #include <BLEServer.h>
 #include <BLEUtils.h>
 #include <BLE2902.h>
+#include <BLE2904.h>
 #include "data.h"
 
 #ifndef ble_h
 #define ble_h
 
 /*
-    UUIDs specified by the Bluetooth GATT Specification: 
-    https://www.bluetooth.com/specifications/gatt
-
-    For custom UUIDs, see the following for generating: 
-    https://www.uuidgenerator.net/
-*/
+ * UUIDs specified by the Bluetooth GATT Specification: 
+ * https://www.bluetooth.com/specifications/gatt
+ *
+ * For custom UUIDs, see the following for generating: 
+ * https://www.uuidgenerator.net/
+ */
 // Device Information Service (official)
 #define SERVICE_UUID_DEVICE_INFORMATION "0000180A-0000-1000-8000-00805f9b34fb"
 // Firmware Revision (official)
@@ -39,8 +40,6 @@
 #define CHARACTERISTIC_UUID_NSSCR "6bb32e9e-41fd-4abc-8089-f24dbe18aa61"
 // Event-related Skin Conductance Response (custom)
 #define CHARACTERISTIC_UUID_ERSCR "12d786f3-8528-43e4-b5f9-f7115db16004"
-
-
 
 // #define  "7d7ca8d5-e2b0-40f2-8d84-eb05a1773bfa"
 
@@ -71,27 +70,33 @@ class customServerCallbacks : public BLEServerCallbacks
     }
 };
 
+/*
+ * Initialises the BLE service and configures it appropriately. Call once.
+ */
 void bleInit(String firmwareRevision)
 {
-    // Create the BLE Device
-    // String deviceName = "MHML M5 v" + firmwareRevision;
+    /* 
+     * Create and name the BLE Device
+     */
     String deviceName = "MHML M5";
     BLEDevice::init(deviceName.c_str());
 
-    // Create the BLE Server
+    /* 
+     * Create the BLE Server and assign custom callbacks
+     */
     pServer = BLEDevice::createServer();
     pServer->setCallbacks(new customServerCallbacks());
 
     /*
-    Create the BLE Service
-    */
+     * Create the BLE Service
+     */
     pServicePPG = pServer->createService(SERVICE_UUID_PPG);
     pServiceGSR = pServer->createService(SERVICE_UUID_GSR);
     pServiceDevInfo = pServer->createService(SERVICE_UUID_DEVICE_INFORMATION);
 
     /*
-    Create a BLE Characteristics for each service
-    */
+     * Create a BLE Characteristics for each service
+     */
     pCharacteristicPPG_HR = pServicePPG->createCharacteristic(
         CHARACTERISTIC_UUID_HR,
         BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
@@ -121,20 +126,32 @@ void bleInit(String firmwareRevision)
         BLECharacteristic::PROPERTY_READ);
 
     /*
-    All characterstics with the the Notify property must also have the CCC 
-    (Client Characteristic Configuration) descriptor.
-
-    https://www.bluetooth.com/specifications/gatt/viewer?attributeXmlFile=org.bluetooth.descriptor.gatt.client_characteristic_configuration.xml
-    */
+     * All characterstics with the the Notify property must also have the CCC 
+     * (Client Characteristic Configuration) descriptor.
+     * https://www.bluetooth.com/specifications/gatt/viewer?attributeXmlFile=org.bluetooth.descriptor.gatt.client_characteristic_configuration.xml
+     */
     pCharacteristicPPG_HR->addDescriptor(new BLE2902());
     pCharacteristicPPG_IBI->addDescriptor(new BLE2902());
     pCharacteristicPPG_SPO2->addDescriptor(new BLE2902());
     pCharacteristicGSR_SCL->addDescriptor(new BLE2902());
 
-    // Set some initial characteristic values
-    pCharacteristicFR->setValue(firmwareRevision.c_str());
+    /* 
+     * Assign any additional descriptors to characteristics
+     */
+    BLE2904 *cpfd = new BLE2904();
+    cpfd->setFormat(6);
+    pCharacteristicPPG_IBI->addDescriptor(cpfd);
 
-    // Start the service and then advertise
+    /* 
+     * Set some initial characteristic values
+     */
+    pCharacteristicFR->setValue(firmwareRevision.c_str());
+    pCharacteristicPPG_BSL->setValue(&DATA.ppgBSL, 1);
+    pCharacteristicGSR_BSL->setValue(&DATA.ppgBSL, 1);
+
+    /* 
+     * Start the service and then advertise
+     */
     pServicePPG->start();
     pServiceGSR->start();
     pServiceDevInfo->start();
@@ -144,9 +161,12 @@ void bleInit(String firmwareRevision)
     pAdvertising->setScanResponse(false);
     pAdvertising->setMinPreferred(0x0); // set to 0x00 to not advertise this parameter
     BLEDevice::startAdvertising();
-    Serial.println("Waiting for a client connection to notify...");
+    Serial.println("Waiting for a client connection...");
 }
 
+/*
+ * Displays debug information on screen for BLE.
+ */
 void bleLCD()
 {
     M5.Lcd.setTextColor(GREEN, BLACK);
@@ -164,14 +184,15 @@ void bleLCD()
     M5.Lcd.print(DATA.heartRate);
 }
 
+/*
+ * When connected, will send notifications of data to client.
+ * Handles connecting/disconnect activity.
+ */
 void bleRun()
 {
     if (deviceConnected)
     {
-        pCharacteristicPPG_BSL->setValue(&DATA.ppgBSL, 2);
-        pCharacteristicGSR_BSL->setValue(&DATA.ppgBSL, 2);
-
-        pCharacteristicPPG_HR->setValue(&DATA.heartRate, 2);
+        pCharacteristicPPG_HR->setValue(&DATA.heartRate, 1);
         pCharacteristicPPG_HR->notify();
 
         pCharacteristicPPG_IBI->setValue(DATA.interbeatInterval);
@@ -180,13 +201,8 @@ void bleRun()
         pCharacteristicPPG_SPO2->setValue(DATA.spo2);
         pCharacteristicPPG_SPO2->notify();
 
-        pCharacteristicGSR_SCL->setValue(&DATA.scl, 2);
+        pCharacteristicGSR_SCL->setValue(DATA.scl);
         pCharacteristicGSR_SCL->notify();
-
-        DATA.heartRate++;
-        DATA.interbeatInterval++;
-        DATA.spo2++;
-        DATA.scl++;
 
         // bluetooth stack will go into congestion if too many packets are sent.
         delay(5); // ensures loop is delayed.
@@ -194,7 +210,8 @@ void bleRun()
 
     if (!deviceConnected && oldDeviceConnected) // disconnecting
     {
-        delay(500);                  // give the bluetooth stack the chance to get things ready
+        // give the bluetooth stack the chance to get things ready
+        delay(500);
         pServer->startAdvertising(); // restart advertising
         Serial.println("BLE: start advertising");
         oldDeviceConnected = deviceConnected;
