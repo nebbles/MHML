@@ -11,7 +11,7 @@
 #include "gsr.h"
 #include "ppg.h"
 
-#define DEBUG // Uncomment whilst debugging for Serial debug stats.
+// #define DEBUG // Uncomment whilst debugging for Serial debug stats.
 
 void setup()
 {
@@ -70,7 +70,22 @@ void setup()
 
 void loop() //Continuously taking samples from MAX30102.  Heart rate and SpO2 are calculated every ST seconds
 {
-  if (millis() - timeStartGSR > 200) // Record GSR at 5 Hz
+
+//buffer length of BUFFER_SIZE stores ST seconds of samples running at FS sps
+//read BUFFER_SIZE samples, and determine the signal range
+for(i=0;i<BUFFER_SIZE;i++)
+{
+    while(digitalRead(oxiInt)==1);  //wait until the interrupt pin asserts
+    ppgInter();
+
+    M5.Lcd.fillRect(11, 30, 140, 140, BLACK); // Clear and reset PPG Screen
+    for(int i=0; i<280; i++)
+    {
+    int graphPos = ppgDeque[i];
+    if (graphPos > 30 && graphPos < 170) M5.Lcd.drawPixel(i + 11, graphPos, BLUE);  //Temp fix to prevent diagonal line from being drawn
+    }
+
+    if (millis() - timeStartGSR > 200) // Record GSR at 5 Hz
   {
     #ifdef DEBUG
     Serial.println("[DEBUG]: GSR Run");
@@ -88,21 +103,8 @@ void loop() //Continuously taking samples from MAX30102.  Heart rate and SpO2 ar
       if (graphPos > 30 && graphPos < 170) // Temp fix to prevent diagonal line from being drawn
         M5.Lcd.drawPixel(i + 171, graphPos, BLUE);
     }
+    timeStartGSR = millis();
   }
-
-//buffer length of BUFFER_SIZE stores ST seconds of samples running at FS sps
-//read BUFFER_SIZE samples, and determine the signal range
-for(i=0;i<BUFFER_SIZE;i++)
-{
-    while(digitalRead(oxiInt)==1);  //wait until the interrupt pin asserts
-    ppgInter();
-
-    M5.Lcd.fillRect(11, 30, 140, 140, BLACK); // Clear and reset PPG Screen
-    for(int i=0; i<280; i++)
-    {
-    int graphPos = ppgDeque[i];
-    if (graphPos > 30 && graphPos < 170) M5.Lcd.drawPixel(i + 11, graphPos, BLUE);  //Temp fix to prevent diagonal line from being drawn
-    }
 }
 
 ppgCalc(); //this calculates the heart rate and prints via Serial
@@ -115,10 +117,10 @@ M5.Lcd.setTextSize(1);
 M5.Lcd.setCursor(10, 185);
 M5.Lcd.print("HR:  ");
 M5.Lcd.setCursor(30, 185);
-M5.Lcd.print((int)(n_heart_rate));
+M5.Lcd.print((int)(n_heart_rate)); // Recorded Heart Rate
 
 M5.Lcd.setCursor(80, 185);
 M5.Lcd.print("SpO2:  ");
 M5.Lcd.setCursor(110, 185);
-M5.Lcd.print((int)(n_spo2));
+M5.Lcd.print((int)(n_spo2)); // Recorded Heart Rate
 }
