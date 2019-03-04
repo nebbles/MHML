@@ -7,15 +7,14 @@
 const int GSR = 35;
 int sensorValue = 0;
 int gsr_average = 0;
-int elapsedTime, timeStart, timeDelay;
+int timeStartGSR, timeDelay;
 int posInt;
-Deque<int> gsrQueue;
+Deque<int> gsrDeque;
 
 void gsrInit()
 {
-    gsrQueue.setLimit(280);
-    for (int i = 0; i < 280; i++)
-        gsrQueue.pushTail(100);
+    gsrDeque.setLimit(140);
+    for (int i = 0; i < 140; i++) gsrDeque.pushTail(100);
 }
 
 void gsrRun()
@@ -29,10 +28,10 @@ void gsrRun()
     }
     gsr_average = sum / 10;
 
-    long pos = map(gsr_average, 0, 4095, 200, 0); // Mapping GSR values to screen height
+    long pos = map(gsr_average, 0, 4095, 140, 0); // Mapping GSR values to screen height
     posInt = floor(pos);
-    gsrQueue.popHead();
-    gsrQueue.pushTail(posInt);
+    gsrDeque.popHead();
+    gsrDeque.pushTail(posInt);
 }
 
 #endif
