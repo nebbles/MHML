@@ -15,8 +15,9 @@ public class sliderValues : MonoBehaviour
 	public void SubmitSliderSetting()
 	{
 		//Displays the value of the slider in the console.
+		productivity.value = 0; 
 		Debug.Log(anxiety.value);
 		JsonUtility.ToJson(this);
-
+	
 	}
 }
