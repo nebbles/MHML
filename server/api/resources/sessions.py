@@ -5,7 +5,13 @@ from api.responses import Response as res
 
 class Sessions(Resource):
     def __init__(self):
-        self.arguments = [('session_id', str), ('Anxiety', float), ('Stress', float), ('Fatigue', float), ('Productivity', float)]
+        self.arguments = [
+            ('session_id', str, True),
+            ('Anxiety', float, True),
+            ('Stress', float, True),
+            ('Fatigue', float, True),
+            ('Productivity', float, True)
+            ]
     
     def get(self, username):
         user_ref = database.document(u'users/'+username)
@@ -32,8 +38,8 @@ class Sessions(Resource):
             sessions_ref = user_ref.collection(u'self_reports')
 
             parser = reqparse.RequestParser(bundle_errors=True)
-            for (n, t) in self.arguments:
-                parser.add_argument(n, type=t, required=True, help= "Wrong or missing entry")
+            for (n, t, b) in self.arguments:
+                parser.add_argument(n, type=t, required=b, help= "Wrong or missing entry")
             
             args = dict(parser.parse_args())
 
@@ -86,8 +92,8 @@ class Session(Sessions):
             if session.exists:
 
                 parser = reqparse.RequestParser(bundle_errors=True)
-                for (n, t) in self.arguments:
-                    parser.add_argument(n, type=t, required=True, help= "Wrong or missing entry")
+                for (n, t, b) in self.arguments:
+                    parser.add_argument(n, type=t, required=b, help= "Wrong or missing entry")
                 args = dict(parser.parse_args())
 
                 if session_id == args['session_id']:

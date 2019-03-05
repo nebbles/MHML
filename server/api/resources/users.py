@@ -66,7 +66,7 @@ class User(Resource):
         user_ref = users_ref.document(username)
         user = user_ref.get()
         if user.exists:
-            return user.to_dict(), 200
+            return res.OK(user.to_dict())
         else:
             return res.NOT_FOUND(username)
 
