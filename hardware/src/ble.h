@@ -147,7 +147,7 @@ void bleInit(String firmwareRevision)
      */
     pCharacteristicFR->setValue(firmwareRevision.c_str());
     pCharacteristicPPG_BSL->setValue(&DATA.ppgBSL, 1);
-    pCharacteristicGSR_BSL->setValue(&DATA.ppgBSL, 1);
+    pCharacteristicGSR_BSL->setValue(&DATA.gsrBSL, 1);
 
     /* 
      * Start the service and then advertise
