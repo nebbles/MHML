@@ -1,7 +1,7 @@
 <h2 align="center"><br>Data Specification</h2>
 
 <p align="center">
-Version <code>0.4</code>
+Version <code>0.5</code>
 </p>
 <br>
 
@@ -28,9 +28,9 @@ All set via the `App -> Account Settings` screen. **Except for username. Usernam
 - `timestamp` is formatted as a unix timestamp. Resolution to the nearest second.
 
 ```
-"session_id": {
-    "session_id": string,                       // ISO 8601 compliant
-    "firmwareRevision": (see BLE Spec),
+<session_id>: {
+    "session_id":       string,                 // ISO 8601 compliant
+    "firmwareRevision": see BLE Spec,
     "selfReported": {                           // Generated from the `App -> Logging` screen
         "anxiety":      float normalised
         "stress":       float normalised
@@ -40,23 +40,23 @@ All set via the `App -> Account Settings` screen. **Except for username. Usernam
     "ppg": {                                    // Generated from the hardware
         "bodySensorLocation": (see BLE Spec),
         "heartRate": {
-            "timestamp": int (in BPM),
+            <timestamp>: int (in BPM),
             ...
         },
         "interbeatInterval": {
-            "timestamp": int (in BPM),
+            <timestamp>: int (in BPM),
             ...
         },
         "spO2": {
-            "timestamp": float (in %),
+            <timestamp>: float (in %),
             ...
         }
     }
     },
     "gsr": {                                    // Generated from the hardware
-        "bodySensorLocation": (see BLE Spec),
+        "bodySensorLocation": see BLE Spec,
         "scl": {
-            "timestamp": int (as adc value),
+            <timestamp>: int (as adc value),
             ...
         }
     }
