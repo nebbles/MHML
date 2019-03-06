@@ -39,7 +39,7 @@ public class Networking {
 		else { //This statement is executed when the get request has been processed successfully. 
 			// Show data retrieved from the API as text in the console on unity
 			Debug.Log(www.downloadHandler.text);
-			//dataWeb = www.downloadHandler.text;
+			dataWeb = www.downloadHandler.text;
 
 			// Or retrieve results as binary data
 			byte[] results = www.downloadHandler.data; 

@@ -9,7 +9,6 @@ public class main : MonoBehaviour{
 	Networking login = new Networking();
 	//Networking login = obj.AddComponent<Networking>();
 	//public string input;
-	//User initial;
 	//public bool dataAvailable = false; 
 	//string aELKJF =  "mhml.greenberg.io/api/users";
 
@@ -22,8 +21,9 @@ public class main : MonoBehaviour{
 
 	public void loginButton() {
 		// add user name				
-		Debug.Log("Katsu");
-		login.setRoute("mhml.greenberg.io/api/users/" + userNameInput);
+		Debug.Log(userNameInput);
+
+		login.setRoute("mhml.greenberg.io/api/users/" + userNameInput.text);
 		login.makeRequest(this); 	
 	}
 

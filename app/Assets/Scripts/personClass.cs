@@ -3,11 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI; // Required when Using UI elements.
 
-public class User{
-	public string[] usernames;
-
-}
-
 public class Session{
 	public int session_id; //server expects str
 	public Slider productivity;

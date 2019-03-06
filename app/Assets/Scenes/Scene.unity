@@ -2869,12 +2869,12 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-      - m_Target: {fileID: 1490614488}
-        m_MethodName: 
+      - m_Target: {fileID: 1490614493}
+        m_MethodName: checkUsers
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -5051,13 +5051,13 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 715159224}
   m_TextComponent: {fileID: 1875267364}
   m_Placeholder: {fileID: 65176471}
-  m_ContentType: 0
+  m_ContentType: 4
   m_InputType: 0
   m_AsteriskChar: 42
-  m_KeyboardType: 0
+  m_KeyboardType: 1
   m_LineType: 0
   m_HideMobileInput: 0
-  m_CharacterValidation: 0
+  m_CharacterValidation: 3
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
@@ -9235,7 +9235,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ff1a0229d5ae724cadb11c3dbc9e2c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  userNameInput: {fileID: 0}
+  userNameInput: {fileID: 715159223}
 --- !u!114 &1490614496
 MonoBehaviour:
   m_ObjectHideFlags: 0
