@@ -9,7 +9,7 @@ public class disconnectCtrl : MonoBehaviour
     public void onClick()
     {
         disconnect = FindObjectOfType<controller>();
-        disconnect.disconnectBluetooth();
+        disconnect.disconnectBluetooth(false); // Not called through device forget, so don't delete the name & address
     }
 
     void Start () {}
