@@ -9,13 +9,13 @@ class Users(Resource):
 
     def __init__(self):
         self.arguments =[
-            ('Username', str, True),
-            ('Name', str, False),
-            ('Age', int, False),
-            ('Gender', bool, False),
-            ('Ethnicity', str, False),
-            ('Location', str, False),
-            ('Occupation', str, False)
+            ('username', str, True),
+            ('name', str, False),
+            ('age', int, False),
+            ('gender', bool, False),
+            ('ethnicity', str, False),
+            ('location', str, False),
+            ('occupation', str, False)
         ] 
     
     def get(self):
@@ -24,7 +24,7 @@ class Users(Resource):
         usernames = []
 
         for user in users:
-            username = user.to_dict()['Username']
+            username = user.to_dict()['username']
             usernames.append(username)
 
         return res.OK(usernames)
@@ -36,7 +36,7 @@ class Users(Resource):
             parser.add_argument(n, type=t, required=b, help="Wrong or missing entry")
         args = dict(parser.parse_args())
 
-        username = args['Username']
+        username = args['username']
         user_ref = users_ref.document(username)
         user = user_ref.get()
 
@@ -74,7 +74,7 @@ class User(Resource):
         user_ref = users_ref.document(username)
         user = user_ref.get()
         if user.exists:
-            user_sessions_ref = database.collection(u'users/'+username+'/self_reports')
+            user_sessions_ref = database.collection(u'users/'+username+'/sessions')
             user_ref.delete()
             self.delete_collection(user_sessions_ref, 10)
             return res.NO_CONTENT(username)
