@@ -1,6 +1,6 @@
 # Data Specification
 
-Version `0.3`
+Version `0.3.1`
 
 ## Notes
 
@@ -27,11 +27,10 @@ All set via the `App -> Account Settings` screen. **Except for username. Usernam
 ## Session Data
 
 ```
-<session_id>: {
-    "sessionid": <session_id>,
+"session_id": {
+    "session_id": string,                       // ISO 8601 compliant
     "firmwareRevision": (see BLE Spec),
     "selfReported": {                           // Generated from the `App -> Logging` screen
-        "sessionid":    string                  // ISO 8601 compliant
         "anxiety":      float normalised
         "stress":       float normalised
         "fatigue":      float normalised
