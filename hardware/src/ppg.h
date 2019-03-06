@@ -46,8 +46,9 @@ Deque<int> ppgDeque;
 
 // Interrupt pin
 const byte oxiInt = 5; // pin connected to MAX30102 INT
+volatile bool ISRRan = false;
 volatile int interruptCounter = 0;
-int numberOfInterrupts = 0;
+int bufferIncrement = 0;
 portMUX_TYPE mux = portMUX_INITIALIZER_UNLOCKED;
 
 uint32_t elapsedTime, timeStart;
@@ -67,9 +68,9 @@ char hr_str[10];
 long graphPos;
 float raw_ir, raw_red;
 
-void IRAM_ATTR ppgInter()
+void ppgInter()
 {
-  maxim_max30102_read_fifo((aun_red_buffer + numberOfInterrupts), (aun_ir_buffer + numberOfInterrupts)); //read from MAX30102 FIFO
+  maxim_max30102_read_fifo((aun_red_buffer + bufferIncrement), (aun_ir_buffer + bufferIncrement)); //read from MAX30102 FIFO
   raw_ir = raw_ir_read(aun_ir_buffer, BUFFER_SIZE, aun_red_buffer, &n_spo2, &n_heart_rate);
   raw_red = raw_red_read(BUFFER_SIZE, aun_red_buffer, &n_spo2, &n_heart_rate);
 
@@ -107,22 +108,18 @@ void IRAM_ATTR ppgInter()
 }
 
 /* 
-  * Buffer length of BUFFER_SIZE stores ST seconds of samples running at FS sps
-  * read BUFFER_SIZE samples, and determine the signal range
+  * Interrupt handler to trigger reading of FIFO
   */
 void IRAM_ATTR handleInterrupt()
 {
   portENTER_CRITICAL(&mux);
-  ppgInter();
-  numberOfInterrupts++;
-  if (numberOfInterrupts == BUFFER_SIZE)
-    numberOfInterrupts = 0;
+  interruptCounter++;
   portEXIT_CRITICAL(&mux);
 }
 
 void ppgInit()
 {
-  pinMode(oxiInt, INPUT); //pin G5 connects to the interrupt output pin of the MAX30102
+  pinMode(oxiInt, INPUT_PULLUP); //pin G5 connects to the interrupt output pin of the MAX30102
   maxim_max30102_reset(); //resets the MAX30102
   delay(1000);
 

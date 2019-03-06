@@ -84,10 +84,10 @@ void setup()
 
   timeStartGSR = millis();
   gsrRun();
-  
-  #ifdef DEBUG
+
+#ifdef DEBUG
   Serial.println("[DEBUG]: Setup Loop Complete");
-  #endif //DEBUG
+#endif //DEBUG
 }
 
 void loop() //Continuously taking samples from MAX30102.  Heart rate and SpO2 are calculated every ST seconds
@@ -99,13 +99,23 @@ void loop() //Continuously taking samples from MAX30102.  Heart rate and SpO2 ar
   // bleLCD();
   bleRun();
 
-  if (deviceConnected)
+  if (interruptCounter > 0)
   {
-    // incrementDataDummy();
+    ppgInter();
+    portENTER_CRITICAL(&mux);
+    interruptCounter--;
+    bufferIncrement = (bufferIncrement + 1) % BUFFER_SIZE;
+    portEXIT_CRITICAL(&mux);
+#ifdef DEBUG
+    Serial.print("[DEBUG]: interruptCounter: ");
+    Serial.println((int)(interruptCounter));
+    Serial.print("[DEBUG]: bufferIncremet: ");
+    Serial.println((int)(bufferIncrement));
+#endif // DEBUG
   }
 
-  Serial.print("BLE: Heart Rate: 0x");
-  Serial.println(DATA.heartRate, HEX);
+  // Serial.print("BLE: Heart Rate: 0x");
+  // Serial.println(DATA.heartRate, HEX);
   // delay(1000);
 
   M5.Lcd.fillRect(11, 30, 140, 140, BLACK); // Clear and reset PPG Screen
