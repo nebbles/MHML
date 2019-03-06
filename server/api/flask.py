@@ -14,8 +14,8 @@ class FlaskApp:
         self.api.add_resource(Stress, '/stress')
         self.api.add_resource(Users, '/api/users')
         self.api.add_resource(User, '/api/users/<string:username>')
-        self.api.add_resource(Sessions, '/api/users/<string:username>/self_reports')
-        self.api.add_resource(Session, '/api/users/<string:username>/self_reports/<string:session_id>')
+        self.api.add_resource(Sessions, '/api/users/<string:username>/sessions')
+        self.api.add_resource(Session, '/api/users/<string:username>/sessions/<string:session_id>')
         print("flask app ready!")
 
 
