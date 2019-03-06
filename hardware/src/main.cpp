@@ -19,7 +19,7 @@
 
 String FIRMWARE_REVISION = "0.2.2";
 
-// #define DEBUG // Uncomment whilst debugging for Serial debug stats.
+#define DEBUG // Uncomment whilst debugging for Serial debug stats.
 
 void setup()
 {
@@ -84,6 +84,10 @@ void setup()
 
   timeStartGSR = millis();
   gsrRun();
+  
+  #ifdef DEBUG
+  Serial.println("[DEBUG]: Setup Loop Complete");
+  #endif //DEBUG
 }
 
 void loop() //Continuously taking samples from MAX30102.  Heart rate and SpO2 are calculated every ST seconds
@@ -104,44 +108,31 @@ void loop() //Continuously taking samples from MAX30102.  Heart rate and SpO2 ar
   Serial.println(DATA.heartRate, HEX);
   // delay(1000);
 
-  /* 
-   * Buffer length of BUFFER_SIZE stores ST seconds of samples running at FS sps
-   * read BUFFER_SIZE samples, and determine the signal range
-   */
-  for (i = 0; i < BUFFER_SIZE; i++)
+  M5.Lcd.fillRect(11, 30, 140, 140, BLACK); // Clear and reset PPG Screen
+  for (int i = 0; i < 280; i++)
   {
+    int graphPos = ppgDeque[i];
+    if (graphPos > 30 && graphPos < 170)
+      M5.Lcd.drawPixel(i + 11, graphPos, BLUE); //Temp fix to prevent diagonal line from being drawn
+  }
 
-    if (digitalRead(oxiInt) == 1) // wait until the interrupt pin asserts
+  if (millis() - timeStartGSR > 200) // Record GSR at 5 Hz
+  {
+    Serial.print("[DEBUG] GSR Run: ");
+    Serial.println((int)(timeStartGSR));
+
+    gsrRun();
+
+    M5.Lcd.fillRect(171, 30, 140, 140, BLACK); // Clear and reset GSR Graph
+
+    for (int i = 0; i < 280; i++) // Draw Graph
     {
-      ppgInter();
+      int graphPos = gsrDeque[i];
+
+      if (graphPos > 30 && graphPos < 170) // Temp fix to prevent diagonal line from being drawn
+        M5.Lcd.drawPixel(i + 171, graphPos, BLUE);
     }
-
-    M5.Lcd.fillRect(11, 30, 140, 140, BLACK); // Clear and reset PPG Screen
-    for (int i = 0; i < 280; i++)
-    {
-      int graphPos = ppgDeque[i];
-      if (graphPos > 30 && graphPos < 170)
-        M5.Lcd.drawPixel(i + 11, graphPos, BLUE); //Temp fix to prevent diagonal line from being drawn
-    }
-
-    if (millis() - timeStartGSR > 200) // Record GSR at 5 Hz
-    {
-      Serial.print("[DEBUG] GSR Run: ");
-      Serial.println((int)(timeStartGSR));
-
-      gsrRun();
-
-      M5.Lcd.fillRect(171, 30, 140, 140, BLACK); // Clear and reset GSR Graph
-
-      for (int i = 0; i < 280; i++) // Draw Graph
-      {
-        int graphPos = gsrDeque[i];
-
-        if (graphPos > 30 && graphPos < 170) // Temp fix to prevent diagonal line from being drawn
-          M5.Lcd.drawPixel(i + 171, graphPos, BLUE);
-      }
-      timeStartGSR = millis();
-    }
+    timeStartGSR = millis();
   }
 
   ppgCalc(); //this calculates the heart rate and prints via Serial
