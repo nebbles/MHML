@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI; // Required when Using UI elements.
 
-public class Session{
+public class Session {
 	public int session_id; //server expects str
 	public Slider productivity;
 	public Slider stress; 
@@ -27,14 +27,11 @@ public class Session{
 }
 
 
-public class personClass : MonoBehaviour {
-	// all class values
+public class personClass {
 	public string Username;
 	public string Name;
-	//public string secondName;    ---> API POST does not currently accept first & second names
-	//public string email ; 
 	public int Age;
-	public bool Gender;  // needs to be changed to string
+	public bool Gender; 
 	public string Ethnicity;
 	public string Location;
 	public string Occupation;

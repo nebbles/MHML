@@ -541,7 +541,7 @@ GameObject:
   - component: {fileID: 55065436}
   - component: {fileID: 55065437}
   m_Layer: 5
-  m_Name: Log In Screen
+  m_Name: LogInScreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5643,28 +5643,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 55065435}
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1562979751}
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
       - m_Target: {fileID: 1490614495}
         m_MethodName: loginButton
         m_Mode: 1
@@ -9235,6 +9213,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ff1a0229d5ae724cadb11c3dbc9e2c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  loginScreen: {fileID: 55065435}
+  homeScreen: {fileID: 1562979751}
+  createAccount: {fileID: 832185033}
   userNameInput: {fileID: 715159223}
 --- !u!114 &1490614496
 MonoBehaviour:
@@ -10508,7 +10489,7 @@ MonoBehaviour:
   m_AsteriskChar: 42
   m_KeyboardType: 6
   m_LineType: 0
-  m_HideMobileInput: 1
+  m_HideMobileInput: 0
   m_CharacterValidation: 4
   m_CharacterLimit: 0
   m_OnEndEdit:

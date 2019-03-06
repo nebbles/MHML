@@ -13,6 +13,7 @@ public class Networking {
 	public bool dataAvailable = false; 
 	public string dataWeb ;
 	public string webAddress;
+	public bool dataNotAvailable = false;
 
 
 	public void setRoute(string route) {
@@ -33,7 +34,7 @@ public class Networking {
 			
 		if(www.isNetworkError || www.isHttpError) { //This statement is executed if the get request fails
 			Debug.Log(www.error); //A message is displayed on the console in unity
-
+			dataNotAvailable = true;
 		}
 
 		else { //This statement is executed when the get request has been processed successfully. 
