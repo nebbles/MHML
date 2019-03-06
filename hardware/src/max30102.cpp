@@ -147,7 +147,7 @@ bool maxim_max30102_init()
 //To solve this problem, 16-bit MSB of the sampled data will be truncated.  Samples become 16-bit data.
 //bool maxim_max30102_read_fifo(uint16_t *pun_red_led, uint16_t *pun_ir_led)
 //#else
-bool maxim_max30102_read_fifo(uint32_t *pun_red_led, uint32_t *pun_ir_led)
+bool IRAM_ATTR maxim_max30102_read_fifo(uint32_t *pun_red_led, uint32_t *pun_ir_led)
 //#endif
 /**
 * \brief        Read a set of samples from the MAX30102 FIFO register

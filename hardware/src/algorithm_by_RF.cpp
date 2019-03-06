@@ -117,7 +117,7 @@ void rf_heart_rate_and_oxygen_saturation(uint32_t *pun_ir_buffer, int32_t n_ir_b
   }
 }
 
-float rf_linear_regression_beta(float *pn_x, float xmean, float sum_x2)
+float IRAM_ATTR rf_linear_regression_beta(float *pn_x, float xmean, float sum_x2)
 /**
 * \brief        Coefficient beta of linear regression 
 * \par          Details
@@ -202,7 +202,7 @@ void rf_signal_periodicity(float *pn_x, int32_t n_size, int32_t *p_last_periodic
   *p_last_periodicity=n_lag;
 }
 
-float rf_rms(float *pn_x, int32_t n_size, float *sumsq) 
+float IRAM_ATTR rf_rms(float *pn_x, int32_t n_size, float *sumsq) 
 /**
 * \brief        Root-mean-square variation 
 * \par          Details
@@ -241,7 +241,7 @@ float rf_Pcorrelation(float *pn_x, float *pn_y, int32_t n_size)
   return r;
 }
 
-float raw_ir_read(uint32_t *pun_ir_buffer, int32_t n_ir_buffer_length, uint32_t *pun_red_buffer, float *pn_spo2,  
+float IRAM_ATTR raw_ir_read(uint32_t *pun_ir_buffer, int32_t n_ir_buffer_length, uint32_t *pun_red_buffer, float *pn_spo2,  
                 int32_t *pn_heart_rate)
 {
   int32_t k;  
@@ -280,7 +280,7 @@ float raw_ir_read(uint32_t *pun_ir_buffer, int32_t n_ir_buffer_length, uint32_t 
 
 }
 
-float raw_red_read(int32_t n_red_buffer_length, uint32_t *pun_red_buffer, float *pn_spo2,  
+float IRAM_ATTR raw_red_read(int32_t n_red_buffer_length, uint32_t *pun_red_buffer, float *pn_spo2,  
                 int32_t *pn_heart_rate)
 {
   int32_t k;  
