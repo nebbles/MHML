@@ -7,30 +7,29 @@ class Sessions(Resource):
     def __init__(self):
         self.arguments = [
             ('session_id', str, True),
-            ('self_reported', dict, True),
-            ('PPG', dict, True),
-            ('GSR', dict, True),
+            ('firmwareRevision', str, True),
+            ('selfReported', dict, True),
+            ('ppg', dict, True),
+            ('gsr', dict, True),
         ]
         
         self.self_reported_arguments = [
-            ('Anxiety', float, True, 'self_reported'),
-            ('Stress', float, True, 'self_reported'),
-            ('Fatigue', float, True, 'self_reported'),
-            ('Productivity', float, True, 'self_reported'),
+            ('anxiety', float, True, 'selfReported'),
+            ('stress', float, True, 'selfReported'),
+            ('fatigue', float, True, 'selfReported'),
+            ('productivity', float, True, 'selfReported'),
         ]
 
         self.PPG_arguments = [
-            ('FirmwareRevision', str, True, 'PPG'),
-            ('BodySensorLocation', str, True, 'PPG')
-            #('HeartRate', ..., True),
-            #('SPO2', ..., True)
+            ('bodySensorLocation', str, True, 'ppg'),
+            ('heartRate', dict, True, 'ppg'),
+            ('interbeatInterval', dict, True, 'ppg'),
+            ('spO2', dict, True, 'ppg')
         ]
 
         self.GSR_arguments = [
-            ('FirmwareRevision', str, True, 'GSR'), 
-            ('BodySensorLocation', str, True, 'GSR')
-            #...,
-            #...
+            ('bodySensorLocation', int, True, 'gsr'),
+            ('scl', dict, True, 'gsr')
         ]
     
     def get(self, username):
@@ -94,7 +93,7 @@ class Session(Sessions):
         user = user_ref.get()
 
         if user.exists:
-            sessions_ref = user_ref.collection(u'self_reports')
+            sessions_ref = user_ref.collection(u'sessions')
             session_ref = sessions_ref.document(session_id)
             session = session_ref.get()
             if session.exists:
