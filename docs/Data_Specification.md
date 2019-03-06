@@ -1,6 +1,6 @@
 # Data Specification
 
-Version `0.1`
+Version `0.2`
 
 ## Notes
 
@@ -39,27 +39,30 @@ Created from the `App -> Logging` screen.
 ## Hardware-Generated Data
 
 ```
-"hardware": {
-    "ppg": {
-        <session_id>: {
-            "firmwareRevision": (see BLE Spec),
-            "bodySensorLocation": (see BLE Spec),
-            "heartRate": [
-                <timestamp>: float (in BPM),
-                ...
-            ],
-            "spO2": [
-                <timestamp>: float (in %),
-                ...
-            ]
-        }
+<session_id>: {
+    "firmwareRevision": (see BLE Spec),
+    "ppg": { 
+        "bodySensorLocation": (see BLE Spec),
+        "heartRate": [
+            <timestamp>: int (in BPM),
+            ...
+        ],
+        "interbeatInterval": [
+            <timestamp>: int (in BPM),
+            ...
+        ],
+        "spO2": [
+            <timestamp>: float (in %),
+            ...
+        ]
+    }
     },
     "gsr": {
-        <session_id>: {
-            "firmwareRevision": (see BLE Spec),
-            "bodySensorLocation": (see BLE Spec),
-            ???
-        }
+        "bodySensorLocation": (see BLE Spec),
+        "scl": [
+            <timestamp>: int (as adc value),
+            ...
+        ]
     }
 }
 ```
