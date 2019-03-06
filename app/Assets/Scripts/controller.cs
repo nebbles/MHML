@@ -42,9 +42,9 @@ public class controller : MonoBehaviour
 
     // Global Public Variables to display info
     public Transform PanelScrollContents;            // device list panel 
-    public Text txtDebug;                        // debugging textbox 
+    // public Text txtDebug;                        // debugging textbox - Redundant for integrated version.
     public GameObject connectButton;               // the button to click to connect to a device 
-    public Text txtData;                        // the text box to type in send data 
+    // public Text txtData;                        // Redunant: the text box to type in send data
     public Text txtReceive;                        // the text boxes data is being received into 1 - 7
     public Text txtReceive2;
     public Text txtReceive3;
@@ -58,7 +58,6 @@ public class controller : MonoBehaviour
     public bool _readFound = false;
     public bool _readFound2 = false;
     public bool _readFound3 = false; // Currently a redundant variable
-    private string _connectedID = null;
     private bool _scanning = false;
     private bool _connecting = false;
 
@@ -87,12 +86,14 @@ public class controller : MonoBehaviour
     private Queue<string> _deviceInfo_data = new Queue<string>();
 
 	public bool _storeSubscribeData = false;
-	public string rememberedDeviceAddress; 
+    public string _connectedID = null; // This is the device address that will get stored permanently, and only updated if the device is 'forgotten'. 
+    public string connectedName = null; // This is the device name that will get stored permanently, and only updated if the device is 'forgotten'. 
 
-	// The three MHML M5 Device Addresses are as follows:
-	public string scottSensor = "B4:E6:2D:8B:92:F7"; // Scotts Hardware Wired Sensor Device
-	public string felixSensor = "84:0D:8E:25:91:C2"; // Felix's Testing Device
-	public string benSensor =  "84:0D:8E:25:96:BA"; // Ben's Testing Device
+    // The three MHML M5 Device Addresses are as follows:
+    public string scottSensorAddr = "B4:E6:2D:8B:92:F7"; // Scotts Hardware Wired Sensor Device
+	public string felixSensorAddr = "84:0D:8E:25:91:C2"; // Felix's Testing Device
+	public string benSensorAddr =  "84:0D:8E:25:96:BA"; // Ben's Testing Device
+    public string storedAddress; // Assign one of the three variables above to storedAddress to 'remember' a device and auto connect later. 
 
     // Other variables
     private int devicesFound = 0;
@@ -101,6 +102,7 @@ public class controller : MonoBehaviour
     private int localReadCount = 0;
     private string _connectedName; // Currently a redundant variable 
     private string _connectedAddress;
+    private bool _hasStoredBluetoothValues = false;
     int ting = 0; // Currently a redundant variable
 
 
@@ -110,10 +112,10 @@ public class controller : MonoBehaviour
     // Disconnect from all bluetooth devices.
     public void disconnectBluetooth()
     {
-        txtDebug.text = "Disconnection in Progress";
+        //txtDebug.text = "Disconnection in Progress";
         BluetoothLEHardwareInterface.DisconnectPeripheral(_connectedAddress, connectedID=>
         {
-            txtDebug.text = "Disconnect Successful";
+            //txtDebug.text = "Disconnect Successful";
 
             // Reset subscribe and read checks
             isConnected = false;
@@ -135,30 +137,45 @@ public class controller : MonoBehaviour
         });
     }
 
+    public void forgetDevice()
+    {
+        _hasStoredBluetoothValues = false;
+        _connectedName = null;
+        _connectedAddress = null;
+        PlayerPrefs.DeleteKey("Saved Device Name");
+        PlayerPrefs.DeleteKey("Saved Device Address");
+        disconnectBluetooth();
+    }
+
     // Connect to the BLE peripheral
-    void connectBluetooth(string addr)
+    void connectBluetooth(string nameID, string addr)
     {
         // System.Threading.Thread.Sleep(500);
         BluetoothLEHardwareInterface.ConnectToPeripheral(addr, (address) => 
         {
-            txtDebug.text = "Checking address";
+            //txtDebug.text = "Checking address";
             if (address == _connectedAddress)
             {
-                txtDebug.text = "Address found";
+                isConnected = true;
+                //txtDebug.text = "Address found";
                 _connectedID = address;
+                //if (_hasStoredBluetoothValues==false)
+                //{
+                //    PlayerPrefs.SetString("Saved Device Name", nameID);
+                //    PlayerPrefs.SetString("Saved Device Address", address);
+                //    _hasStoredBluetoothValues = true;
+                //}
 
                 showConnected();
-
-                isConnected = true;
                 _readFound = true;
                 _readFound2 = true;
                 _readFound3 = true;
 				_storeSubscribeData = true;
-                txtDebug.text = "Beginning Data Receiving";
+                //txtDebug.text = "Beginning Data Receiving";
             }
         }, (address, serviceUUID) => 
         {
-            txtDebug.text = "service found";
+            //txtDebug.text = "service found";
         },
 
         // Callback initiated upon service characteristic discovery. Will be called 7 times in this case. 
@@ -169,7 +186,7 @@ public class controller : MonoBehaviour
             // This will get called when the device disconnects be aware that this will also get called when the disconnect 
             // is called above.
             isConnected = false;
-            txtDebug.text = "Beginning Disconnect Callback";
+            //txtDebug.text = "Beginning Disconnect Callback";
             disconnectBluetooth();
         });
         _connecting = false;
@@ -178,10 +195,10 @@ public class controller : MonoBehaviour
     // Connect to the device address, but not yet initiating the bluetooth connection.
     public void connectTo(string sName, string sAddress)
     {
-        txtDebug.text = "Button Clicked";
+        //txtDebug.text = "Button Clicked";
         if (_connecting == false)
         {
-            txtDebug.text += " Connect to " + sName + " " + sAddress + "\n";
+            //txtDebug.text += " Connect to " + sName + " " + sAddress + "\n";
             _connecting = true;
 
             // stop scanning 
@@ -190,8 +207,8 @@ public class controller : MonoBehaviour
 
             // System.Threading.Thread.Sleep(500);
             // connect to selected device 
-            txtDebug.text = "Beginning connecting";
-            connectBluetooth(sAddress);
+            //txtDebug.text = "Beginning connecting";
+            connectBluetooth(sName, sAddress);
         }
     }
 
@@ -200,16 +217,16 @@ public class controller : MonoBehaviour
     {
         if (_scanning == true)
         {
-            txtDebug.text = "Stop scan";
+            //txtDebug.text = "Stop scan";
             BluetoothLEHardwareInterface.StopScan();
             _scanning = false;
         }
         else
         if (_scanning == false)
         {
-            txtDebug.text = "Scanning has begun 1";
+            //txtDebug.text = "Scanning has begun 1";
             RemovePeripherals();
-            txtDebug.text = "Peripherals removed 2";
+            //txtDebug.text = "Peripherals removed 2";
 
             devicesFound = 0;
 
@@ -220,7 +237,7 @@ public class controller : MonoBehaviour
             BluetoothLEHardwareInterface.ScanForPeripheralsWithServices(null, (address, name) => {
                 AddPeripheral(name, address);
             }, (address, name, rssi, advertisingInfo) => { });
-            txtDebug.text = name;
+            //txtDebug.text = name;
             _scanning = true;
         }
     }
@@ -232,7 +249,7 @@ public class controller : MonoBehaviour
         {
             if (data.Length == 0)
             {
-                txtDebug.text = "No Text to Read";
+                //txtDebug.text = "No Text to Read";
             }
             else
             {
@@ -251,7 +268,7 @@ public class controller : MonoBehaviour
         {
             if (data.Length == 0)
             {
-                txtDebug.text = "No Text to Read";
+                //txtDebug.text = "No Text to Read";
             }
             else
             {
@@ -405,11 +422,11 @@ public class controller : MonoBehaviour
         }
         if (!_peripheralList.ContainsKey(address))
         {
-            txtDebug.text = "Found " + name + "\n";
+            //txtDebug.text = "Found " + name + "\n";
             devicesFound++;
 
             // Button prefab only created if the MHML M5 exists. 
-            if (name == "MHML M5")
+            if (address==felixSensorAddr || address==scottSensorAddr || address==benSensorAddr)
             {
                 GameObject buttonObject = (GameObject)Instantiate(connectButton);
                 connectButtonScript script = buttonObject.GetComponent<connectButtonScript>();
@@ -428,8 +445,8 @@ public class controller : MonoBehaviour
                 buttonObject.transform.localPosition = new Vector3(0, h, 0);
 
                 _peripheralList[address] = name;
-                txtDebug.text = name + "/n" + address;
-                connectTo(name, address);
+                //txtDebug.text = name + "/n" + address;
+                //connectTo(name, address);
             }
         }
     }
@@ -525,6 +542,15 @@ public class controller : MonoBehaviour
     // Use this for initialization 
     void Start()
     {
+        //if (PlayerPrefs.HasKey("Saved Device Name"))  // check if we already save It before
+        //{
+        //    connectedName = PlayerPrefs.GetString("Saved Device Name");
+        //}
+        //if (PlayerPrefs.HasKey("Saved Device Address"))  // check if we already save It before
+        //{
+        //    _connectedID = PlayerPrefs.GetString("Saved Device Address");
+        //    _hasStoredBluetoothValues = true;
+        //}
 
         panelScan = GameObject.Find("panelScan");
         panelConnected = GameObject.Find("panelConnected");
@@ -624,5 +650,14 @@ public class controller : MonoBehaviour
            readNonNotifyCharacteristics();
            // This one works in the same way as the count loop just above
         }
+
+        // TODO load saved Device: This autoconnect logic should only run if:
+        // - a stored device name exists (loaded upon start).
+        // - The device is not already in the process of connecting.
+        // - The device is not already connected. 
+        //if (_connectedID!=null && connectedName!=null && isConnected==false && _connecting==false && _hasStoredBluetoothValues==true)
+        //{
+        //    connectTo(connectedName, _connectedID);
+        //}
     }
 }
