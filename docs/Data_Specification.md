@@ -1,7 +1,7 @@
 <h2 align="center"><br>Data Specification</h2>
 
 <p align="center">
-Version <code>0.3.2</code>
+Version <code>0.4</code>
 </p>
 <br>
 
@@ -23,8 +23,9 @@ All set via the `App -> Account Settings` screen. **Except for username. Usernam
 
 ## Session Data
 
-- **Note**: `session_id` is a datetime string and should be formatted according to the ISO 8601 standard e.g. `“2018-02-26T21:18:04”`.
+- `session_id` is a datetime string and should be formatted according to the ISO 8601 standard e.g. `“2018-02-26T21:18:04”`.
 - `session_id` should be created at the start of the session. All data relating to the same session should use the same UUID. Only the instantiation of a new session should generate a new datetime UUID.
+- `timestamp` is formatted as a unix timestamp. Resolution to the nearest second.
 
 ```
 "session_id": {
@@ -39,15 +40,15 @@ All set via the `App -> Account Settings` screen. **Except for username. Usernam
     "ppg": {                                    // Generated from the hardware
         "bodySensorLocation": (see BLE Spec),
         "heartRate": {
-            <timestamp>: int (in BPM),
+            "timestamp": int (in BPM),
             ...
         },
         "interbeatInterval": {
-            <timestamp>: int (in BPM),
+            "timestamp": int (in BPM),
             ...
         },
         "spO2": {
-            <timestamp>: float (in %),
+            "timestamp": float (in %),
             ...
         }
     }
@@ -55,7 +56,7 @@ All set via the `App -> Account Settings` screen. **Except for username. Usernam
     "gsr": {                                    // Generated from the hardware
         "bodySensorLocation": (see BLE Spec),
         "scl": {
-            <timestamp>: int (as adc value),
+            "timestamp": int (as adc value),
             ...
         }
     }
