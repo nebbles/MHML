@@ -20,6 +20,7 @@
 String FIRMWARE_REVISION = "0.2.3";
 
 #define DEBUG // Uncomment whilst debugging for Serial debug stats.
+int button;
 
 void setup()
 {
@@ -56,13 +57,26 @@ void setup()
 
   while (true)
   {
-    if (M5.BtnA.wasPressed() || M5.BtnB.wasPressed() || M5.BtnC.wasPressed())
+    if (M5.BtnA.wasPressed())
+    {
+      button = 1;
       break;
+    }
+    else if (M5.BtnB.wasPressed())
+    {
+      button = 2;
+      break;
+    }
+    else if (M5.BtnC.wasPressed())
+    {
+      button = 3;
+      break;
+    }
     M5.update();
   }
 
-  DATA.ppgBSL = 3; // set PPG body sensor location
-  DATA.gsrBSL = 3; // set GSR body sensor location
+  DATA.ppgBSL = button; // set PPG body sensor location
+  DATA.gsrBSL = button; // set GSR body sensor location
   bleInit(FIRMWARE_REVISION);
 
   ppgInit();
