@@ -68,9 +68,11 @@ char hr_str[10];
 long graphPos;
 float raw_ir, raw_red;
 
-void ppgInter()
+void ppgBufferProcess()
 {
-  maxim_max30102_read_fifo((aun_red_buffer + bufferIncrement), (aun_ir_buffer + bufferIncrement)); //read from MAX30102 FIFO
+  // read from MAX30102 FIFO
+  maxim_max30102_read_fifo((aun_red_buffer + bufferIncrement), (aun_ir_buffer + bufferIncrement));
+  bufferIncrement = (bufferIncrement + 1) % BUFFER_SIZE; 
   raw_ir = raw_ir_read(aun_ir_buffer, BUFFER_SIZE, aun_red_buffer, &n_spo2, &n_heart_rate);
   raw_red = raw_red_read(BUFFER_SIZE, aun_red_buffer, &n_spo2, &n_heart_rate);
 
@@ -108,8 +110,8 @@ void ppgInter()
 }
 
 /* 
-  * Interrupt handler to trigger reading of FIFO
-  */
+ * Interrupt handler to trigger reading of FIFO
+ */
 void IRAM_ATTR handleInterrupt()
 {
   portENTER_CRITICAL(&mux);
@@ -120,7 +122,7 @@ void IRAM_ATTR handleInterrupt()
 void ppgInit()
 {
   pinMode(oxiInt, INPUT_PULLUP); //pin G5 connects to the interrupt output pin of the MAX30102
-  maxim_max30102_reset(); //resets the MAX30102
+  maxim_max30102_reset();        //resets the MAX30102
   delay(1000);
 
   maxim_max30102_read_reg(REG_INTR_STATUS_1, &uch_dummy); //Reads/clears the interrupt status register
@@ -176,6 +178,5 @@ void ppgCalc()
     Serial.println("");
   }
 }
-
 
 #endif // ppg_h
