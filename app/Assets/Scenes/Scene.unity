@@ -2491,7 +2491,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-      - m_Target: {fileID: 1490614496}
+      - m_Target: {fileID: 0}
         m_MethodName: resetSliders
         m_Mode: 1
         m_Arguments:
@@ -9087,7 +9087,6 @@ GameObject:
   - component: {fileID: 1490614490}
   - component: {fileID: 1490614489}
   - component: {fileID: 1490614494}
-  - component: {fileID: 1490614496}
   - component: {fileID: 1490614493}
   - component: {fileID: 1490614495}
   m_Layer: 5
@@ -9217,24 +9216,6 @@ MonoBehaviour:
   homeScreen: {fileID: 1562979751}
   createAccount: {fileID: 832185033}
   userNameInput: {fileID: 715159223}
---- !u!114 &1490614496
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1490614488}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 508c1f59cb227434ea6423382cd01c31, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Username: 
-  Name: 
-  Age: 0
-  Gender: 0
-  Ethnicity: 
-  Location: 
-  Occupation: 
 --- !u!1 &1508407351
 GameObject:
   m_ObjectHideFlags: 0
