@@ -111,10 +111,8 @@ void loop() //Continuously taking samples from MAX30102.  Heart rate and SpO2 ar
   for (i = 0; i < BUFFER_SIZE; i++)
   {
 
-    if (digitalRead(oxiInt) == 1) // wait until the interrupt pin asserts
-    {
-      ppgInter();
-    }
+    while(digitalRead(oxiInt) == 1); // wait until the interrupt pin asserts
+    ppgInter();
 
     M5.Lcd.fillRect(11, 30, 140, 140, BLACK); // Clear and reset PPG Screen
     for (int i = 0; i < 280; i++)
