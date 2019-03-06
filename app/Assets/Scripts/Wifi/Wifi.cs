@@ -3,6 +3,7 @@ using UnityEngine.Networking;
 using System.Collections;
 using UnityEngine.UI; // Required when Using UI elements.
 
+
 public class Person { //For any data we need to send, we need to first store it in an object of a pre-defined class,
 	public string name; //For example, if we want to send a user_name and an ID together, then the class created
 	public byte[] key; //needs two variables, one of type int (for the age) and one of type string (for the username)
@@ -18,6 +19,7 @@ public class Wifi : MonoBehaviour {
 
 
 	IEnumerator upload() {
+		// change to have input as webaddress & object
 		WWWForm form = new WWWForm(); //Type of data needed to be able to encapsulate data
 		Person panos = new Person(); //Object created of the class that contains the variables that will store the data
 		panos.name = "MEE7A"; //In this case the name is a string "MEE7A"

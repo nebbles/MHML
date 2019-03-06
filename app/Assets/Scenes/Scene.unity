@@ -2869,6 +2869,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 1490614488}
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &402792639
@@ -5632,17 +5643,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1490614497}
-        m_MethodName: uploadUsers
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: mhml.greenberg.io/api/users
-          m_BoolArgument: 1
-        m_CallState: 2
       - m_Target: {fileID: 55065435}
         m_MethodName: SetActive
         m_Mode: 6
@@ -5665,16 +5665,16 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-      - m_Target: {fileID: 1490614497}
-        m_MethodName: set_enabled
-        m_Mode: 6
+      - m_Target: {fileID: 1490614495}
+        m_MethodName: loginButton
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
@@ -9110,8 +9110,8 @@ GameObject:
   - component: {fileID: 1490614489}
   - component: {fileID: 1490614494}
   - component: {fileID: 1490614496}
-  - component: {fileID: 1490614497}
   - component: {fileID: 1490614493}
+  - component: {fileID: 1490614495}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -9224,6 +9224,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 867732657c01b47bb8e32b212dc0d44c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1490614495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1490614488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ff1a0229d5ae724cadb11c3dbc9e2c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  userNameInput: {fileID: 0}
 --- !u!114 &1490614496
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9242,26 +9254,6 @@ MonoBehaviour:
   Ethnicity: 
   Location: 
   Occupation: 
-  session_id: 0
-  productivity: {fileID: 195204155}
-  stress: {fileID: 2034045246}
-  fatigue: {fileID: 945941021}
-  anxiety: {fileID: 920000590}
-  heartRate: 0
-  GSR: 0
---- !u!114 &1490614497
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1490614488}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c35e33fafff184f22b83236971f23bac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  input: 
-  dataAvailable: 0
 --- !u!1 &1508407351
 GameObject:
   m_ObjectHideFlags: 0
