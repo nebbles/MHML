@@ -2,13 +2,28 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
+using System.Linq;
+
 
 //Once we know what data we expect to receive from the API we can create a class for it to be able to handle it and extract 
 //and process each part of the data in the required manner
+
+public class User{
+		public string[] usernames;
+	}
+
 public class receive : MonoBehaviour {	
 		
-			public void uploadUsers(){ //Function attached to a button on the app to retreive data from the API
+
+		public void checkUsers() {
+
+		}
+				
+
+		public void uploadUsers(){ //Function attached to a button on the app to retreive data from the API
 				StartCoroutine(getUsers());
+				
 			}
 
 		IEnumerator getUsers() {
@@ -18,13 +33,19 @@ public class receive : MonoBehaviour {
 				
 			if(www.isNetworkError || www.isHttpError) { //This statement is executed if the get request fails
 				Debug.Log(www.error); //A message is displayed on the console in unity
+				
 			}
+
 			else { //This statement is executed when the get request has been processed successfully. 
 				// Show data retrieved from the API as text in the console on unity
 				Debug.Log(www.downloadHandler.text);
 
+
 				// Or retrieve results as binary data
 				byte[] results = www.downloadHandler.data; 
+				
+				User initial = JsonUtility.FromJson<User>(www.downloadHandler.text);
+				Debug.Log(initial);
 			}
 		}
 

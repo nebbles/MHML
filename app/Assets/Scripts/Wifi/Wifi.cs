@@ -2,9 +2,6 @@
 using UnityEngine.Networking;
 using System.Collections;
 using UnityEngine.UI; // Required when Using UI elements.
-using UnityEngine;
-using UnityEngine.Networking;
-using System.Collections;
 
 public class Person { //For any data we need to send, we need to first store it in an object of a pre-defined class,
 	public string name; //For example, if we want to send a user_name and an ID together, then the class created

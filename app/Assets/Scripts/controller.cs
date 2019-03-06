@@ -67,13 +67,13 @@ public class controller : MonoBehaviour
     private bool _IBI_Notification = false;
     private bool _Spo2_Notification = false;
     private bool _SkinConductance_Notification = false;
-    private bool _allSubscribingComplete = false;
+    public bool _allSubscribingComplete = false;
 
     // characteristic read checks
     private bool _ppgBodyCheck = false;
     private bool _gsrBodyCheck = false;
     private bool _DeviceInfoCheck = false;
-    private bool _allReadingComplete = false;
+    public bool _allReadingComplete = false;
 
     // Data storage
     private Dictionary<string, string> _peripheralList;
@@ -86,6 +86,13 @@ public class controller : MonoBehaviour
     private Queue<int> _gsrLocation_data = new Queue<int>();
     private Queue<string> _deviceInfo_data = new Queue<string>();
 
+	public bool _storeSubscribeData = false;
+	public string rememberedDeviceAddress; 
+
+	// The three MHML M5 Device Addresses are as follows:
+	public string scottSensor = "B4:E6:2D:8B:92:F7"; // Scotts Hardware Wired Sensor Device
+	public string felixSensor = "84:0D:8E:25:91:C2"; // Felix's Testing Device
+	public string benSensor =  "84:0D:8E:25:96:BA"; // Ben's Testing Device
 
     // Other variables
     private int devicesFound = 0;
@@ -146,6 +153,7 @@ public class controller : MonoBehaviour
                 _readFound = true;
                 _readFound2 = true;
                 _readFound3 = true;
+				_storeSubscribeData = true;
                 txtDebug.text = "Beginning Data Receiving";
             }
         }, (address, serviceUUID) => 
@@ -252,58 +260,6 @@ public class controller : MonoBehaviour
                 dataprocessing(decoded_data);
             }
         });
-    }
-
-    // Reads all the non-notify characteristics at once. Currently a redundant function, review usage later on.
-    void readThreeCharacteristics ()
-    {
-        localReadCount = 0;
-        while (localReadCount < 500)
-        {
-            localReadCount += 1;
-            if (localReadCount == 400)
-            {
-                txtDebug.text = "Read ppg location";
-                readCharacteristicFromServiceInt(_ppgServiceUUID, _bodySensorLocationUUID, receiveText4PpgBody, uint8_tDecode);
-            }
-            if (localReadCount == 450)
-            {
-                txtDebug.text = "Read gsr location";
-                readCharacteristicFromServiceInt(_gsrServiceUUID, _bodySensorLocationGsrUUID, receiveTextGsrBody, uint8_tDecode);
-            }
-            if (localReadCount == 499)
-            {
-                txtDebug.text = "Read Device Info";
-                readCharacteristicFromServiceString(_FirmwareRevisionUUID, _DeviceInfoUUID, receiveTextInfo, UTF8Decode);
-            }
-            _readFound2 = false;
-        }
-    }
-
-    // This method is currently redundant. Review Usage later on. 
-    void readThreeCharacteristicsBen1()
-    {
-        readCharacteristicFromServiceInt(_ppgServiceUUID, _bodySensorLocationUUID, receiveText4PpgBody, uint8_tDecode);
-        while (!_ppgBodyCheck)
-        {
-            txtDebug.text = "Waiting for 1 to complete";
-            //System.Threading.Thread.Sleep(100);
-        }
-
-        readCharacteristicFromServiceInt(_gsrServiceUUID, _bodySensorLocationGsrUUID, receiveTextGsrBody, uint8_tDecode);
-        while (!_gsrBodyCheck)
-        {
-            txtDebug.text = "Waiting for 2 to complete";
-            //System.Threading.Thread.Sleep(100);
-        }
-
-        readCharacteristicFromServiceString(_FirmwareRevisionUUID, _DeviceInfoUUID, receiveTextInfo, UTF8Decode);
-        while (!_DeviceInfoCheck)
-        {
-            txtDebug.text = "Waiting for 3 to complete";
-            //System.Threading.Thread.Sleep(100);
-        }
-        _readFound2 = false;
     }
 
     // Reads all the non-notify characteristics upon switching of a boolean value. This function must go in the update function. 
@@ -481,33 +437,41 @@ public class controller : MonoBehaviour
     // Places the received text in the first textbox 
     void receiveTextHR(int s)
     {
-        _HR_data.Enqueue(s);
-        txtReceive.text = s.ToString();
+		if (_storeSubscribeData == true) {
+			_HR_data.Enqueue (s);
+		}
+		txtReceive.text = s.ToString();
     }
 
     // Places the received text in the second textbox
     void receiveTextIBI(int s)
     {
-        _IBI_data.Enqueue(s);
+		if (_storeSubscribeData == true) {
+			_IBI_data.Enqueue (s);
+		}
         txtReceive2.text = s.ToString();
     }
 
     void receiveTextSpo2(float s)
     {
-        _Spo2_data.Enqueue(s);
+		if (_storeSubscribeData == true) {
+			_Spo2_data.Enqueue (s);
+		}
         txtReceive3.text = s.ToString();
     }
 
     void receiveText4PpgBody(int s)
     {
-        _ppgLocation_data.Enqueue(s);
+		_ppgLocation_data.Enqueue (s);
         txtReceive4.text = s.ToString();
         _ppgBodyCheck = true; 
     }
 
     void receiveTextSClvl(int s)
     {
-        _skinConductance_data.Enqueue(s);
+		if (_storeSubscribeData == true) {
+			_skinConductance_data.Enqueue (s);
+		}
         txtReceive5.text = s.ToString();
     }
 
