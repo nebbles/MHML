@@ -147,3 +147,25 @@ class Session(Sessions):
                 return res.NOT_FOUND(username, session_id)
         else:
             return res.NOT_FOUND(username)
+
+
+    def delete(self, username, session_id):
+
+        user_ref = database.document(u'users/'+username)
+        user = user_ref.get()
+
+        if user.exists:
+            sessions_ref = user_ref.collection(u'sessions')
+            session_ref = sessions_ref.document(session_id)
+            session = session_ref.get()
+
+            if session.exists:
+                session_ref.delete()
+                return res.NO_CONTENT(session_id)
+
+            else:
+                return res.NOT_FOUND(username, session_id)
+
+        else:
+            return res.NOT_FOUND(username)
+
