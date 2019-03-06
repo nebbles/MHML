@@ -1,12 +1,9 @@
-# Data Specification
+<h2 align="center"><br>Data Specification</h2>
 
-Version `0.3.1`
-
-## Notes
-
-- All white cells are confirmed for this version. To suggest changes, use comments.
-- All datetime fields should be recorded as a string formatted according to the ISO 8601 standard. An example of this would be “2018-02-26T21:18:04”.
-- Session UUIDs should be created as a datetime field, with the UUID corresponding to the start of the session. All data relating to the same session should use the same UUID. Only the instantiation of a new session should generate a new datetime UUID.
+<p align="center">
+Version <code>0.3.2</code>
+</p>
+<br>
 
 ## User Config Data
 
@@ -25,6 +22,9 @@ All set via the `App -> Account Settings` screen. **Except for username. Usernam
 ```
 
 ## Session Data
+
+- **Note**: `session_id` is a datetime string and should be formatted according to the ISO 8601 standard e.g. `“2018-02-26T21:18:04”`.
+- `session_id` should be created at the start of the session. All data relating to the same session should use the same UUID. Only the instantiation of a new session should generate a new datetime UUID.
 
 ```
 "session_id": {
