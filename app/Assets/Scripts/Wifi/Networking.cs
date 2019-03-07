@@ -19,13 +19,11 @@ public class Networking {
 	public void setRoute(string route) {
 		webAddress = route;
 	}
-
-
+		
 	public void makeRequest(MonoBehaviour myMonoBehaviour){ //Function attached to a button on the app to retreive data from the API
 		myMonoBehaviour.StartCoroutine(getUsers());
 		}
 		
-
 	IEnumerator getUsers() {
 		//"mhml.greenberg.io/api/users"
 		Debug.Log("GetUSers");
@@ -49,5 +47,6 @@ public class Networking {
 	}
 
 
+		
 
 }

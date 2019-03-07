@@ -37,8 +37,8 @@ public class Session {
 public class personClass {
 	public string username;
 	public string name;
-	public int age;
-	public bool gender; 
+	public float age;
+	public int gender; 
 	public string ethnicity;
 	public string location;
 	public string occupation;

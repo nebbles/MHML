@@ -430,7 +430,7 @@ GameObject:
   m_Component:
   - component: {fileID: 53905064}
   m_Layer: 5
-  m_Name: Relax Screen
+  m_Name: RelaxScreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5698,7 +5698,7 @@ GameObject:
   m_Component:
   - component: {fileID: 832185034}
   m_Layer: 0
-  m_Name: Create Account
+  m_Name: CreateAccount
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9212,9 +9212,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ff1a0229d5ae724cadb11c3dbc9e2c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loginScreen: {fileID: 55065435}
-  homeScreen: {fileID: 1562979751}
-  createAccount: {fileID: 832185033}
+  loginScreen: {fileID: 0}
+  homeScreen: {fileID: 0}
+  createAccount: {fileID: 0}
+  canvas: {fileID: 0}
+  relaxScreen: {fileID: 0}
+  logScreen: {fileID: 0}
+  settings: {fileID: 0}
+  thankYou: {fileID: 0}
   userNameInput: {fileID: 715159223}
 --- !u!1 &1508407351
 GameObject:
@@ -9893,7 +9898,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1562979752}
   m_Layer: 5
-  m_Name: Home Screen
+  m_Name: HomeScreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
