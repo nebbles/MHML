@@ -62,6 +62,7 @@ public class controller : MonoBehaviour
     private bool _scanning = false;
     private bool _connecting = false;
     private bool _stuckConnecting = false;
+    private bool _permitAutoConnect = false;
 
     // characteristic subscription checks
     private bool _HR_Notification = false;
@@ -99,7 +100,9 @@ public class controller : MonoBehaviour
     public string scottSensorAddr = "B4:E6:2D:8B:92:F7"; // Scotts Hardware Wired Sensor Device
 	public string felixSensorAddr = "84:0D:8E:25:91:C2"; // Felix's Testing Device
 	public string benSensorAddr =  "84:0D:8E:25:96:BA"; // Ben's Testing Device
-    private string _permittedDeviceName = "MHML M5";
+    private string _permittedDeviceNameFelix = "MHML M5 F";
+    private string _permittedDeviceNameBen = "MHML M5 B";
+    private string _permittedDeviceNameScott = "MHML M5 S";
 
     // Other variables
     private int devicesFound = 0;
@@ -139,7 +142,7 @@ public class controller : MonoBehaviour
             if (_calledThroughForgetDevice == true)
             {
                 storedName = null;
-                storedAddress = null;
+                //storedAddress = null;
             }
 
             // show scanning panel
@@ -153,9 +156,10 @@ public class controller : MonoBehaviour
     public void forgetDevice()
     {
         PlayerPrefs.DeleteKey("Saved Device Name");
-        PlayerPrefs.DeleteKey("Saved Device Address");
+        //PlayerPrefs.DeleteKey("Saved Device Address");
         _hasStoredBluetoothValues = false;
         txtDebug.text = "Deleting Device Address";
+        _permitAutoConnect = false;
         disconnectBluetooth(true); // This must go before clearing the Name and address, otherwise the BLE interface doesn't know what to disconnect from. 
         
     }
@@ -183,8 +187,8 @@ public class controller : MonoBehaviour
             {
                 PlayerPrefs.SetString("Saved Device Name", nameID);
                 storedName = nameID;
-                PlayerPrefs.SetString("Saved Device Address", address);
-                storedAddress = address;
+                // PlayerPrefs.SetString("Saved Device Address", address);
+                // storedAddress = address;
                 _hasStoredBluetoothValues = true;
                 txtDebug.text = "Device Address Stored";
             }
@@ -203,8 +207,8 @@ public class controller : MonoBehaviour
             // This will get called when the device disconnects be aware that this will also get called when the disconnect 
             // is called above.
             isConnected = false;
-            _connectedAddress = null;
-            _connectedName = null;
+            //_connectedAddress = null;
+            //_connectedName = null;
             //txtDebug.text = "Beginning Disconnect Callback";
             disconnectBluetooth(false); // Not called through device forget, so don't delete the name & address
         });
@@ -217,7 +221,7 @@ public class controller : MonoBehaviour
         // stop scanning 
         // Ensure we are only connecting to one of the MHML devices. 
         // This will attempt to connect to a device if clicked. However, the scan will refresh after a certain timeout (max 12.5 seconds) if the connection attempt is unsuccessful. 
-        if (sName==_permittedDeviceName)
+        if (sName==_permittedDeviceNameFelix || sName == _permittedDeviceNameBen || sName == _permittedDeviceNameScott)
         {
             txtDebug.text += "Beginning connecting";
             _connecting = true;
@@ -439,8 +443,8 @@ public class controller : MonoBehaviour
         {
             txtDebug.text = "Found " + name + "\n";
             
-            // Button prefab only created if the MHML M5 exists. 
-            if (name == _permittedDeviceName)
+            // Button prefab only created if the one of the MHML M5's exist. 
+            if (name == _permittedDeviceNameFelix || name == _permittedDeviceNameBen || name == _permittedDeviceNameScott)
             {
                 devicesFound++;
                 GameObject buttonObject = (GameObject)Instantiate(connectButton);
@@ -463,10 +467,11 @@ public class controller : MonoBehaviour
 
                 if (_hasStoredBluetoothValues==true && isConnected == false && _connecting == false) // Need to stop instantly assigning, and wait for a check to see if the peripheral is the one. 
                 {
-                    if (address == storedAddress)
+                    if (name == storedName)
                     {
                         _connectedName = storedName;
-                        _connectedAddress = storedAddress;
+                        _connectedAddress = address;
+                        _permitAutoConnect = true;
                     }
                 }
             }
@@ -568,14 +573,14 @@ public class controller : MonoBehaviour
         if (PlayerPrefs.HasKey("Saved Device Name"))  // check if we already save It before
         {
             storedName = PlayerPrefs.GetString("Saved Device Name");
+            _hasStoredBluetoothValues = true;
             txtDebug.text = storedName;
         }
-        if (PlayerPrefs.HasKey("Saved Device Address"))  // check if we already save It before
-        {
-            storedAddress = PlayerPrefs.GetString("Saved Device Address");
-            _hasStoredBluetoothValues = true;
-            txtDebug.text += storedAddress;
-        }
+        //if (PlayerPrefs.HasKey("Saved Device Address"))  // check if we already save It before
+        //{
+        //    storedAddress = PlayerPrefs.GetString("Saved Device Address");
+        //    txtDebug.text += storedAddress;
+        //}
 
         panelScan = GameObject.Find("panelScan");
         panelConnected = GameObject.Find("panelConnected");
@@ -644,12 +649,12 @@ public class controller : MonoBehaviour
         if (_connectedName != null && _connectedAddress != null && isConnected == false && _connecting == false && _hasStoredBluetoothValues == true)
         {
             _autoConnectTimer += 1; 
-            if (_autoConnectTimer == 20)
+            if (_autoConnectTimer == 20 && _permitAutoConnect==true)
             {
                 txtDebug.text += "AutoConnect Entered";
                 txtDebug.text = storedName;
                 txtDebug.text += storedAddress;
-                connectTo(storedName, storedAddress);
+                connectTo(_connectedName, _connectedAddress);
             }
             if (_autoConnectTimer == 40)
             {
