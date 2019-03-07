@@ -7,6 +7,7 @@
 ### GET /api/users
 
 **Required**: `None`
+
 | Response code | Response body |
 |--|--|
 | 200 Ok| `{'usernames': [array of usernames]}`
@@ -32,6 +33,7 @@ This request adds a new `User` object to the database.
 ### GET /api/users/\<username>
 
 **Required**: `None`
+
 | Response code | Response body |
 |--|--|
 | **200** Ok| `User object`
@@ -44,6 +46,7 @@ This request adds a new `User` object to the database.
 ### DELETE /api/users/\<username>
 
 **Required**: `username` key of the `User` object.
+
 | Response code | Response body |
 |--|--|
 | **204** No Content| `None`
@@ -58,6 +61,7 @@ This request adds a new `User` object to the database.
 ### GET /api/users/\<username>/sessions
 
 **Required**: `None`
+
 | Response code | Response body |
 |--|--|
 | 200 Ok| `{"session_ids": [array of session ids]}`
@@ -99,6 +103,7 @@ Each of the keys' value must be of the correct type according to the [Data Speci
 ### GET /api/users/\<username>/sessions/\<session_id>
 
 **Required**: `None`
+
 | Response code | Response body |
 |--|--|
 | **200** Ok| `Session object`
@@ -140,6 +145,7 @@ Note that the request body parameter `"session_id"` and the URL parameter `<sess
 ### DELETE /api/users/\<username>/sessions/\<session_id>
 
 **Required**: `None`
+
 | Response code | Response body |
 |--|--|
 | **204** No Content| `None`
