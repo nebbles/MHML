@@ -1,6 +1,6 @@
 # API Specification
 
-**Note**: this This specification refers heavily to objects defined in the [Data Specification](https://github.com/nebbles/MHML/blob/develop/docs/Data_Specification.md). 
+**Note**: This specification refers heavily to objects defined in the [Data Specification](https://github.com/nebbles/MHML/blob/develop/docs/Data_Specification.md). 
 
 ## Users Collection :
 
