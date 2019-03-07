@@ -22,6 +22,7 @@
 # directory at the root of the repository and any of its
 # subdirectories.
 #/build/logs/ @doctocat
+/server/      @caoanle13
 
 # The `docs/*` pattern will match files like
 # `docs/getting-started.md` but not further nested files like
