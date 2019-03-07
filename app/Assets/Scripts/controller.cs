@@ -209,14 +209,17 @@ public class controller : MonoBehaviour
     public void connectTo(string sName, string sAddress)
     {
         // stop scanning 
-        connectBluetooth(sName, sAddress);
-        // System.Threading.Thread.Sleep(500);
-        // connect to selected device 
-        txtDebug.text += "Beginning connecting";
-        _connecting = true;
-        BluetoothLEHardwareInterface.StopScan();
-        _scanning = false;
-        txtDebug.text += "Tried Bluetooth Connect";
+        // Ensure we are only connecting to one of the MHML devices. 
+        if (sAddress==benSensorAddr || sAddress==felixSensorAddr || sAddress==scottSensorAddr)
+        {
+            txtDebug.text += "Beginning connecting";
+            _connecting = true;
+            BluetoothLEHardwareInterface.StopScan();
+            _scanning = false;
+            connectBluetooth(sName, sAddress);
+            txtDebug.text += "Tried Bluetooth Connect";
+        }
+        
     }
 
     // Scan for BLE enabled devices
@@ -266,7 +269,6 @@ public class controller : MonoBehaviour
                 int decoded_data = Decoder(data);
                 dataprocessing(decoded_data);
             }
-            
         });
     }
 
@@ -431,12 +433,12 @@ public class controller : MonoBehaviour
         }
         if (!_peripheralList.ContainsKey(address))
         {
-            //txtDebug.text = "Found " + name + "\n";
-            devicesFound++;
-
+            txtDebug.text = "Found " + name + "\n";
+            
             // Button prefab only created if the MHML M5 exists. 
-            if (address==felixSensorAddr || address==scottSensorAddr || address==benSensorAddr)
+            if (address == felixSensorAddr || address == scottSensorAddr || address == benSensorAddr || name=="No Name")
             {
+                devicesFound++;
                 GameObject buttonObject = (GameObject)Instantiate(connectButton);
                 connectButtonScript script = buttonObject.GetComponent<connectButtonScript>();
                 script.TextName.text = name;
@@ -447,7 +449,7 @@ public class controller : MonoBehaviour
 
                 // each button is 50 pixels high 
                 // the container panel is 544 pixels high 
-                var h = (980 / 2) - (55 * 2);
+                var h = (550 / 2) - (85 * devicesFound);
 
                 buttonObject.transform.SetParent(PanelScrollContents);
                 buttonObject.transform.localScale = new Vector3(1f, 1f, 1f);
