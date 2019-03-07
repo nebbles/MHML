@@ -439,7 +439,7 @@ public class controller : MonoBehaviour
             txtDebug.text = "Found " + name + "\n";
             
             // Button prefab only created if the MHML M5 exists. 
-            if (address == felixSensorAddr || address == scottSensorAddr || address == benSensorAddr || name=="No Name") // Remove for final Version.
+            if (address == felixSensorAddr || address == scottSensorAddr || address == benSensorAddr) // Remove for final Version.
             {
                 devicesFound++;
                 GameObject buttonObject = (GameObject)Instantiate(connectButton);
