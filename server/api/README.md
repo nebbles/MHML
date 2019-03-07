@@ -84,6 +84,7 @@ This request adds a new `User` object to the database.
 - `"gsr"`
 
 Each of the keys' value must be of the correct type according to the [Data Specification](https://github.com/nebbles/MHML/blob/develop/docs/Data_Specification.md). 
+
 | Response code | Response body |
 |--|--|
 | **201** Created | `{"user": User Object,"new session": Session Object}`
