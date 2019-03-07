@@ -163,14 +163,19 @@ public class controller : MonoBehaviour
     // Connect to the BLE peripheral
     void connectBluetooth(string nameID, string addr)
     {
+        BluetoothLEHardwareInterface.Log("Beginning connection attempt");
+        BluetoothLEHardwareInterface.Log("NameID: " + nameID);
+        BluetoothLEHardwareInterface.Log("Address: " + addr);
         // System.Threading.Thread.Sleep(500);
         BluetoothLEHardwareInterface.ConnectToPeripheral(addr, (address) => 
         {
+            BluetoothLEHardwareInterface.Log("Connection Callback Address Connected To: " + addr);
+            BluetoothLEHardwareInterface.Log("Callback Address found: " + address);
             _connecting = false;
             txtDebug.text = "Connection Successful";
             isConnected = true;
             _connectedName = nameID;
-            _connectedAddress = address;
+            _connectedAddress = addr;
 
             showConnected();
 
@@ -440,18 +445,22 @@ public class controller : MonoBehaviour
             txtDebug.text = "Found " + name + "\n";
             
             // Button prefab only created if the MHML M5 exists. 
-            if (name == deviceNames)
+            if (name == deviceNames) // Here is where we'd implement extra checking for different device names. Currently we only allow one device name ("MHML M5"). Add device name database to check through.
             {
                 devicesFound++;
                 GameObject buttonObject = (GameObject)Instantiate(connectButton);
                 connectButtonScript script = buttonObject.GetComponent<connectButtonScript>();
-                script.TextName.text = name;
+
                 // _connectedName = name;
 
                 // THIS IS THE POINT WHERE WE IMPLEMENT A HARD CONNECTION TO ONLY ONCE DEVICE FOR COMPATABILITY BETWEEN ANDROID & IOS. 
                 // To make this work for multiple devices, we would need unique identifiers in the names of each BLE device, as IOS blocks the MAC Address ID. 
                 // Therefore to allow connection to many devices, we would need to implement certain checks here to pick from a list of predefined MAC Addresses. 
+
+                script.TextName.text = deviceNames;
+                BluetoothLEHardwareInterface.Log("Name given to Button: " + deviceNames);
                 script.TextAddress.text = felixSensorAddr;
+                BluetoothLEHardwareInterface.Log("Address given to Button: " + felixSensorAddr);
                 // _connectedAddress = address;
                 script.controllerScript = this;
 
