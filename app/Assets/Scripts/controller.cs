@@ -141,7 +141,9 @@ public class controller : MonoBehaviour
             }
 
             // show scanning panel
+
             showScan();
+            _scanning = false;
             scan();
         });
     }
@@ -215,7 +217,6 @@ public class controller : MonoBehaviour
             txtDebug.text += "Beginning connecting";
             _connecting = true;
             BluetoothLEHardwareInterface.StopScan();
-            _scanning = false;
             connectBluetooth(sName, sAddress);
             txtDebug.text += "Tried Bluetooth Connect";
         }
@@ -250,7 +251,7 @@ public class controller : MonoBehaviour
                 AddPeripheral(name, address);
             }, (address, name, rssi, advertisingInfo) => { });
             txtDebug.text = "Scanning = True";
-            _scanning = true;
+            // _scanning = true;
         }
     }
 
