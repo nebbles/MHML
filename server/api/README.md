@@ -1,4 +1,6 @@
-# API Specification
+<h2 align="center"><br>API Specification</h2>
+
+<br>
 
 **Base URL**: ___mhml.greenberg.io___
 
