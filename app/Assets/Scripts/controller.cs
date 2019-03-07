@@ -99,6 +99,7 @@ public class controller : MonoBehaviour
     public string scottSensorAddr = "B4:E6:2D:8B:92:F7"; // Scotts Hardware Wired Sensor Device
 	public string felixSensorAddr = "84:0D:8E:25:91:C2"; // Felix's Testing Device
 	public string benSensorAddr =  "84:0D:8E:25:96:BA"; // Ben's Testing Device
+    private string _permittedDeviceName = "MHML M5";
 
     // Other variables
     private int devicesFound = 0;
@@ -439,7 +440,7 @@ public class controller : MonoBehaviour
             txtDebug.text = "Found " + name + "\n";
             
             // Button prefab only created if the MHML M5 exists. 
-            if (address == felixSensorAddr || address == scottSensorAddr || address == benSensorAddr) // Remove for final Version.
+            if (name == _permittedDeviceName)
             {
                 devicesFound++;
                 GameObject buttonObject = (GameObject)Instantiate(connectButton);
