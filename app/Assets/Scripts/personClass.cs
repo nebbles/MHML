@@ -35,17 +35,17 @@ public class Session {
 
 
 public class personClass {
-	public string username;
-	public string name;
-	public float age;
-	public int gender; 
-	public string ethnicity;
-	public string location;
-	public string occupation;
-
-
-	// This is placeholder at the moment, but functions to be written
-	public void exportPersonData() { 
+    public string username { get; set; }
+    public int age { get; set; }
+    public string name { get; set; }
+    public bool gender { get; set; }
+    public string occupation { get; set; }
+    public string ethnicity { get; set; }
+    public string location { get; set; }
+    
+   
+    // This is placeholder at the moment, but functions to be written
+    public void exportPersonData() { 
 		//exporting current person data as json
 		//string jsonLogging = JsonUtility.ToJson(productivity, stress, fatigue, anxiety);
 	}

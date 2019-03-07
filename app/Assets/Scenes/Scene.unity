@@ -9220,7 +9220,6 @@ MonoBehaviour:
   logScreen: {fileID: 0}
   settings: {fileID: 0}
   thankYou: {fileID: 0}
-  userNameInput: {fileID: 715159223}
 --- !u!1 &1508407351
 GameObject:
   m_ObjectHideFlags: 0

@@ -28,24 +28,30 @@ public class main : MonoBehaviour{
     
     void Update()
     {
-        Debug.Log("leahizcoo");
-        if (login.dataAvailable == true)
-        {
-            Debug.Log("true");
-            loadUserData();
-            login.dataAvailable = false;
+        // Login screen update script
+        if (loginScreen.activeSelf) {
+            Debug.Log("leahizcoo");
+            if (login.dataAvailable == true)
+            {
+                Debug.Log("true");
+                loadUserData();
+                login.dataAvailable = false;
 
-            loginScreen.SetActive(false);
-            homeScreen.SetActive(true);
+                loginScreen.SetActive(false);
+                homeScreen.SetActive(true);
+            }
+
+            if (login.dataNotAvailable == true)
+            {
+                Debug.Log("no user");
+                loginScreen.SetActive(false);
+                createAccount.SetActive(true);
+                login.dataNotAvailable = false;
+            }
         }
 
-        if (login.dataNotAvailable == true)
-        {
-            Debug.Log("no user");
-            loginScreen.SetActive(false);
-            createAccount.SetActive(true);
-            login.dataNotAvailable = false;
-        }
+        
+
     }
 
     public void loginButton() {
@@ -58,8 +64,7 @@ public class main : MonoBehaviour{
 	public void loadUserData(){
 		Debug.Log("loadUserData"); 
 		initial = JsonUtility.FromJson<personClass>(login.dataWeb);
-
-		Debug.Log(initial.username);
-	}
+		Debug.Log(initial.name);
+    }
 
 }

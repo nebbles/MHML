@@ -17,7 +17,7 @@ public class Wifi : MonoBehaviour {
 		panos.username = "teehee";
 		panos.name = "MEE7A"; //In this case the name is a string "MEE7A"
 		panos.age = 22; //the age is an integer 22
-		panos.gender = 1 ; 
+		panos.gender = true ; 
 		panos.ethnicity = "white"; //how to specify and send arrays of any type, in this case it is byte arrays
 		panos.location = "London"; //how to specify and send arrays of any type, in this case it is integer arrays
 		panos.occupation = "Student";
