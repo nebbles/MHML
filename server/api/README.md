@@ -27,6 +27,7 @@
 |:----|:----|
 | **201** Created | `{'new user': User object}`
 | **409** Conflict| `{"error": "User <username> already exists"}`
+
 This request adds a new `User` object to the database.
 
 
