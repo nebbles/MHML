@@ -451,8 +451,8 @@ public class controller : MonoBehaviour
                 script.controllerScript = this;
 
                 // each button is 50 pixels high 
-                // the container panel is 544 pixels high 
-                var h = (550 / 2) - (85 * devicesFound);
+                // the container panel is 443 pixels high 
+                var h = (675 / 2) - (100 * devicesFound) - 20;
 
                 buttonObject.transform.SetParent(PanelScrollContents);
                 buttonObject.transform.localScale = new Vector3(1f, 1f, 1f);
