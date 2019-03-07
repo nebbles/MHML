@@ -40,9 +40,10 @@ public class controller : MonoBehaviour
     // Device Information Characteristics
     private string _FirmwareRevisionUUID = "00002a26-0000-1000-8000-00805f9b34fb"; //UTF-8 String check
 
+
     // Global Public Variables to display info
     public Transform PanelScrollContents;            // device list panel 
-    public Text txtDebug;                        // debugging textbox - Redundant for integrated version.
+    public Text txtDebug;                        // debugging textbox - Redundant for integrated version. Remove for final version.
     public GameObject connectButton;               // the button to click to connect to a device 
     // public Text txtData;                        // Redunant: the text box to type in send data
     public Text txtReceive;                        // the text boxes data is being received into 1 - 7
@@ -105,11 +106,10 @@ public class controller : MonoBehaviour
     private int readingCount = 0;
     private int localReadCount = 0;
     private int _reScanTimer = 0;
+    private int _autoConnectTimer = 0;
 
     private bool _hasStoredBluetoothValues = false;
-    int ting = 0; // Currently a redundant variable
-
-
+     
     private GameObject panelScan;
     private GameObject panelConnected;
 
@@ -215,6 +215,7 @@ public class controller : MonoBehaviour
     {
         // stop scanning 
         // Ensure we are only connecting to one of the MHML devices. 
+        // This will attempt to connect to a device if clicked. However, the scan will refresh after a certain timeout (max 12.5 seconds) if the connection attempt is unsuccessful. 
         if (sAddress==benSensorAddr || sAddress==felixSensorAddr || sAddress==scottSensorAddr)
         {
             txtDebug.text += "Beginning connecting";
@@ -354,7 +355,6 @@ public class controller : MonoBehaviour
         return value_data;
     }
 
-
     // Subscribes to the data stream of an Integer characteristic, updating when a notification is received. 
     void subscribeToCharacteristicInt(string serviceUUID, string characteristicUUID, Action<int> dataprocessing, Func<byte[], int> Decoder)
     {
@@ -394,7 +394,6 @@ public class controller : MonoBehaviour
             if (characteristicUUID == _InterbeatIntervalUUID) { _IBI_Notification = true; }
             if (characteristicUUID == _Spo2MeasurementUUID) { _Spo2_Notification = true; }
             if (characteristicUUID == _skinConductanceLevelUUID) { _SkinConductance_Notification = true; }
-            // txtDebug.text += "\n " + notification;
         }, (deviceAddress2, characteristic, data) =>
         {
             BluetoothLEHardwareInterface.Log("id: " + _connectedAddress);
@@ -440,7 +439,7 @@ public class controller : MonoBehaviour
             txtDebug.text = "Found " + name + "\n";
             
             // Button prefab only created if the MHML M5 exists. 
-            if (address == felixSensorAddr || address == scottSensorAddr || address == benSensorAddr || name=="No Name")
+            if (address == felixSensorAddr || address == scottSensorAddr || address == benSensorAddr || name=="No Name") // Remove for final Version.
             {
                 devicesFound++;
                 GameObject buttonObject = (GameObject)Instantiate(connectButton);
@@ -593,48 +592,9 @@ public class controller : MonoBehaviour
 
     // Update is called once per frame. Currently unsure of the frame refresh rate. 
     void Update()
-    {
-        //if (_readFound3 == true)
-        //{
-        //    ting += 1;
-        //    if (ting == 2)
-        //    {
-        //        txtDebug.text = "HR: " + _HR_data.Count.ToString();
-        //    }
-        //    if (ting == 10)
-        //    {
-        //        txtDebug.text += "IBI: " + _IBI_data.Count.ToString();
-        //    }
-        //    if (ting == 20)
-        //    {
-        //        txtDebug.text += "SPO2: " + _Spo2_data.Count.ToString();
-        //    }
-        //    if (ting == 30)
-        //    {
-        //        txtDebug.text += "PPG: " + _ppgLocation_data.Count.ToString();
-        //    }
-        //    if (ting == 40)
-        //    {
-        //        txtDebug.text += "Skin C: " + _skinConductance_data.Count.ToString();
-        //    }
-        //    if (ting == 50)
-        //    {
-        //        txtDebug.text += "GSR: " + _gsrLocation_data.Count.ToString();
-        //    }
-        //    if (ting == 60)
-        //    {
-        //        txtDebug.text += "Info: " + _deviceInfo_data.Count.ToString();
-        //    }
-        //    if (ting == 70)
-        //    {
-        //        ting = 0;
-        //    }
-        //}
-        
-        
+    {      
         // The counts and boolean checks are implemented to prevent synchronous subscribe attempts. This ensures each subscribe method occurs subsequently
         // Ensuring all characteristics can be subscribed to. 
-
         if (_readFound == true) 
         {
             _allSubscribingComplete = false;
@@ -682,17 +642,17 @@ public class controller : MonoBehaviour
 
         if (_connectedName != null && _connectedAddress != null && isConnected == false && _connecting == false && _hasStoredBluetoothValues == true)
         {
-            ting += 1; 
-            if (ting == 20)
+            _autoConnectTimer += 1; 
+            if (_autoConnectTimer == 20)
             {
                 txtDebug.text += "AutoConnect Entered";
                 txtDebug.text = storedName;
                 txtDebug.text += storedAddress;
                 connectTo(storedName, storedAddress);
             }
-            if (ting == 200)
+            if (_autoConnectTimer == 40)
             {
-                ting = 0;
+                _autoConnectTimer = 0;
             }
         }
 
@@ -700,7 +660,7 @@ public class controller : MonoBehaviour
         if (isConnected == false && _connecting==false && _scanning == false)
         {
             _reScanTimer += 1;
-            if (_reScanTimer == 740)
+            if (_reScanTimer == 700)
             {
                 txtDebug.text = "RE SCAN TIME";
                 BluetoothLEHardwareInterface.StopScan();
