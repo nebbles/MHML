@@ -217,7 +217,7 @@ public class controller : MonoBehaviour
         // stop scanning 
         // Ensure we are only connecting to one of the MHML devices. 
         // This will attempt to connect to a device if clicked. However, the scan will refresh after a certain timeout (max 12.5 seconds) if the connection attempt is unsuccessful. 
-        if (sAddress==benSensorAddr || sAddress==felixSensorAddr || sAddress==scottSensorAddr)
+        if (sName==_permittedDeviceName)
         {
             txtDebug.text += "Beginning connecting";
             _connecting = true;
