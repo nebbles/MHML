@@ -4,11 +4,18 @@ using UnityEngine;
 using UnityEngine.UI; // Required when Using UI elements.
 
 public class Session {
-	public int session_id; //server expects str
+	public string session_id; //server expects str
+	public string firmwareRevision;
+	public string[] selfReported;
+	public string[] ppg;
+	public string[] gsr;
+
+
 	public Slider productivity;
 	public Slider stress; 
 	public Slider fatigue;
 	public Slider anxiety;
+
 	public float heartRate;
 	public float GSR; 
 
@@ -22,19 +29,19 @@ public class Session {
 
 	public void newSession(){
 		//Session id should have been instantiated using last registered id of user
-		session_id =+ 1 ; 
+		//session_id =+ 1 ; 
 	}
 }
 
 
 public class personClass {
-	public string Username;
-	public string Name;
-	public int Age;
-	public bool Gender; 
-	public string Ethnicity;
-	public string Location;
-	public string Occupation;
+	public string username;
+	public string name;
+	public int age;
+	public bool gender; 
+	public string ethnicity;
+	public string location;
+	public string occupation;
 
 
 	// This is placeholder at the moment, but functions to be written
