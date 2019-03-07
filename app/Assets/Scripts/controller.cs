@@ -104,6 +104,7 @@ public class controller : MonoBehaviour
     private int count = 0;
     private int readingCount = 0;
     private int localReadCount = 0;
+    private int _reScanTimer = 0;
 
     private bool _hasStoredBluetoothValues = false;
     int ting = 0; // Currently a redundant variable
@@ -201,6 +202,8 @@ public class controller : MonoBehaviour
             // This will get called when the device disconnects be aware that this will also get called when the disconnect 
             // is called above.
             isConnected = false;
+            _connectedAddress = null;
+            _connectedName = null;
             //txtDebug.text = "Beginning Disconnect Callback";
             disconnectBluetooth(false); // Not called through device forget, so don't delete the name & address
         });
@@ -458,13 +461,13 @@ public class controller : MonoBehaviour
 
                 _peripheralList[address] = name;
 
-                if (_hasStoredBluetoothValues==true && isConnected == false && _connecting == false)
+                if (_hasStoredBluetoothValues==true && isConnected == false && _connecting == false) // Need to stop instantly assigning, and wait for a check to see if the peripheral is the one. 
                 {
-                    _connectedName = storedName;
-                    _connectedAddress = storedAddress;
-                    //_connecting = true;
-                    //txtDebug.text += "AutoConnect Entered";
-                    //connectTo(_connectedName, _connectedAddress);
+                    if (address == storedAddress)
+                    {
+                        _connectedName = storedName;
+                        _connectedAddress = storedAddress;
+                    }
                 }
             }
         }
@@ -677,7 +680,7 @@ public class controller : MonoBehaviour
         // 2) The device is not already in the process of connecting.
         // 3) The device is not already connected. 
 
-        if (_connectedName != null && _connectedAddress != null && isConnected == false && _hasStoredBluetoothValues == true)
+        if (_connectedName != null && _connectedAddress != null && isConnected == false && _connecting == false && _hasStoredBluetoothValues == true)
         {
             ting += 1; 
             if (ting == 20)
@@ -687,13 +690,26 @@ public class controller : MonoBehaviour
                 txtDebug.text += storedAddress;
                 connectTo(storedName, storedAddress);
             }
-            if (ting == 40)
+            if (ting == 200)
             {
                 ting = 0;
             }
         }
-        //txtDebug.text += _hasStoredBluetoothValues.ToString();
-        //txtDebug.text += isConnected.ToString();
-        //txtDebug.text += _connecting.ToString();
+
+        // Automatic Rescanning to update peripheral list every 12.5 seconds. Only called when not connected/connecting to a device. 
+        if (isConnected == false && _connecting==false && _scanning == false)
+        {
+            _reScanTimer += 1;
+            if (_reScanTimer == 740)
+            {
+                txtDebug.text = "RE SCAN TIME";
+                BluetoothLEHardwareInterface.StopScan();
+                scan();
+            }
+            if (_reScanTimer == 750)
+            {
+                _reScanTimer = 0;
+            }
+        }
     }
 }
