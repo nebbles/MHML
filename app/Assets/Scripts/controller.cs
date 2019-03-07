@@ -99,6 +99,7 @@ public class controller : MonoBehaviour
     public string scottSensorAddr = "B4:E6:2D:8B:92:F7"; // Scotts Hardware Wired Sensor Device
 	public string felixSensorAddr = "84:0D:8E:25:91:C2"; // Felix's Testing Device
 	public string benSensorAddr =  "84:0D:8E:25:96:BA"; // Ben's Testing Device
+    public string deviceNames = "MHML M5";
 
     // Other variables
     private int devicesFound = 0;
@@ -216,7 +217,7 @@ public class controller : MonoBehaviour
         // stop scanning 
         // Ensure we are only connecting to one of the MHML devices. 
         // This will attempt to connect to a device if clicked. However, the scan will refresh after a certain timeout (max 12.5 seconds) if the connection attempt is unsuccessful. 
-        if (sAddress==benSensorAddr || sAddress==felixSensorAddr || sAddress==scottSensorAddr)
+        if (sName==deviceNames)
         {
             txtDebug.text += "Beginning connecting";
             _connecting = true;
@@ -434,19 +435,23 @@ public class controller : MonoBehaviour
         {
             _peripheralList = new Dictionary<string, string>();
         }
-        if (!_peripheralList.ContainsKey(address))
+        if (!_peripheralList.ContainsKey(name))
         {
             txtDebug.text = "Found " + name + "\n";
             
             // Button prefab only created if the MHML M5 exists. 
-            if (address == felixSensorAddr || address == scottSensorAddr || address == benSensorAddr) // Remove for final Version.
+            if (name == deviceNames)
             {
                 devicesFound++;
                 GameObject buttonObject = (GameObject)Instantiate(connectButton);
                 connectButtonScript script = buttonObject.GetComponent<connectButtonScript>();
                 script.TextName.text = name;
                 // _connectedName = name;
-                script.TextAddress.text = address;
+
+                // THIS IS THE POINT WHERE WE IMPLEMENT A HARD CONNECTION TO ONLY ONCE DEVICE FOR COMPATABILITY BETWEEN ANDROID & IOS. 
+                // To make this work for multiple devices, we would need unique identifiers in the names of each BLE device, as IOS blocks the MAC Address ID. 
+                // Therefore to allow connection to many devices, we would need to implement certain checks here to pick from a list of predefined MAC Addresses. 
+                script.TextAddress.text = felixSensorAddr;
                 // _connectedAddress = address;
                 script.controllerScript = this;
 
@@ -458,11 +463,11 @@ public class controller : MonoBehaviour
                 buttonObject.transform.localScale = new Vector3(1f, 1f, 1f);
                 buttonObject.transform.localPosition = new Vector3(0, h, 0);
 
-                _peripheralList[address] = name;
+                _peripheralList[name] = address;
 
                 if (_hasStoredBluetoothValues==true && isConnected == false && _connecting == false) // Need to stop instantly assigning, and wait for a check to see if the peripheral is the one. 
                 {
-                    if (address == storedAddress)
+                    if (name == storedName)
                     {
                         _connectedName = storedName;
                         _connectedAddress = storedAddress;
