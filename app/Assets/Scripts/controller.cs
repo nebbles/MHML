@@ -27,6 +27,7 @@ public class controller : MonoBehaviour
 
 
     // GSR Service
+    private string _gsrServiceUUID = "720f8954-ace5-41f7-acec-113b274bc54f"; 
 
     // GSR Characteristics
     private string _skinConductanceLevelUUID = "3f18d911-bffd-4236-b5fc-94c9bf27d0e8"; // uint16 check
