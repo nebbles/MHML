@@ -3,12 +3,50 @@ using UnityEngine.Networking;
 using System.Collections;
 using UnityEngine.UI; // Required when Using UI elements.
 
+
+public class selfReported{
+	float anxiety;
+	float stress;
+	float fatigue;
+	float productivity;
+}
+
+public class PPG {                                    
+        int bodySensorLocation;
+        IDictionary<string, int> heartrate = new Dictionary<string, int>();
+	IDictionary<string, int> interbeatInterval = new Dictionary<string, int>();
+	IDictionary<string, float> sp = new Dictionary<string, float>();
+}
+
+public class GSR {                                    
+        int bodySensorLocation;
+        IDictionary<string, int> scl = new Dictionary<string, int>();
+}
+
+public class Session {
+	string session_id;
+	string firmwareRevision;
+    	selfReported self_reported = new selfReported();
+	PPG ppg = new PPG();
+	GSR gsr = new GSR();
 	
+	}
+
+public class User {
+    string username;
+    string name;
+    float age;
+    int gender;
+    string ethnicity;
+    string location;
+    string occupation;
+}
 public class Wifi : MonoBehaviour {
 	public void send_message_now() { //This is the function attached to a button in the app
 		StartCoroutine(upload()); //it sends a message to the API whenever the button is pressed
 	}
-
+	
+	
 
 	IEnumerator upload() {
 		// change to have input as webaddress & object
