@@ -1,4 +1,94 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Networking;
+using UnityEngine.UI;
+using System.Linq;
+
+
+public class selfReported{
+	float anxiety;
+	float stress;
+	float fatigue;
+	float productivity;
+}
+
+public class PPG {                                    
+	int bodySensorLocation;
+	Dictionary<string, int> heartrate = new Dictionary<string, int>();
+	Dictionary<string, int> interbeatInterval = new Dictionary<string, int>();
+	Dictionary<string, float> sp = new Dictionary<string, float>();
+}
+
+public class GSR {                                    
+	int bodySensorLocation;
+	Dictionary<string, int> scl = new Dictionary<string, int>();
+}
+
+public class Session {
+	string session_id;
+	string firmwareRevision;
+	selfReported self_reported = new selfReported();
+	PPG ppg = new PPG();
+	GSR gsr = new GSR();
+
+}
+
+public class User {
+	string username;
+	string name;
+	float age;
+	int gender;
+	string ethnicity;
+	string location;
+	string occupation;
+}
+
+public class Wifi {	
+	public bool dataAvailable = false; 
+	public string dataWeb ;
+	public string webAddress;
+	public bool dataNotAvailable = false;
+
+
+	public void setRoute(string route) {
+		webAddress = route;
+	}
+		
+	public void makeRequest(MonoBehaviour myMonoBehaviour){ //Function attached to a button on the app to retreive data from the API
+		myMonoBehaviour.StartCoroutine(Upload());
+		}
+		
+	IEnumerator Upload() {		
+		Debug.Log("Upload");					
+		WWWForm form = new WWWForm(); //Type of data needed to be able to encapsulate data
+		User user = new User();
+		//Session session = new Session();
+		string user_json = JsonUtility.ToJson(user); //We jsonify the object panos into a string panos_json so that we send our data in json format for processing by the API
+		//string session_json = JsonUtility.ToJson(session); 
+		form.AddField("User", user_json);
+		//form.AddField("Session", session_json); //The json message is then encapsulated in a form object (needed for http Post method used for sending)
+		UnityWebRequest www = UnityWebRequest.Post(webAddress, form); //We Post (i.e.) send the form containing the json message to the API
+		yield return www.SendWebRequest();
+
+		if(www.isNetworkError || www.isHttpError) {
+			Debug.Log(www.error); //If an error occurs, the console on unity displays this message
+		}
+		else {
+			Debug.Log("Form upload complete!"); //If the sending goes well, the console on unity displays this message
+		}
+
+	}
+
+
+		
+
+}
+
+
+
+/*
+using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
 using UnityEngine.UI; // Required when Using UI elements.
