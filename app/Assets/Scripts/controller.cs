@@ -27,7 +27,6 @@ public class controller : MonoBehaviour
 
 
     // GSR Service
-    private string _gsrServiceUUID = "720f8954-ace5-41f7-acec-113b274bc54f";
 
     // GSR Characteristics
     private string _skinConductanceLevelUUID = "3f18d911-bffd-4236-b5fc-94c9bf27d0e8"; // uint16 check
@@ -45,7 +44,6 @@ public class controller : MonoBehaviour
     public Transform PanelScrollContents;            // device list panel 
     public Text txtDebug;                        // debugging textbox - Redundant for integrated version. Remove for final version.
     public GameObject connectButton;               // the button to click to connect to a device 
-    // public Text txtData;                        // Redunant: the text box to type in send data
     public Text txtReceive;                        // the text boxes data is being received into 1 - 7
     public Text txtReceive2;
     public Text txtReceive3;
@@ -93,8 +91,6 @@ public class controller : MonoBehaviour
     public string storedName = null; // This is the device name that will get stored permanently, and only updated if the device is 'forgotten'.
     private string _connectedName;
     private string _connectedAddress;
-    // private string _connectedID = null; // Currently a redundant variable
-    // private string connectedName = null;  // Currently a redundant variable 
 
     // The three MHML M5 Device Addresses are as follows:
     public string scottSensorAddr = "B4:E6:2D:8B:92:F7"; // Scotts Hardware Wired Sensor Device
@@ -187,8 +183,6 @@ public class controller : MonoBehaviour
             {
                 PlayerPrefs.SetString("Saved Device Name", nameID);
                 storedName = nameID;
-                // PlayerPrefs.SetString("Saved Device Address", address);
-                // storedAddress = address;
                 _hasStoredBluetoothValues = true;
                 txtDebug.text = "Device Address Stored";
             }
@@ -207,8 +201,7 @@ public class controller : MonoBehaviour
             // This will get called when the device disconnects be aware that this will also get called when the disconnect 
             // is called above.
             isConnected = false;
-            //_connectedAddress = null;
-            //_connectedName = null;
+
             //txtDebug.text = "Beginning Disconnect Callback";
             disconnectBluetooth(false); // Not called through device forget, so don't delete the name & address
         });
@@ -264,29 +257,22 @@ public class controller : MonoBehaviour
         }
     }
 
-    // Read a single integer characteristic once
-    void readCharacteristicFromServiceInt(string serviceID, string characteristicID, Action<int> dataprocessing, Func<byte[], int> Decoder)
+    public void callReadCharacteristics()
     {
-        BluetoothLEHardwareInterface.ReadCharacteristic(_connectedAddress, serviceID, characteristicID, (characteristic, data) =>
-        {
-            if (data.Length == 0)
-            {
-                //txtDebug.text = "No Text to Read";
-            }
-            else
-            {
-                //txtDebug.text = "Read Value Found";
-                int decoded_data = Decoder(data);
-                dataprocessing(decoded_data);
-            }
-        });
+        _ppgBodyCheck = false;
+        _gsrBodyCheck = false;
+        _DeviceInfoCheck = false;
+        _readFound2 = true;
+        BluetoothLEHardwareInterface.Log("Read Button Clicked" + _readFound2.ToString());
     }
 
-    // Read a single string characteristic once
-    void readCharacteristicFromServiceString(string serviceID, string characteristicID, Action<string> dataprocessing, Func<byte[], string> Decoder)
+    // Read a single characteristic once
+    void readCharacteristicFromService(string serviceID, string characteristicID, Action<byte[], string, string> Decoder)
     {
+        BluetoothLEHardwareInterface.Log("Attempting to Read Characteristic with ID: " + _connectedAddress);
         BluetoothLEHardwareInterface.ReadCharacteristic(_connectedAddress, serviceID, characteristicID, (characteristic, data) =>
         {
+            BluetoothLEHardwareInterface.Log("Entered Read State: " + _connectedAddress + serviceID + characteristicID);
             if (data.Length == 0)
             {
                 //txtDebug.text = "No Text to Read";
@@ -294,8 +280,7 @@ public class controller : MonoBehaviour
             else
             {
                 //txtDebug.text = "Read Value Found";
-                string decoded_data = Decoder(data);
-                dataprocessing(decoded_data);
+                Decoder(data, serviceID, characteristicID);
             }
         });
     }
@@ -307,61 +292,90 @@ public class controller : MonoBehaviour
         localReadCount += 1;
         if (localReadCount == 3)
         {
-            if (_ppgBodyCheck == false) { readCharacteristicFromServiceInt(_ppgServiceUUID, _bodySensorLocationUUID, receiveText4PpgBody, uint8_tDecode); }
+            if (_ppgBodyCheck == false) { readCharacteristicFromService(_ppgServiceUUID, _bodySensorLocationUUID, uint8_tDecode); }
         }
 
         if (localReadCount == 6)
         {
-            if (_gsrBodyCheck == false) { readCharacteristicFromServiceInt(_gsrServiceUUID, _bodySensorLocationGsrUUID, receiveTextGsrBody, uint8_tDecode); }
+            if (_gsrBodyCheck == false) { readCharacteristicFromService(_gsrServiceUUID, _bodySensorLocationGsrUUID, uint8_tDecode); }
         }
 
         if (localReadCount == 9)
         {
-            if (_DeviceInfoCheck == false) { readCharacteristicFromServiceString(_DeviceInfoUUID, _FirmwareRevisionUUID, receiveTextInfo, UTF8Decode); }
+            if (_DeviceInfoCheck == false) { readCharacteristicFromService(_DeviceInfoUUID, _FirmwareRevisionUUID, UTF8Decode); }
         }
 
         if (localReadCount == 12)
         {
-            localReadCount = 0;
+            
             if (_ppgBodyCheck == true && _gsrBodyCheck == true && _DeviceInfoCheck == true)
             {
                 _readFound2 = false;
                 _allReadingComplete = true;
             }
+            localReadCount = 0;
         }
     }
 
     // Decoding byte[] array functions
-    int uint8_tDecode (byte[] raw_data)
+    void uint8_tDecode (byte[] raw_data, string service, string characteristic)
     {
         int value_data = int.Parse(BitConverter.ToString(raw_data), System.Globalization.NumberStyles.HexNumber);
         BluetoothLEHardwareInterface.Log("data: " + value_data);
-        return value_data;
+        if (service==_ppgServiceUUID && characteristic==_HRmeasurementUUID)
+        {
+            receiveTextHR(value_data);
+        }
+        else if (service==_ppgServiceUUID && characteristic==_bodySensorLocationUUID)
+        {
+            receiveText4PpgBody(value_data);
+        }
+        else if (service == _gsrServiceUUID && characteristic == _bodySensorLocationUUID)
+        {
+            receiveTextGsrBody(value_data);
+        }
+        //postProcessor(value_data);
     }
 
-    int uint16_tDecode(byte[] raw_data)
+    void uint16_tDecode(byte[] raw_data, string service, string characteristic)
     {
         int value_data = BitConverter.ToInt16(raw_data, 0);
         BluetoothLEHardwareInterface.Log("data: " + value_data);
-        return value_data;
+        if (service == _ppgServiceUUID && characteristic == _InterbeatIntervalUUID)
+        {
+            receiveTextIBI(value_data);
+        }
+        else if (service == _gsrServiceUUID && characteristic == _skinConductanceLevelUUID)
+        {
+            receiveTextSClvl(value_data);
+        }
+        //postProcessor(value_data);
     }
 
-    float float32Decode(byte[] raw_data)
+    void float32Decode(byte[] raw_data, string service, string characteristic)
     {
         float value_data = BitConverter.ToSingle(raw_data, 0);
         BluetoothLEHardwareInterface.Log("data: " + value_data);
-        return value_data;
+        if (service == _ppgServiceUUID && characteristic == _Spo2MeasurementUUID)
+        {
+            receiveTextSpo2(value_data);
+        }
+        //postProcessor(value_data);
     }
 
-    string UTF8Decode(byte[] raw_data)
+    void UTF8Decode(byte[] raw_data, string service, string characteristic)
     {
         string value_data = Encoding.UTF8.GetString(raw_data);
         BluetoothLEHardwareInterface.Log("data: " + value_data);
-        return value_data;
+        if (service == _DeviceInfoUUID && characteristic == _FirmwareRevisionUUID)
+        {
+            receiveTextInfo(value_data);
+        }
+        //postProcessor(value_data);
     }
 
-    // Subscribes to the data stream of an Integer characteristic, updating when a notification is received. 
-    void subscribeToCharacteristicInt(string serviceUUID, string characteristicUUID, Action<int> dataprocessing, Func<byte[], int> Decoder)
+    // Subscribes to the data stream of a characteristic, updating when a notification is received. 
+    void subscribeToCharacteristic(string serviceUUID, string characteristicUUID, Action<byte[], string, string> Decoder)
     {
         BluetoothLEHardwareInterface.SubscribeCharacteristicWithDeviceAddress(_connectedAddress, serviceUUID, characteristicUUID, (deviceAddress, notification) =>
         {
@@ -382,35 +396,7 @@ public class controller : MonoBehaviour
                 if (data.Length == 0) {}
                 else
                 {
-                    int decoded_data = Decoder(data);
-                    dataprocessing(decoded_data);
-                }
-            }
-        });
-    }
-
-    // Subscribes to the data stream of a Float characteristic, updating when a notification is received. 
-    void subscribeToCharacteristicFloat(string serviceUUID, string characteristicUUID, Action<float> dataprocessing, Func<byte[], float> Decoder)
-    {
-        BluetoothLEHardwareInterface.SubscribeCharacteristicWithDeviceAddress(_connectedAddress, serviceUUID, characteristicUUID, (deviceAddress, notification) =>
-        {
-            BluetoothLEHardwareInterface.Log("Notification: " + notification);
-            if (characteristicUUID == _HRmeasurementUUID) { _HR_Notification = true; }
-            if (characteristicUUID == _InterbeatIntervalUUID) { _IBI_Notification = true; }
-            if (characteristicUUID == _Spo2MeasurementUUID) { _Spo2_Notification = true; }
-            if (characteristicUUID == _skinConductanceLevelUUID) { _SkinConductance_Notification = true; }
-        }, (deviceAddress2, characteristic, data) =>
-        {
-            BluetoothLEHardwareInterface.Log("id: " + _connectedAddress);
-            BluetoothLEHardwareInterface.Log("received data: " + characteristic);
-            if (deviceAddress2.CompareTo(_connectedAddress) == 0)
-            {
-                BluetoothLEHardwareInterface.Log(string.Format("data length: {0}", data.Length));
-                if (data.Length == 0) { }
-                else
-                {
-                    float decoded_data = Decoder(data);
-                    dataprocessing(decoded_data);
+                    Decoder(data, serviceUUID, characteristicUUID);
                 }
             }
         });
@@ -508,7 +494,8 @@ public class controller : MonoBehaviour
     {
 		_ppgLocation_data.Enqueue (s);
         txtReceive4.text = s.ToString();
-        _ppgBodyCheck = true; 
+        _ppgBodyCheck = true;
+        BluetoothLEHardwareInterface.Log("_ppgBodyCheck: " + _ppgBodyCheck.ToString());
     }
 
     void receiveTextSClvl(int s)
@@ -524,6 +511,7 @@ public class controller : MonoBehaviour
         _gsrLocation_data.Enqueue(s);
         txtReceive6.text = s.ToString();
         _gsrBodyCheck = true;
+        BluetoothLEHardwareInterface.Log("GsrBodyCheck: " + _gsrBodyCheck.ToString());
     }
 
     void receiveTextInfo(string s)
@@ -531,6 +519,7 @@ public class controller : MonoBehaviour
         _deviceInfo_data.Enqueue(s);
         txtReceive7.text = s;
         _DeviceInfoCheck = true;
+        BluetoothLEHardwareInterface.Log("DeviceInfoCheck: " + _DeviceInfoCheck.ToString());
     }
 
     // Used to clear the received text in the first textbox. Currently a redundant function. Review usage later on.
@@ -570,17 +559,12 @@ public class controller : MonoBehaviour
     void Start()
     {
         txtDebug.text = "No address";
-        if (PlayerPrefs.HasKey("Saved Device Name"))  // check if we already save It before
+        if (PlayerPrefs.HasKey("Saved Device Name"))  // check if we already saved it before
         {
             storedName = PlayerPrefs.GetString("Saved Device Name");
             _hasStoredBluetoothValues = true;
             txtDebug.text = storedName;
         }
-        //if (PlayerPrefs.HasKey("Saved Device Address"))  // check if we already save It before
-        //{
-        //    storedAddress = PlayerPrefs.GetString("Saved Device Address");
-        //    txtDebug.text += storedAddress;
-        //}
 
         panelScan = GameObject.Find("panelScan");
         panelConnected = GameObject.Find("panelConnected");
@@ -607,22 +591,22 @@ public class controller : MonoBehaviour
             count += 1;
             if (count == 2)
             {
-                if (_HR_Notification != true) { subscribeToCharacteristicInt(_ppgServiceUUID, _HRmeasurementUUID, receiveTextHR, uint8_tDecode); }
+                if (_HR_Notification != true) { subscribeToCharacteristic(_ppgServiceUUID, _HRmeasurementUUID, uint8_tDecode); }
             }
 
             if (count == 5)
             {
-                if (_IBI_Notification != true) { subscribeToCharacteristicInt(_ppgServiceUUID, _InterbeatIntervalUUID, receiveTextIBI, uint16_tDecode); }
+                if (_IBI_Notification != true) { subscribeToCharacteristic(_ppgServiceUUID, _InterbeatIntervalUUID, uint16_tDecode); }
             }
 
             if (count == 10)
             {
-                if (_Spo2_Notification != true) { subscribeToCharacteristicFloat(_ppgServiceUUID, _Spo2MeasurementUUID, receiveTextSpo2, float32Decode); }
+                if (_Spo2_Notification != true) { subscribeToCharacteristic(_ppgServiceUUID, _Spo2MeasurementUUID, float32Decode); }
             }
 
             if (count == 15)
             {
-                if (_SkinConductance_Notification != true) { subscribeToCharacteristicInt(_gsrServiceUUID, _skinConductanceLevelUUID, receiveTextSClvl, uint16_tDecode); }
+                if (_SkinConductance_Notification != true) { subscribeToCharacteristic(_gsrServiceUUID, _skinConductanceLevelUUID, uint16_tDecode); }
             }
 
             if (count == 20)
@@ -638,7 +622,8 @@ public class controller : MonoBehaviour
 
         if (_readFound2 == true)
         {
-           readNonNotifyCharacteristics(); // This function works in the same way as the count loop above. 
+            BluetoothLEHardwareInterface.Log("Loop Check for _readFound2: " + _readFound2.ToString());
+            readNonNotifyCharacteristics(); // This function works in the same way as the count loop above. 
         }
 
         // This autoconnect logic should only run if:
