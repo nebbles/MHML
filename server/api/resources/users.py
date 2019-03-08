@@ -8,14 +8,17 @@ users_ref = database.collection(u'users')
 class Users(Resource):
 
     def __init__(self):
+
+        self.key = ('U', dict, True)
+        
         self.arguments =[
-            ('username', str, True),
-            ('name', str, False),
-            ('age', int, False),
-            ('gender', bool, False),
-            ('ethnicity', str, False),
-            ('location', str, False),
-            ('occupation', str, False)
+            ('username', str, True, 'U'),
+            ('name', str, False, 'U'),
+            ('age', int, False, 'U'),
+            ('gender', bool, False, 'U'),
+            ('ethnicity', str, False, 'U'),
+            ('location', str, False, 'U'),
+            ('occupation', str, False, 'U')
         ] 
     
     def get(self):
@@ -31,10 +34,17 @@ class Users(Resource):
     
 
     def post(self):
+
+        key_parser = reqparse.RequestParser()
+        n, t, b = self.key
+        key_parser.add_argument(n, type=t, required=b, help="Wrong or missing entry")
+        parsed_user = key_parser.parse_args()
+
+
         parser = reqparse.RequestParser(bundle_errors=True)
-        for (n, t, b) in self.arguments:
-            parser.add_argument(n, type=t, required=b, help="Wrong or missing entry")
-        args = dict(parser.parse_args())
+        for (n, t, b, l) in self.arguments:
+            parser.add_argument(n, type=t, required=b, location=l, help="Wrong or missing entry")
+        args = dict(parser.parse_args(req=parsed_user))
 
         username = args['username']
         user_ref = users_ref.document(username)
