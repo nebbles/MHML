@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI; // Required when Using UI elements.
 
-public class Session {
+public class No {
 	public string session_id; //server expects str
 	public string firmwareRevision;
 	public string[] selfReported;

@@ -15,19 +15,42 @@ public class gsrClass
 }
 
 
-public class testGraph
+public class testGraph : MonoBehaviour
 {
     Vector3 graphdata;
-    int[] xval = new int[]{ 0, 10, 20, 30, 40, 50, 60, 70, 80, 90};
+    int[] xval = new int[] { 1551987459, 1551988459, 1551989459, 1551990459, 1551991459, 1551992459, 1551993459, 1551994459, 1551995459, 1551996459 };
     int[] yval = new int[] { 66, 70, 39, 69, 28, 59, 60, 60, 70, 79 };
-    int[] zval = new int[]{ 0, 0, 39, 69, 28, 59, 60, 60, 70, 79};
-    public void lineSmoother()
+    public Vector3[] vertext;
+    List<Vector3> mydata = new List<Vector3>();
+    private LineRenderer line; 
+
+
+    private void Start()
     {
-
-
-
+        line = GetComponent<LineRenderer>();
+        line.material = new Material(Shader.Find("Sprites/Default")); 
+        lineSmoother(); 
     }
+    public void lineSmoother()
+        {
+            var arraylength = xval.Length;
 
+            for (var i = 0; i < arraylength; i++)
+            {
+                mydata.Add(new Vector3(xval[i], yval[i], 0));
+                Debug.Log(mydata);
+            }
+
+        vertext = mydata.ToArray(); 
+        //Vector3[] smoothed = SmoothLine(vertext, 10);
+        //print(smoothed);
+
+        }
+
+    private void Update()
+    {
+        line.SetPositions(vertext);
+    }
 
 }
 

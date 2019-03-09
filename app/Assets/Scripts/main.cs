@@ -5,11 +5,13 @@ using UnityEngine.UI; // Required when Using UI elements.
 
 public class main : MonoBehaviour{
 	public GameObject loginScreen, homeScreen, createAccount, canvas, relaxScreen, logScreen,settings, thankYou ;
-    Text usernameInput;
-	Networking login = new Networking();
-	personClass initial = new personClass(); 
+    public InputField usernameInput, createUsername, cname, ethnicity, location, occupation, age; 
+    public Dropdown  gender;
+    Networking login = new Networking();
+	User person = new User();
+    //public LineRenderer line;
 
-	public main() {
+    public main() {
 
 	}
 
@@ -22,7 +24,7 @@ public class main : MonoBehaviour{
 		logScreen = canvas.transform.Find("Log Screen").gameObject;
 		thankYou = canvas.transform.Find("Thank-you").gameObject;
 		settings = canvas.transform.Find("You Screen").gameObject;
-        usernameInput = loginScreen.GetComponent<InputField>().GetComponent<Text>();
+        //line.sortingOrder = 4; line.sortingLayerName = "UI";
         
     }
     
@@ -30,7 +32,7 @@ public class main : MonoBehaviour{
     {
         // Login screen update script
         if (loginScreen.activeSelf) {
-            Debug.Log("leahizcoo");
+            //Debug.Log("leahizcoo");
             if (login.dataAvailable == true)
             {
                 Debug.Log("true");
@@ -47,6 +49,7 @@ public class main : MonoBehaviour{
                 loginScreen.SetActive(false);
                 createAccount.SetActive(true);
                 login.dataNotAvailable = false;
+                createAnAccount(); 
             }
         }
 
@@ -55,16 +58,40 @@ public class main : MonoBehaviour{
     }
 
     public void loginButton() {
-		// add user name				
-		//Debug.Log(userNameInput);
-		login.setRoute("mhml.greenberg.io/api/users/" + usernameInput );
-		login.makeRequest(this); 	
+        // add user name				
+        Debug.Log(usernameInput.text);
+        
+        login.setRoute("mhml.greenberg.io/api/users/" + usernameInput.text );
+        Debug.Log(usernameInput);
+        login.makeRequest(this); 
+        
 	}
 
 	public void loadUserData(){
-		Debug.Log("loadUserData"); 
-		initial = JsonUtility.FromJson<personClass>(login.dataWeb);
-		Debug.Log(initial.name);
+		//Debug.Log("loadUserData"); 
+		person = JsonUtility.FromJson<User>(login.dataWeb);
+		//Debug.Log(person.name);
+    }
+
+    public void createAnAccount()
+    {
+        Debug.Log("creating account");
+        person.username = createUsername.text;
+        person.name = cname.text;
+        person.ethnicity = ethnicity.text;
+        person.location = location.text; 
+        person.age = int.Parse(age.text); 
+
+        if (gender.ToString() == "Female")
+        {
+            person.gender = 1; 
+        }
+        else
+        {
+            person.gender = 0;
+        }
+
+
     }
 
 }

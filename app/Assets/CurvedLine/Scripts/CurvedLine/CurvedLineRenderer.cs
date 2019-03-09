@@ -10,10 +10,6 @@ public class CurvedLineRenderer : MonoBehaviour
 	//PUBLIC
 	public float lineSegmentSize = 0.15f;
 	public float lineWidth = 0.1f;
-    [Tooltip("Enable this to set a custom width for the line end")]
-	public bool useCustomEndWidth = false;
-    [Tooltip("Custom width for the line end")]
-	public float endWidth = 0.1f;
 	[Header("Gizmos")]
 	public bool showGizmos = true;
 	public float gizmoSize = 0.1f;
@@ -74,7 +70,7 @@ public class CurvedLineRenderer : MonoBehaviour
 			line.positionCount = smoothedPoints.Length;
 			line.SetPositions( smoothedPoints );
             line.startWidth = lineWidth;
-            line.endWidth = useCustomEndWidth ? endWidth : lineWidth;
+            line.endWidth = lineWidth;
 		}
 	}
 
