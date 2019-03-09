@@ -7,41 +7,41 @@ using System.Linq;
 
 
 public class selfReported{
-	float anxiety;
-	float stress;
-	float fatigue;
-	float productivity;
+	public float anxiety;
+	public float stress;
+	public float fatigue;
+	public float productivity;
 }
 
 public class PPG {                                    
-	int bodySensorLocation;
-	Dictionary<string, int> heartrate = new Dictionary<string, int>();
-	Dictionary<string, int> interbeatInterval = new Dictionary<string, int>();
-	Dictionary<string, float> sp = new Dictionary<string, float>();
+	public int bodySensorLocation;
+	public Dictionary<string, int> heartrate = new Dictionary<string, int>();
+	public Dictionary<string, int> interbeatInterval = new Dictionary<string, int>();
+	public Dictionary<string, float> sp = new Dictionary<string, float>();
 }
 
 public class GSR {                                    
-	int bodySensorLocation;
-	Dictionary<string, int> scl = new Dictionary<string, int>();
+	public int bodySensorLocation;
+	public Dictionary<string, int> scl = new Dictionary<string, int>();
 }
 
 public class Session {
-	string session_id;
-	string firmwareRevision;
-	selfReported self_reported = new selfReported();
-	PPG ppg = new PPG();
-	GSR gsr = new GSR();
+	public string session_id;
+	public string firmwareRevision;
+	public selfReported self_reported = new selfReported();
+	public PPG ppg = new PPG();
+	public GSR gsr = new GSR();
 
 }
 
 public class User {
-	string username;
-	string name;
-	float age;
-	int gender;
-	string ethnicity;
-	string location;
-	string occupation;
+	public string username;
+	public string name;
+	public float age;
+	public int gender;
+	public string ethnicity;
+	public string location;
+	public string occupation;
 }
 
 public class Wifi {	
@@ -49,6 +49,8 @@ public class Wifi {
 	public string dataWeb ;
 	public string webAddress;
 	public bool dataNotAvailable = false;
+	public User user = new User();
+	public Session session = new Session();
 
 
 	public void setRoute(string route) {
@@ -62,8 +64,6 @@ public class Wifi {
 	IEnumerator Upload() {		
 		Debug.Log("Upload");					
 		WWWForm form = new WWWForm(); //Type of data needed to be able to encapsulate data
-		User user = new User();
-		//Session session = new Session();
 		string user_json = JsonUtility.ToJson(user); //We jsonify the object panos into a string panos_json so that we send our data in json format for processing by the API
 		//string session_json = JsonUtility.ToJson(session); 
 		form.AddField("User", user_json);
