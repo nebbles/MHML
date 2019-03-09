@@ -18,6 +18,7 @@
 #include "ppg.h"
 
 String FIRMWARE_REVISION = "0.2.3";
+String DEVICE_NAME = "MHML M5 B";
 
 int button;
 #define DEBUG_MAIN // Uncomment whilst debugging for Serial debug stats.
@@ -77,7 +78,8 @@ void setup()
 
   DATA.ppgBSL = button; // set PPG body sensor location
   DATA.gsrBSL = button; // set GSR body sensor location
-  bleInit(FIRMWARE_REVISION);
+
+  bleInit(DEVICE_NAME, FIRMWARE_REVISION);
 
   ppgInit();
   gsrInit();

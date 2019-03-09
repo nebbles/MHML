@@ -73,12 +73,11 @@ class customServerCallbacks : public BLEServerCallbacks
 /*
  * Initialises the BLE service and configures it appropriately. Call once.
  */
-void bleInit(String firmwareRevision)
+void bleInit(String deviceName, String firmwareRevision)
 {
     /* 
      * Create and name the BLE Device
      */
-    String deviceName = "MHML M5";
     BLEDevice::init(deviceName.c_str());
 
     /* 
