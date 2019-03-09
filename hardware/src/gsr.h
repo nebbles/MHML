@@ -9,10 +9,14 @@
 const int GSR = 35;
 int sensorValue = 0;
 int gsr_average = 0;
-int timeStartGSR, timeDelay;
+int timeStartGSR;
+int timeDelay;
 int posInt;
 Deque<int> gsrDeque;
 
+/* 
+ * Set up GSR related tasks.  
+ */
 void gsrInit()
 {
     gsrDeque.setLimit(140);
