@@ -66,7 +66,7 @@ public class Wifi { // Class created to send user_data and session_data (based o
 			Debug.Log("Starting Data Upload");					
 			WWWForm form = new WWWForm(); //Create a form object needed to be able to encapsulate data for Post method 
 			form.AddField(key, jsondata); // We add the jsonified string to the form object
-			UnityWebRequest www = UnityWebRequest.Post(userwebaddress, form); //We Post the form to the userwebaddress (set above)
+			UnityWebRequest www = UnityWebRequest.Post(webaddress, form); //We Post the form to the userwebaddress (set above)
 			yield return www.SendWebRequest();
 
 			if(www.isNetworkError || www.isHttpError) {
