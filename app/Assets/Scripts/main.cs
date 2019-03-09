@@ -9,7 +9,8 @@ public class main : MonoBehaviour{
     public Dropdown  gender;
     Networking login = new Networking();
 	User person = new User();
-    //public LineRenderer line;
+    Wifi wifiPerson = new Wifi();
+    Wifi wifiSession = new Wifi(); 
 
     public main() {
 
@@ -24,7 +25,6 @@ public class main : MonoBehaviour{
 		logScreen = canvas.transform.Find("Log Screen").gameObject;
 		thankYou = canvas.transform.Find("Thank-you").gameObject;
 		settings = canvas.transform.Find("You Screen").gameObject;
-        //line.sortingOrder = 4; line.sortingLayerName = "UI";
         
     }
     
@@ -79,7 +79,8 @@ public class main : MonoBehaviour{
         person.username = createUsername.text;
         person.name = cname.text;
         person.ethnicity = ethnicity.text;
-        person.location = location.text; 
+        person.location = location.text;
+        person.occupation = occupation.text;
         person.age = int.Parse(age.text); 
 
         if (gender.ToString() == "Female")
@@ -91,7 +92,29 @@ public class main : MonoBehaviour{
             person.gender = 0;
         }
 
+        //Creating Wifi person object
+        string person_json = JsonUtility.ToJson(person);
+        Debug.Log(person_json);
+        wifiPerson.key = "U" ;
+        wifiPerson.webaddress = "mhml.greenberg.io/api/users/";
+        wifiPerson.jsondata = person_json ;
+        wifiPerson.makeRequest(this);
 
-    }
+        if (wifiPerson.dataUploaded == false)
+        {
+            // activate sorry technical issues page
+            createAccount.SetActive(false);
+
+        }
+
+        else {
+            wifiPerson.dataUploaded = false ;
+            homeScreen.SetActive(true);
+            createAccount.SetActive(false); 
+
+        }
+
+
+}
 
 }
