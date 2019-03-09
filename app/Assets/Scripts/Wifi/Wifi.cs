@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -44,127 +44,71 @@ public class User {
 	public string occupation;
 }
 
-public class Wifi {	
-	public bool dataAvailable = false; 
-	public string dataWeb ;
-	public string webAddress;
-	public bool dataNotAvailable = false;
-	public User user = new User();
-	public Session session = new Session();
+public class Wifi { // Class created to send user_data and session_data (based on the classes User and Session defined above).
+	// These are all the variables/methods that can be accessed in main.cs to control the class as if it was a function.
+
+	public bool dataUploaded = false; // Boolean variable to check if data was uploaded successfully
+	public bool senduserdata = false; // Set to true in main.cs if we are performing a user_data upload.
+	public bool sendsessiondata = false; // Set to true in main.cs if we are performing a session_data upload.
+	public string userwebaddress; // address to send the user data to
+	public string sessionwebaddress; // address to send the session data to
+	public User user = new User(); // set this object to the user data without Jsonification 
+	public Session session = new Session(); //set this oject to the sessionid data without Jsonification
 
 
-	public void setRoute(string route) {
-		webAddress = route;
+	public void SetUserRoute(string route) { // Use this function to set the user data webaddress
+		userwebaddress = route;
 	}
-		
-	public void makeRequest(MonoBehaviour myMonoBehaviour){ //Function attached to a button on the app to retreive data from the API
+
+	public void SetSessionRoute(string route) { // Use this function to set the session data webaddress
+		sessionwebaddress = route;
+	}
+
+	public void makeRequest(MonoBehaviour myMonoBehaviour){
 		myMonoBehaviour.StartCoroutine(Upload());
-		}
-		
-	IEnumerator Upload() {		
-		Debug.Log("Upload");					
-		WWWForm form = new WWWForm(); //Type of data needed to be able to encapsulate data
-		string user_json = JsonUtility.ToJson(user); //We jsonify the object panos into a string panos_json so that we send our data in json format for processing by the API
-		//string session_json = JsonUtility.ToJson(session); 
-		form.AddField("User", user_json);
-		//form.AddField("Session", session_json); //The json message is then encapsulated in a form object (needed for http Post method used for sending)
-		UnityWebRequest www = UnityWebRequest.Post(webAddress, form); //We Post (i.e.) send the form containing the json message to the API
-		yield return www.SendWebRequest();
+	}
 
-		if(www.isNetworkError || www.isHttpError) {
-			Debug.Log(www.error); //If an error occurs, the console on unity displays this message
+	// This is the function used to upload the user_data and/or session_data depending on how the variables defined above are set. 
+
+	IEnumerator Upload() {
+		if (senduserdata == true){ // Executes if we are sending user data (Note: senduserdata must be set to True in main.cs for this to execute).
+			dataUploaded = false;
+			Debug.Log("Starting User Data Upload");					
+			WWWForm user_form = new WWWForm(); //Create a form object needed to be able to encapsulate data for Post method 
+			string user_json = JsonUtility.ToJson(user); //We jsonify the user_data object
+			user_form.AddField("User", user_json); // We add the jsonified string to the form object
+			UnityWebRequest www = UnityWebRequest.Post(userwebaddress, user_form); //We Post the form to the userwebaddress (set above)
+			yield return www.SendWebRequest();
+
+			if(www.isNetworkError || www.isHttpError) {
+				Debug.Log(www.error); //If an error occurs, the console on unity displays this message
+				dataUploaded = false; // And the boolean dataUploaded is set to False
+			}
+			else {
+				Debug.Log("Form upload complete!"); //If the sending goes well, the console on unity displays this message
+				dataUploaded = true; // And the boolean dataUploaded is set to True
+			}
 		}
-		else {
-			Debug.Log("Form upload complete!"); //If the sending goes well, the console on unity displays this message
+
+		if (sendsessiondata == true){ // Executes if we are sending session data (Note: sendsessiondata must be set to True for this to execute.
+			dataUploaded = false; //Same logic as that described for the userdata if statement above.
+			Debug.Log("Starting Session Data Upload");					
+			WWWForm session_form = new WWWForm();
+			string session_json = JsonUtility.ToJson(session); 
+			session_form.AddField("Session", session_json); 
+			UnityWebRequest www = UnityWebRequest.Post(sessionwebaddress, session_form); 
+			yield return www.SendWebRequest();
+
+			if(www.isNetworkError || www.isHttpError) {
+				Debug.Log(www.error); 
+				dataUploaded = false;
+			}
+			else {
+				Debug.Log("Form upload complete!");
+				dataUploaded = true;
+			}
 		}
 
 	}
 
-
-		
-
 }
-
-
-
-/*
-using UnityEngine;
-using UnityEngine.Networking;
-using System.Collections;
-using UnityEngine.UI; // Required when Using UI elements.
-
-
-public class selfReported{
-	float anxiety;
-	float stress;
-	float fatigue;
-	float productivity;
-}
-
-public class PPG {                                    
-        int bodySensorLocation;
-        IDictionary<string, int> heartrate = new Dictionary<string, int>();
-	IDictionary<string, int> interbeatInterval = new Dictionary<string, int>();
-	IDictionary<string, float> sp = new Dictionary<string, float>();
-}
-
-public class GSR {                                    
-        int bodySensorLocation;
-        IDictionary<string, int> scl = new Dictionary<string, int>();
-}
-
-public class Session {
-	string session_id;
-	string firmwareRevision;
-    	selfReported self_reported = new selfReported();
-	PPG ppg = new PPG();
-	GSR gsr = new GSR();
-	
-	}
-
-public class User {
-    string username;
-    string name;
-    float age;
-    int gender;
-    string ethnicity;
-    string location;
-    string occupation;
-}
-public class Wifi : MonoBehaviour {
-	public void send_message_now() { //This is the function attached to a button in the app
-		StartCoroutine(upload()); //it sends a message to the API whenever the button is pressed
-	}
-	
-	
-
-	IEnumerator upload() {
-		// change to have input as webaddress & object
-		WWWForm form = new WWWForm(); //Type of data needed to be able to encapsulate data
-		personClass panos = new personClass(); //Object created of the class that contains the variables that will store the data
-		panos.username = "teehee";
-		panos.name = "MEE7A"; //In this case the name is a string "MEE7A"
-		panos.age = 22; //the age is an integer 22
-		panos.gender = true ; 
-		panos.ethnicity = "white"; //how to specify and send arrays of any type, in this case it is byte arrays
-		panos.location = "London"; //how to specify and send arrays of any type, in this case it is integer arrays
-		panos.occupation = "Student";
-		string panos_json = JsonUtility.ToJson(panos); //We jsonify the object panos into a string panos_json so that we send our data in json format for processing by the API
-		form.AddField("Panos", panos_json); //The json message is then encapsulated in a form object (needed for http Post method used for sending)
-
-		UnityWebRequest www = UnityWebRequest.Post("mhml.greenberg.io/person", form); //We Post (i.e.) send the form containing the json message to the API
-		yield return www.SendWebRequest();
-
-		if(www.isNetworkError || www.isHttpError) {
-			Debug.Log(www.error); //If an error occurs, the console on unity displays this message
-		}
-		else {
-			Debug.Log("Form upload complete!"); //If the sending goes well, the console on unity displays this message
-		}
-	}
-
-
-
-}
-
-
