@@ -41,7 +41,7 @@
 
 Deque<int> ppgDeque;
 
-// #define DEBUG // Uncomment for debug output to the Serial stream
+// #define DEBUG_PPG // Uncomment for debug output to the Serial stream
 // #define showRed
 
 // Interrupt pin
@@ -72,7 +72,7 @@ void ppgBufferProcess()
 {
   // read from MAX30102 FIFO
   maxim_max30102_read_fifo((aun_red_buffer + bufferIncrement), (aun_ir_buffer + bufferIncrement));
-  bufferIncrement = (bufferIncrement + 1) % BUFFER_SIZE; 
+  bufferIncrement = (bufferIncrement + 1) % BUFFER_SIZE;
   raw_ir = raw_ir_read(aun_ir_buffer, BUFFER_SIZE, aun_red_buffer, &n_spo2, &n_heart_rate);
   raw_red = raw_red_read(BUFFER_SIZE, aun_red_buffer, &n_spo2, &n_heart_rate);
 
@@ -93,7 +93,7 @@ void ppgBufferProcess()
     ppgDeque.pushTail(graphPos);
   }
 #endif //showRed
-#ifdef DEBUG
+#ifdef DEBUG_PPG
   Serial.println("Interrupt Loop");
   Serial.print(aun_red_buffer[i], DEC);
   Serial.print(F("\n"));
@@ -106,7 +106,30 @@ void ppgBufferProcess()
   Serial.print(F("\t"));
   Serial.print(aun_ir_buffer[i], DEC);
   Serial.println("");
-#endif // DEBUG
+#endif // DEBUG_PPG
+}
+
+/* 
+ * Collect samples from MAX30102 when there is data to process.  
+ * Heart rate and SpO2 are calculated every ST seconds.
+ */
+void ppgCollectSamples()
+{
+
+  if (interruptCounter > 0)
+  {
+    ppgBufferProcess();
+    portENTER_CRITICAL(&mux);
+    interruptCounter--;
+    portEXIT_CRITICAL(&mux);
+
+#ifdef DEBUG_PPG
+    Serial.print("[DEBUG] interruptCounter: ");
+    Serial.println((int)(interruptCounter));
+    Serial.print("[DEBUG] bufferIncremet: ");
+    Serial.println((int)(bufferIncrement));
+#endif // DEBUG_PPG
+  }
 }
 
 /* 
@@ -149,7 +172,7 @@ void ppgCalc()
   elapsedTime = millis() - timeStart;
   elapsedTime /= 1000; // Time in seconds
 
-#ifdef DEBUG
+#ifdef DEBUG_PPG
   Serial.println("--RF--");
   Serial.print(elapsedTime);
   Serial.print("\t");
@@ -159,7 +182,7 @@ void ppgCalc()
   Serial.print("\t");
   Serial.println(hr_str);
   Serial.println("------");
-#endif // DEBUG
+#endif // DEBUG_PPG
 
   if (ch_hr_valid && ch_spo2_valid)
   {

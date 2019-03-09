@@ -4,6 +4,8 @@
 #include <M5Stack.h>
 #include "Deque.h"
 
+// #define DEBUG_GSR // use to enable debug functionality with GSR
+
 const int GSR = 35;
 int sensorValue = 0;
 int gsr_average = 0;
@@ -17,6 +19,9 @@ void gsrInit()
     for (int i = 0; i < 140; i++) gsrDeque.pushTail(100);
 }
 
+/* 
+ * Collect GSR data from sensor.  
+ */
 void gsrRun()
 {
     long sum = 0;
