@@ -10,8 +10,9 @@ public class main : MonoBehaviour{
     public GameObject  measurement ;
     public Dropdown gender;
     public Slider productivity, stress, fatigue, anxiety;
-    int sensorLocation, HR, IBI, SP, SCL;
-    string bluetoothfirm;
+    public int ppgsensorLocation, gsrsensorLocation, HR, IBI, SCL;
+    public float SP;
+    public Text textspazz ; 
     string timestamp;
     bool deviceConnected = false; 
 
@@ -21,6 +22,7 @@ public class main : MonoBehaviour{
 
     User person = new User();
     Session newSession = new Session();
+    controller bluetoothData; 
 
 
 
@@ -132,11 +134,14 @@ public class main : MonoBehaviour{
 
     public void startData()
     {
-        // if bluetoothConnected == true:
+        
+        
+        // if bluetoothConnected == true: // _allSubscribingComplete  //_allReadingComplete // isConnected
 
         newSession.session_id = System.DateTime.UtcNow.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
-        newSession.firmwareRevision = bluetoothfirm;
+        //newSession.firmwareRevision = bluetoothData._deviceInfo_data.Peek();
         measurement.SetActive(true); 
+        
         // else - pop up modal window
         
     }
@@ -162,13 +167,27 @@ public class main : MonoBehaviour{
     public void sensorData()
     {
         timestamp = System.DateTime.UtcNow.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
-        
-        newSession.ppg.bodySensorLocation = sensorLocation;
+
+        //PPG Service
+        //ppgsensorLocation = bluetoothData._ppgLocation_data.Peek(); 
+        //HR = bluetoothData._HR_data.Peek();
+        //IBI = bluetoothData._IBI_data.Peek();
+        //SP = bluetoothData._Spo2_data.Peek();
+       
+        //newSession.ppg.bodySensorLocation = ppgsensorLocation;
         newSession.ppg.heartrate.Add(timestamp, HR);
         newSession.ppg.interbeatInterval.Add(timestamp, IBI);
         newSession.ppg.sp.Add(timestamp, SP);
 
-        newSession.gsr.bodySensorLocation = sensorLocation;
+        textspazz.text = newSession.ppg.heartrate.ToString(); 
+
+
+        //GSR Servic
+        //gsrsensorLocation = bluetoothData._gsrLocation_data.Peek();
+        //SCL = bluetoothData._skinConductance_data.Peek(); 
+
+
+        newSession.gsr.bodySensorLocation = gsrsensorLocation;
         newSession.gsr.scl.Add(timestamp, SCL);
     }
 
