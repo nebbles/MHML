@@ -22,7 +22,7 @@ public class main : MonoBehaviour{
 
     User person = new User();
     Session newSession = new Session();
-    controller bluetoothData; 
+    public controller bluetoothData; 
 
 
 
@@ -138,8 +138,14 @@ public class main : MonoBehaviour{
         
         // if bluetoothConnected == true: // _allSubscribingComplete  //_allReadingComplete // isConnected
 
+        // TODO Make sure you add in the checks here to ensure the BLE device is connected and has data, otherwise one of three things could happen:
+        // 1. The app could freeze.
+        // 2. The app could 'stop working'. 
+        // 3. The 'Begin' button click will not permit a click. 
+
         newSession.session_id = System.DateTime.UtcNow.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
-        //newSession.firmwareRevision = bluetoothData._deviceInfo_data.Peek();
+        newSession.firmwareRevision = bluetoothData._deviceInfo_data.Peek();
+        textspazz.text = newSession.firmwareRevision;
         measurement.SetActive(true); 
         
         // else - pop up modal window
@@ -169,22 +175,22 @@ public class main : MonoBehaviour{
         timestamp = System.DateTime.UtcNow.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
 
         //PPG Service
-        //ppgsensorLocation = bluetoothData._ppgLocation_data.Peek(); 
-        //HR = bluetoothData._HR_data.Peek();
-        //IBI = bluetoothData._IBI_data.Peek();
-        //SP = bluetoothData._Spo2_data.Peek();
-       
-        //newSession.ppg.bodySensorLocation = ppgsensorLocation;
+        ppgsensorLocation = bluetoothData._ppgLocation_data.Peek(); 
+        HR = bluetoothData._HR_data.Peek();
+        IBI = bluetoothData._IBI_data.Peek();
+        SP = bluetoothData._Spo2_data.Peek();
+
+        newSession.ppg.bodySensorLocation = ppgsensorLocation;
         newSession.ppg.heartrate.Add(timestamp, HR);
         newSession.ppg.interbeatInterval.Add(timestamp, IBI);
         newSession.ppg.sp.Add(timestamp, SP);
 
-        textspazz.text = newSession.ppg.heartrate.ToString(); 
+        textspazz.text = newSession.ppg.heartrate.ToString();
 
 
         //GSR Servic
-        //gsrsensorLocation = bluetoothData._gsrLocation_data.Peek();
-        //SCL = bluetoothData._skinConductance_data.Peek(); 
+        gsrsensorLocation = bluetoothData._gsrLocation_data.Peek();
+        SCL = bluetoothData._skinConductance_data.Peek();
 
 
         newSession.gsr.bodySensorLocation = gsrsensorLocation;
