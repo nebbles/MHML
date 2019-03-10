@@ -5,13 +5,15 @@ using UnityEngine.UI; // Required when Using UI elements.
 
 
 public class main : MonoBehaviour{
-	public GameObject loginScreen, homeScreen, createAccount, canvas, relaxScreen, logScreen,settings, thankYou, technicalDifficulties ;
+    GameObject loginScreen, homeScreen, createAccount, canvas, relaxScreen, logScreen, settings, thankYou, technicalDifficulties;
     public InputField usernameInput, createUsername, cname, ethnicity, location, occupation, age;
+    public GameObject  measurement ;
     public Dropdown gender;
     public Slider productivity, stress, fatigue, anxiety;
     int sensorLocation, HR, IBI, SP, SCL;
     string bluetoothfirm;
-    string timestamp; 
+    string timestamp;
+    bool deviceConnected = false; 
 
     Networking login = new Networking();
     Wifi wifiPerson = new Wifi();
@@ -128,12 +130,15 @@ public class main : MonoBehaviour{
     }
 
 
-    public void seshData()
+    public void startData()
     {
-        newSession.session_id = "session";
-        newSession.firmwareRevision = bluetoothfirm;
+        // if bluetoothConnected == true:
 
-        // if no firmware available --> go to technical difficulties screen
+        newSession.session_id = System.DateTime.UtcNow.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
+        newSession.firmwareRevision = bluetoothfirm;
+        measurement.SetActive(true); 
+        // else - pop up modal window
+        
     }
 
     public void logSelfReported()
@@ -154,7 +159,7 @@ public class main : MonoBehaviour{
         anxiety.value = 0;
     }
 
-    void sensorData()
+    public void sensorData()
     {
         timestamp = System.DateTime.UtcNow.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
         
@@ -169,7 +174,7 @@ public class main : MonoBehaviour{
 
     public void submitSession()
     {
-
+        Debug.Log(newSession.self_reported.anxiety); 
         string session_json = JsonUtility.ToJson(newSession);
         wifiSession.key = "S";
         wifiSession.webaddress = "mhml.greenberg.io/api/users/" + person.username + "sessions";
@@ -178,7 +183,7 @@ public class main : MonoBehaviour{
 
         if (wifiSession.dataUploaded == false)
         {
-            createAccount.SetActive(false);
+            thankYou.SetActive(false);
             technicalDifficulties.SetActive(true); 
 
         }
@@ -188,7 +193,6 @@ public class main : MonoBehaviour{
             wifiSession.dataUploaded = false;
             homeScreen.SetActive(true);
             thankYou.SetActive(false);
-
         }
     }
 

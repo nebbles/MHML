@@ -31,12 +31,7 @@ public class anxietyClass : MonoBehaviour {
 		//string jsonLogging = JsonUtility.ToJson (heartRate, GSR); 
 	}
 
-	public void resetSliders(){
-		productivity.value = 0;
-		stress.value = 0;
-		fatigue.value = 0;
-		anxiety.value = 0;
-	}
+
 
 }
 
