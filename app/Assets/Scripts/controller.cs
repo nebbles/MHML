@@ -270,7 +270,7 @@ public class controller : MonoBehaviour
     // Read a single characteristic once
     void readCharacteristicFromService(string serviceID, string characteristicID, Action<byte[], string, string> Decoder)
     {
-        BluetoothLEHardwareInterface.Log("Attempting to Read Characteristic with ID: " + _connectedAddress);
+        BluetoothLEHardwareInterface.Log("Attempting to Read Characteristic with ID: " + _connectedAddress + serviceID + characteristicID);
         BluetoothLEHardwareInterface.ReadCharacteristic(_connectedAddress, serviceID, characteristicID, (characteristic, data) =>
         {
             BluetoothLEHardwareInterface.Log("Entered Read State: " + _connectedAddress + serviceID + characteristicID);
