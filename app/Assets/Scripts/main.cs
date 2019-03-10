@@ -3,14 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI; // Required when Using UI elements.
 
+
 public class main : MonoBehaviour{
-	public GameObject loginScreen, homeScreen, createAccount, canvas, relaxScreen, logScreen,settings, thankYou ;
-    public InputField usernameInput, createUsername, cname, ethnicity, location, occupation, age; 
-    public Dropdown  gender;
+	public GameObject loginScreen, homeScreen, createAccount, canvas, relaxScreen, logScreen,settings, thankYou, technicalDifficulties ;
+    public InputField usernameInput, createUsername, cname, ethnicity, location, occupation, age;
+    public Dropdown gender;
+    public Slider productivity, stress, fatigue, anxiety;
+    int sensorLocation, HR, IBI, SP, SCL;
+    string bluetoothfirm;
+    string timestamp; 
+
     Networking login = new Networking();
-	User person = new User();
     Wifi wifiPerson = new Wifi();
-    Wifi wifiSession = new Wifi(); 
+    Wifi wifiSession = new Wifi();
+
+    User person = new User();
+    Session newSession = new Session();
+
+
 
     public main() {
 
@@ -25,6 +35,7 @@ public class main : MonoBehaviour{
 		logScreen = canvas.transform.Find("Log Screen").gameObject;
 		thankYou = canvas.transform.Find("Thank-you").gameObject;
 		settings = canvas.transform.Find("You Screen").gameObject;
+        technicalDifficulties = canvas.transform.Find("TechnicalProblems").gameObject;
         
     }
     
@@ -52,12 +63,10 @@ public class main : MonoBehaviour{
                 createAnAccount(); 
             }
         }
-
-        
-
     }
 
-    public void loginButton() {
+    public void loginButton()
+    {
         // add user name				
         Debug.Log(usernameInput.text);
         
@@ -67,7 +76,8 @@ public class main : MonoBehaviour{
         
 	}
 
-	public void loadUserData(){
+	public void loadUserData()
+    {
 		//Debug.Log("loadUserData"); 
 		person = JsonUtility.FromJson<User>(login.dataWeb);
 		//Debug.Log(person.name);
@@ -104,6 +114,7 @@ public class main : MonoBehaviour{
         {
             // activate sorry technical issues page
             createAccount.SetActive(false);
+            technicalDifficulties.SetActive(true);
 
         }
 
@@ -114,7 +125,72 @@ public class main : MonoBehaviour{
 
         }
 
+    }
 
-}
+
+    public void seshData()
+    {
+        newSession.session_id = "session";
+        newSession.firmwareRevision = bluetoothfirm;
+
+        // if no firmware available --> go to technical difficulties screen
+    }
+
+    public void logSelfReported()
+    {
+        newSession.self_reported.anxiety = anxiety.value;
+        newSession.self_reported.productivity = productivity.value;
+        newSession.self_reported.stress = stress.value;
+        newSession.self_reported.fatigue = fatigue.value;
+
+        resetSliders(); 
+    }
+
+    void resetSliders()
+    {
+        productivity.value = 0;
+        stress.value = 0;
+        fatigue.value = 0;
+        anxiety.value = 0;
+    }
+
+    void sensorData()
+    {
+        timestamp = System.DateTime.UtcNow.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
+        
+        newSession.ppg.bodySensorLocation = sensorLocation;
+        newSession.ppg.heartrate.Add(timestamp, HR);
+        newSession.ppg.interbeatInterval.Add(timestamp, IBI);
+        newSession.ppg.sp.Add(timestamp, SP);
+
+        newSession.gsr.bodySensorLocation = sensorLocation;
+        newSession.gsr.scl.Add(timestamp, SCL);
+    }
+
+    public void submitSession()
+    {
+
+        string session_json = JsonUtility.ToJson(newSession);
+        wifiSession.key = "S";
+        wifiSession.webaddress = "mhml.greenberg.io/api/users/" + person.username + "sessions";
+        wifiSession.jsondata = session_json;
+        wifiSession.makeRequest(this);
+
+        if (wifiSession.dataUploaded == false)
+        {
+            createAccount.SetActive(false);
+            technicalDifficulties.SetActive(true); 
+
+        }
+
+        else
+        {
+            wifiSession.dataUploaded = false;
+            homeScreen.SetActive(true);
+            thankYou.SetActive(false);
+
+        }
+    }
+
 
 }
