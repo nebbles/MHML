@@ -53,51 +53,30 @@ class Sessions(Resource):
 
   
     def post(self, username):
-        user_ref = database.document(u'users/'+username)
-        user = user_ref.get()
-        
-        key_parser = reqparse.RequestParser()
-        n, t, b = self.key
-        key_parser.add_argument(n, type=t, required=b, help="Wrong or missing entry")
-        parsed_session = json.loads(dict(key_parser.parse_args())['Session'])
-        print(parsed_session)
-        #self_reported = json.loads(parsed_session['self_reported'])
-        #print(type(self_reported))
-        #print(self_reported)
 
-        """
         if user.exists:
-    
-            sessions_ref = user_ref.collection(u'sessions')
-
-            outer_parser = reqparse.RequestParser(bundle_errors=True)
-            for (n, t, b) in self.arguments:
-                outer_parser.add_argument(n, type=t, required=b, help= "Wrong or missing entry")
-            parsed_session = outer_parser.parse_args()
+            user_ref = database.document(u'users/'+username)
+            user = user_ref.get()
             
-            for args in self.self_reported_arguments, self.PPG_arguments, self.GSR_arguments:
-                inner_parser = reqparse.RequestParser(bundle_errors=True)
-                for (n, t, b, l) in args:
-                    inner_parser.add_argument(n, type=t, required=b, location=l, help= "Wrong or missing entry")
-                nested_args = inner_parser.parse_args(req=parsed_session)
-            
-            session_obj = dict(parsed_session)
-
+            key_parser = reqparse.RequestParser()
+            key_parser.add_argument("Session", type=str, required=True, help="Wrong or missing entry")
+            session_obj = json.loads(dict(key_parser.parse_args())["Session"])
             session_id = session_obj['session_id']
 
+            sessions_ref = user_ref.collection(u'sessions')
             session_ref = sessions_ref.document(session_id)
             session = session_ref.get()
 
             if not session.exists:
                 session_obj.pop('session_id')
-                session_obj.pop('unparsed_arguments', None)
                 session_ref.set(session_obj)
                 return res.CREATED(username, session_obj)
             else:
                 return res.CONFLICT(username, session_id)
+            
         else:
             return res.NOT_FOUND(username)
-        """
+        
 
 
 
