@@ -93,8 +93,17 @@ void rf_heart_rate_and_oxygen_saturation(uint32_t *pun_ir_buffer, int32_t n_ir_b
 
   // Calculate Pearson correlation between red and IR
   *correl = rf_Pcorrelation(an_x, an_y, n_ir_buffer_length) / sqrt(f_red_sumsq * f_ir_sumsq);
+  
   Serial.print("[DEBUG] average periodicity: ");
   Serial.println((int)(n_last_peak_interval));
+
+  // Injected code to extract interbeat interval data.
+  if (DATA.heartRate > 0)
+    DATA.interbeatInterval = n_last_peak_interval;
+  else
+    DATA.interbeatInterval = 0;
+  // End injected code.
+
   if (*correl >= min_pearson_correlation)
   {
     // RF, If correlation os good, then find average periodicity of the IR signal. If aperiodic, return periodicity of 0
