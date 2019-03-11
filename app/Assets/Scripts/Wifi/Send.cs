@@ -63,15 +63,26 @@ public class Wifi { // Class created to send user_data and session_data (based o
     // This is the function used to upload the user_data and/or session_data depending on how the variables defined above are set. 
 
 
-    public void sessionUpload(string username, string session_json)
+    public void sessionUpload(string username, object newSession)
     {
+        string session_json = JsonUtility.ToJson(newSession);
         webaddress = "mhml.greenberg.io/api/users/" + username + "sessions";
         key = "S";
         jsondata = session_json;
 
+    }
 
-    }        
-	IEnumerator Upload() {
+    public void userUpload(object user)
+    {
+        string session_json = JsonUtility.ToJson(user);
+        webaddress = "mhml.greenberg.io/api/users/" ;
+        key = "U";
+        jsondata = session_json;
+
+    }
+
+
+    IEnumerator Upload() {
 			dataUploaded = false;
 			Debug.Log("Starting Data Upload");					
 			WWWForm form = new WWWForm(); //Create a form object needed to be able to encapsulate data for Post method 

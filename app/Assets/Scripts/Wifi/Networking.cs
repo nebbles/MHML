@@ -26,7 +26,7 @@ public class Networking {
 		
 	IEnumerator getUsers() {
 		//"mhml.greenberg.io/api/users"
-		Debug.Log("GetUSers");
+		Debug.Log("GetUsers");
 		UnityWebRequest www = UnityWebRequest.Get(webAddress); //Get request to API
 		yield return www.SendWebRequest();
 			

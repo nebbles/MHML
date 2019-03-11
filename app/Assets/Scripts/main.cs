@@ -7,7 +7,7 @@ using UnityEngine.UI; // Required when Using UI elements.
 public class main : MonoBehaviour{
     GameObject loginScreen, homeScreen, createAccount, canvas, relaxScreen, logScreen, settings, thankYou, technicalDifficulties;
     public InputField usernameInput, createUsername, cname, ethnicity, location, occupation, age;
-    public GameObject  measurement ;
+    public GameObject  anxious ;
     public Dropdown gender;
     public Slider productivity, stress, fatigue, anxiety;
     public int ppgsensorLocation, gsrsensorLocation, HR, IBI, SCL;
@@ -107,13 +107,12 @@ public class main : MonoBehaviour{
         }
 
         //Creating Wifi person object
-        wifiPerson.userUpload(person);
+        wifiPerson.userUpload( person);
         wifiPerson.makeRequest(this);
 
         if (wifiPerson.dataUploaded == false)
         {
             // activate sorry technical issues page
-            createAccount.SetActive(false);
             technicalDifficulties.SetActive(true);
 
         }
@@ -131,7 +130,21 @@ public class main : MonoBehaviour{
     public void startData()
     {
         
+        if (bluetoothData.isConnected == true)
+        {
+            newSession.session_id = System.DateTime.UtcNow.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
+            newSession.firmwareRevision = bluetoothData._deviceInfo_data.Peek();
+            textspazz.text = newSession.firmwareRevision;
+            bluetoothData._storeSubscribeData = true;
+            anxious.SetActive(true);
+        }
         
+        else
+        {
+
+
+
+        }
         // if bluetoothConnected == true: // _allSubscribingComplete  //_allReadingComplete // isConnected
 
         // TODO Make sure you add in the checks here to ensure the BLE device is connected and has data, otherwise one of three things could happen:
@@ -139,10 +152,7 @@ public class main : MonoBehaviour{
         // 2. The app could 'stop working'. 
         // 3. The 'Begin' button click will not permit a click. 
 
-        newSession.session_id = System.DateTime.UtcNow.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
-        newSession.firmwareRevision = bluetoothData._deviceInfo_data.Peek();
-        textspazz.text = newSession.firmwareRevision;
-        measurement.SetActive(true); 
+        
         
         // else - pop up modal window
         
@@ -183,7 +193,6 @@ public class main : MonoBehaviour{
 
         textspazz.text = newSession.ppg.heartrate.ToString();
 
-
         //GSR Service
         gsrsensorLocation = bluetoothData._gsrLocation_data.Peek();
         SCL = bluetoothData._skinConductance_data.Peek();
@@ -193,16 +202,35 @@ public class main : MonoBehaviour{
         newSession.gsr.scl.Add(timestamp, SCL);
     }
 
+
+    public void technicalButton()
+    {
+        if (thankYou.activeSelf == true)
+        {
+            thankYou.SetActive(false);
+            logScreen.SetActive(true);
+        }
+
+        else if (createAccount == true)
+        {
+            loginScreen.SetActive(true);
+            createAccount.SetActive(false); 
+        }
+        technicalDifficulties.SetActive(false);
+    }
+
+
     public void submitSession()
     {
-        Debug.Log(newSession.self_reported.anxiety);
 
         wifiSession.sessionUpload(person.username, newSession); 
         wifiSession.makeRequest(this);
 
+        bluetoothData._storeSubscribeData = false; 
+
         if (wifiSession.dataUploaded == false)
         {
-            thankYou.SetActive(false);
+            
             technicalDifficulties.SetActive(true); 
 
         }
