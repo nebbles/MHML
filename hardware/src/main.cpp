@@ -140,37 +140,6 @@ void setup()
  */
 void drawGraphPPG()
 {
-<<<<<<< HEAD
-  // bleLCD(); // debug BLE information to LCD
-  bleRun(); // general BLE activity
-
-  /* 
-   * Collect samples from MAX30102 when there is data to process.  
-   * Heart rate and SpO2 are calculated every ST seconds.
-   */
-  if (interruptCounter > 0)
-  {
-    ppgBufferProcess();
-    portENTER_CRITICAL(&mux);
-    interruptCounter--;
-    portEXIT_CRITICAL(&mux);
-
-#ifdef DEBUG
-    Serial.print("[DEBUG] interruptCounter: ");
-    Serial.println((int)(interruptCounter));
-    Serial.print("[DEBUG] bufferIncremet: ");
-    Serial.println((int)(bufferIncrement));
-#endif // DEBUG
-  }
-
-  ppgCalc(); // calculates heart rate
-  Serial.print("Heart Rate: ");
-  Serial.println((int)(DATA.heartRate));
-  /* 
-   * Draw the raw PPG data to graph on LCD.  
-   */
-=======
->>>>>>> b3f1afb8ce1992e45cb4b8644ff587107e89b533
   M5.Lcd.fillRect(11, 30, 140, 140, BLACK); // Clear and reset PPG Screen
   for (int i = 0; i < 280; i++)
   {
