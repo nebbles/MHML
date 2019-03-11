@@ -2,9 +2,13 @@ from api.firestore import database
 from flask_restful import Resource, reqparse
 from flask import request
 from api.responses import Response as res
+import json
 
 class Sessions(Resource):
     def __init__(self):
+
+        self.key = "Session", str, True
+
         self.arguments = [
             ('session_id', str, True),
             ('firmwareRevision', str, True),
@@ -51,7 +55,17 @@ class Sessions(Resource):
     def post(self, username):
         user_ref = database.document(u'users/'+username)
         user = user_ref.get()
+        
+        key_parser = reqparse.RequestParser()
+        n, t, b = self.key
+        key_parser.add_argument(n, type=t, required=b, help="Wrong or missing entry")
+        parsed_session = json.loads(dict(key_parser.parse_args())['Session'])
+        print(parsed_session)
+        #self_reported = json.loads(parsed_session['self_reported'])
+        #print(type(self_reported))
+        #print(self_reported)
 
+        """
         if user.exists:
     
             sessions_ref = user_ref.collection(u'sessions')
@@ -83,6 +97,7 @@ class Sessions(Resource):
                 return res.CONFLICT(username, session_id)
         else:
             return res.NOT_FOUND(username)
+        """
 
 
 
