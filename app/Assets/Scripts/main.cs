@@ -134,7 +134,7 @@ public class main : MonoBehaviour{
         if (bluetoothData.isConnected == true)
         {
             newSession.session_id = System.DateTime.UtcNow.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
-            newSession.firmwareRevision = bluetoothData._deviceInfo_data.Peek();
+            newSession.firmwareRevision = bluetoothData._deviceInfo_data[bluetoothData._deviceInfo_data.Count - 1];
             textspazz.text = newSession.firmwareRevision;
             bluetoothData._storeSubscribeData = true;
             anxious.SetActive(true);
@@ -172,10 +172,10 @@ public class main : MonoBehaviour{
         timestamp = System.DateTime.UtcNow.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
 
         //PPG Service
-        ppgsensorLocation = bluetoothData._ppgLocation_data.Peek(); 
-        HR = bluetoothData._HR_data.Peek();
-        IBI = bluetoothData._IBI_data.Peek();
-        SP = bluetoothData._Spo2_data.Peek();
+        ppgsensorLocation = bluetoothData._ppgLocation_data[bluetoothData._ppgLocation_data.Count - 1]; 
+        HR = bluetoothData._HR_data[bluetoothData._HR_data.Count - 1];
+        IBI = bluetoothData._IBI_data[bluetoothData._IBI_data.Count - 1];
+        SP = bluetoothData._Spo2_data[bluetoothData._Spo2_data.Count - 1];
 
         newSession.ppg.bodySensorLocation = ppgsensorLocation;
         newSession.ppg.heartrate.Add(timestamp, HR);
@@ -185,8 +185,8 @@ public class main : MonoBehaviour{
         textspazz.text = newSession.ppg.heartrate.ToString();
 
         //GSR Service
-        gsrsensorLocation = bluetoothData._gsrLocation_data.Peek();
-        SCL = bluetoothData._skinConductance_data.Peek();
+        gsrsensorLocation = bluetoothData._gsrLocation_data[bluetoothData._gsrLocation_data.Count - 1];
+        SCL = bluetoothData._skinConductance_data[bluetoothData._skinConductance_data.Count - 1];
 
 
         newSession.gsr.bodySensorLocation = gsrsensorLocation;
