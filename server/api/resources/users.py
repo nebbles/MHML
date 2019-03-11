@@ -2,6 +2,7 @@ from api.firestore import database
 from flask_restful import Resource, reqparse
 from flask import request
 from api.responses import Response as res
+import json
 
 users_ref = database.collection(u'users')
 
@@ -9,8 +10,8 @@ class Users(Resource):
 
     def __init__(self):
 
-        self.key = ('U', dict, True)
-        
+        self.key = ('U', str, True)
+        """
         self.arguments =[
             ('username', str, True, 'U'),
             ('name', str, False, 'U'),
@@ -19,8 +20,8 @@ class Users(Resource):
             ('ethnicity', str, False, 'U'),
             ('location', str, False, 'U'),
             ('occupation', str, False, 'U')
-        ] 
-    
+        ]
+        """
     def get(self):
 
         users = users_ref.get()
@@ -34,29 +35,39 @@ class Users(Resource):
     
 
     def post(self):
-
         key_parser = reqparse.RequestParser()
         n, t, b = self.key
         key_parser.add_argument(n, type=t, required=b, help="Wrong or missing entry")
-        parsed_user = key_parser.parse_args()
+        parsed_user = json.loads(dict(key_parser.parse_args())['U'])
+        print("type of parsed_user:", type(parsed_user))
+        print("parsed_user:", parsed_user)
 
-
+        # Omit error handling
+        """
         parser = reqparse.RequestParser(bundle_errors=True)
+        parser.add_argument("username", type=str, required=False, location="U")
+        parser.parse_args(req=parsed_user)
+        
         for (n, t, b, l) in self.arguments:
             parser.add_argument(n, type=t, required=b, location=l, help="Wrong or missing entry")
+        print('reached here')
         args = dict(parser.parse_args(req=parsed_user))
+        """
 
-        username = args['username']
+        username = parsed_user['username']
         user_ref = users_ref.document(username)
         user = user_ref.get()
 
         if not user.exists:
-            data = {k: v for k, v in args.items() if v is not None}
+            data = {k: v for k, v in parsed_user.items() if v is not ""}
+            data = {k: v for k, v in data.items() if v!=0}
             user_ref.set(data)
             return res.CREATED(data)
 
         else:
             return res.CONFLICT(username)
+    
+        
 
 class User(Resource):
 
