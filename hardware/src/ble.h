@@ -73,12 +73,11 @@ class customServerCallbacks : public BLEServerCallbacks
 /*
  * Initialises the BLE service and configures it appropriately. Call once.
  */
-void bleInit(String firmwareRevision)
+void bleInit(String deviceName, String firmwareRevision)
 {
     /* 
      * Create and name the BLE Device
      */
-    String deviceName = "MHML M5";
     BLEDevice::init(deviceName.c_str());
 
     /* 
@@ -169,19 +168,57 @@ void bleInit(String firmwareRevision)
  */
 void bleLCD()
 {
-    M5.Lcd.setTextColor(GREEN, BLACK);
     M5.Lcd.setTextSize(2); // 20 px high
-
+    M5.Lcd.setTextColor(WHITE);
     M5.Lcd.setCursor(0, 30);
-    if (deviceConnected)
-        M5.Lcd.print("Device connected.");
-    else
-        M5.Lcd.print("No BLE connection.");
+    M5.Lcd.print("BLE Status:");
 
+    if (deviceConnected || oldDeviceConnected)
+        M5.Lcd.fillRect(140, 30, 320, 20 * 5, BLACK);
+    M5.Lcd.setCursor(140, 30);
+    if (deviceConnected)
+    {
+        M5.Lcd.setTextColor(GREEN);
+        M5.Lcd.print("Connected.");
+    }
+    else
+    {
+        M5.Lcd.setTextColor(RED);
+        M5.Lcd.print("No connection.");
+    }
+
+    M5.Lcd.setTextColor(WHITE);
     M5.Lcd.setCursor(0, 50);
     M5.Lcd.print("Heart rate: ");
+    M5.Lcd.setTextColor(MAGENTA);
     M5.Lcd.setCursor(140, 50);
     M5.Lcd.print(DATA.heartRate);
+
+    M5.Lcd.setTextColor(WHITE);
+    M5.Lcd.setCursor(0, 70);
+    M5.Lcd.print("IBI: ");
+    M5.Lcd.setTextColor(MAGENTA);
+    M5.Lcd.setCursor(140, 70);
+    M5.Lcd.print(DATA.interbeatInterval);
+
+    M5.Lcd.setTextColor(WHITE);
+    M5.Lcd.setCursor(0, 90);
+    M5.Lcd.print("SpO2: ");
+    M5.Lcd.setTextColor(MAGENTA);
+    M5.Lcd.setCursor(140, 90);
+    M5.Lcd.print(DATA.spo2);
+
+    M5.Lcd.setTextColor(WHITE);
+    M5.Lcd.setCursor(0, 110);
+    M5.Lcd.print("SCL: ");
+    M5.Lcd.setTextColor(MAGENTA);
+    M5.Lcd.setCursor(140, 110);
+    M5.Lcd.print(DATA.scl);
+
+    M5.Lcd.setTextColor(RED);
+    M5.Lcd.setTextSize(1);
+    M5.Lcd.setCursor(0, 150);
+    M5.Lcd.print("Note: this data is simulated.");
 }
 
 /*
