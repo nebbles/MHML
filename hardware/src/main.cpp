@@ -42,8 +42,8 @@ void setup()
 
   M5.Lcd.setTextColor(GREEN, BLACK);
   M5.Lcd.setTextSize(2);
-  M5.Lcd.setCursor(124, 90);
-  M5.Lcd.print("v" + FIRMWARE_REVISION);
+  M5.Lcd.setCursor(64, 90);
+  M5.Lcd.print(DEVICE_NAME+" v" + FIRMWARE_REVISION);
 
   M5.Lcd.setTextColor(GREEN);
   M5.Lcd.setTextSize(2);
