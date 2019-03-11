@@ -90,7 +90,7 @@ void ppgBufferProcess()
     graphPos = map(raw_ir, -bound, bound, 140, 0);
     graphPos = floor(graphPos);
     ppgDeque.popHead();
-    ppgDeque.pushTail(graphPos);
+    ppgDeque.pushTail(graphPos + 30);
   }
 #endif //showRed
 #ifdef DEBUG

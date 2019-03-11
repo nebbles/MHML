@@ -31,7 +31,7 @@ void gsrRun()
     long pos = map(gsr_average, 0, 4095, 140, 0); // Mapping GSR values to screen height
     posInt = floor(pos);
     gsrDeque.popHead();
-    gsrDeque.pushTail(posInt);
+    gsrDeque.pushTail(posInt + 30);
 }
 
 #endif

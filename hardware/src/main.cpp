@@ -142,7 +142,8 @@ void loop()
   }
 
   ppgCalc(); // calculates heart rate
-
+  Serial.print("Heart Rate: ");
+  Serial.println((int)(DATA.heartRate));
   /* 
    * Draw the raw PPG data to graph on LCD.  
    */
