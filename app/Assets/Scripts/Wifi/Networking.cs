@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
 
 
 //Once we know what data we expect to receive from the API we can create a class for it to be able to handle it and extract 

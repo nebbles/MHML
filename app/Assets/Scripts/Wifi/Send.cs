@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
 
 
 public class selfReported{
@@ -13,17 +16,23 @@ public class selfReported{
 	public float productivity;
 	}
 
-public class PPG {                                    
+public class PPG
+{                                    
 	public int bodySensorLocation;
-	public Dictionary<string, int> heartrate = new Dictionary<string, int>();
-	public Dictionary<string, int> interbeatInterval = new Dictionary<string, int>();
-	public Dictionary<string, float> sp = new Dictionary<string, float>();
-	}
+    //public Dictionary<string, int> heartrate = new Dictionary<string, int>();
+    //public Dictionary<string, int> interbeatInterval = new Dictionary<string, int>();
+    //public Dictionary<string, float> sp = new Dictionary<string, float>();
+    public JObject heartRate;
+    public JObject interbeatInterval;
+    public JObject spO2;
+}
 
-public class GSR {                                    
+public class GSR
+{                                    
 	public int bodySensorLocation;
-	public Dictionary<string, int> scl = new Dictionary<string, int>();
-	}
+    //public Dictionary<string, int> scl = new Dictionary<string, int>();
+    public JObject scl;
+}
 
 public class Session {
 	public string session_id;
@@ -37,7 +46,7 @@ public class User {
 	public string username;
 	public string name;
 	public float age;
-	public int gender;
+	public bool gender;
 	public string ethnicity;
 	public string location;
 	public string occupation;
@@ -65,19 +74,31 @@ public class Wifi { // Class created to send user_data and session_data (based o
 
     public void sessionUpload(string username, object newSession)
     {
-        string session_json = JsonUtility.ToJson(newSession);
+        string session_json = JsonConvert.SerializeObject(newSession);
         webaddress = "mhml.greenberg.io/api/users/" + username + "sessions";
-        key = "S";
+        key = "Session";
         jsondata = session_json;
-
     }
 
     public void userUpload(object user)
     {
-        string session_json = JsonUtility.ToJson(user);
+        var userer = new User
+        {
+            username = "khangle27",
+            name = "Khang",
+            age = 25,
+            gender = false,
+            ethnicity = "Asian",
+            //location = "London",
+            //occupation = "Software Developer"
+
+        };
+
+
+        string user_json = JsonConvert.SerializeObject(userer);
         webaddress = "mhml.greenberg.io/api/users/" ;
-        key = "U";
-        jsondata = session_json;
+        key = "User";
+        jsondata = user_json;
     }
 
 
@@ -85,7 +106,24 @@ public class Wifi { // Class created to send user_data and session_data (based o
 			dataUploaded = false;
 			Debug.Log("Starting Data Upload");					
 			WWWForm form = new WWWForm(); //Create a form object needed to be able to encapsulate data for Post method 
-			form.AddField(key, jsondata); // We add the jsonified string to the form object
+
+            var user = new User
+            {
+                username = "khangle27",
+                name = "Khang",
+                age = 25,
+                gender = true,
+                ethnicity = "Asian",
+                //location = "London",
+                //occupation = "Software Developer"
+
+            };
+
+            string user_json = JsonConvert.SerializeObject(user);
+            
+
+
+            form.AddField("User", user_json); // We add the jsonified string to the form object
 			UnityWebRequest www = UnityWebRequest.Post(webaddress, form); //We Post the form to the userwebaddress (set above)
 			yield return www.SendWebRequest();
 

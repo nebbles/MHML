@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI; // Required when Using UI elements.
 using VoxelBusters.NativePlugins;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 
 public class main : MonoBehaviour{
@@ -101,11 +103,11 @@ public class main : MonoBehaviour{
 
         if (gender.ToString() == "Female")
         {
-            person.gender = 1; 
+            //person.gender = 1; 
         }
         else
         {
-            person.gender = 0;
+            //person.gender = 0;
         }
 
         //Creating Wifi person object
@@ -192,23 +194,34 @@ public class main : MonoBehaviour{
     {
         timestamp = System.DateTime.UtcNow.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
 
-        //PPG Service
-        ppgsensorLocation = bluetoothData._ppgLocation_data[bluetoothData._ppgLocation_data.Count - 1]; 
+       
         HR = bluetoothData._HR_data[bluetoothData._HR_data.Count - 1];
         IBI = bluetoothData._IBI_data[bluetoothData._IBI_data.Count - 1];
         SP = bluetoothData._Spo2_data[bluetoothData._Spo2_data.Count - 1];
 
-        newSession.ppg.bodySensorLocation = ppgsensorLocation;
-        newSession.ppg.heartrate.Add(timestamp, HR);
-        newSession.ppg.interbeatInterval.Add(timestamp, IBI);
-        newSession.ppg.sp.Add(timestamp, SP);
+        var heartRateobj = new JObject();
+        heartRateobj.Add(timestamp, HR);
 
-        textspazz.text = newSession.ppg.heartrate.ToString();
+        var interbeatInterval_obj = new JObject();
+        interbeatInterval_obj.Add(timestamp, IBI);
+
+        var spO2_obj = new JObject();
+        spO2_obj.Add(timestamp, SP);
+
+        var scl_obj = new JObject();
+        scl_obj.Add(timestamp, SP);
+
+        //PPG Service
+        newSession.ppg.heartRate = heartRateobj;
+        newSession.ppg.interbeatInterval = interbeatInterval_obj;
+        newSession.ppg.spO2 = spO2_obj;
+        ppgsensorLocation = bluetoothData._ppgLocation_data[bluetoothData._ppgLocation_data.Count - 1];
+
 
         //GSR Service
         gsrsensorLocation = bluetoothData._gsrLocation_data[bluetoothData._gsrLocation_data.Count - 1];
         SCL = bluetoothData._skinConductance_data[bluetoothData._skinConductance_data.Count - 1];
-
+        newSession.gsr.scl = scl_obj; 
 
         newSession.gsr.bodySensorLocation = gsrsensorLocation;
         newSession.gsr.scl.Add(timestamp, SCL);
