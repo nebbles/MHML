@@ -17,7 +17,7 @@
 #include "gsr.h"
 #include "ppg.h"
 
-String FIRMWARE_REVISION = "0.3.0";
+String FIRMWARE_REVISION = "0.3.1";
 String DEVICE_NAME = "MHML M5 B";
 enum class Modes
 {
