@@ -257,7 +257,6 @@ void loop()
    */
   DATA.heartRate = n_heart_rate;
   DATA.spo2 = n_spo2;
-  DATA.scl = gsr_average;
 
   drawLcdSensorValues();
   drawLcdBleStatus();
