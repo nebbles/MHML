@@ -50,6 +50,7 @@ public class Wifi { // Class created to send user_data and session_data (based o
 	public string webaddress; // address to send the data to
   	public string key; // use "U" for user data and "S" for session data
 	public string jsondata; // jsonified object to be sent
+    
 
 	public void SetUserRoute(string route) { // Use this function to set the data webaddress
 		webaddress = route;
@@ -59,8 +60,17 @@ public class Wifi { // Class created to send user_data and session_data (based o
 		myMonoBehaviour.StartCoroutine(Upload());
 		}
 
-	// This is the function used to upload the user_data and/or session_data depending on how the variables defined above are set. 
+    // This is the function used to upload the user_data and/or session_data depending on how the variables defined above are set. 
 
+
+    public void sessionUpload(string username, string session_json)
+    {
+        webaddress = "mhml.greenberg.io/api/users/" + username + "sessions";
+        key = "S";
+        jsondata = session_json;
+
+
+    }        
 	IEnumerator Upload() {
 			dataUploaded = false;
 			Debug.Log("Starting Data Upload");					

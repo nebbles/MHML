@@ -107,11 +107,7 @@ public class main : MonoBehaviour{
         }
 
         //Creating Wifi person object
-        string person_json = JsonUtility.ToJson(person);
-        Debug.Log(person_json);
-        wifiPerson.key = "U" ;
-        wifiPerson.webaddress = "mhml.greenberg.io/api/users/";
-        wifiPerson.jsondata = person_json ;
+        wifiPerson.userUpload(person);
         wifiPerson.makeRequest(this);
 
         if (wifiPerson.dataUploaded == false)
@@ -188,7 +184,7 @@ public class main : MonoBehaviour{
         textspazz.text = newSession.ppg.heartrate.ToString();
 
 
-        //GSR Servic
+        //GSR Service
         gsrsensorLocation = bluetoothData._gsrLocation_data.Peek();
         SCL = bluetoothData._skinConductance_data.Peek();
 
@@ -199,11 +195,9 @@ public class main : MonoBehaviour{
 
     public void submitSession()
     {
-        Debug.Log(newSession.self_reported.anxiety); 
-        string session_json = JsonUtility.ToJson(newSession);
-        wifiSession.key = "S";
-        wifiSession.webaddress = "mhml.greenberg.io/api/users/" + person.username + "sessions";
-        wifiSession.jsondata = session_json;
+        Debug.Log(newSession.self_reported.anxiety);
+
+        wifiSession.sessionUpload(person.username, newSession); 
         wifiSession.makeRequest(this);
 
         if (wifiSession.dataUploaded == false)
