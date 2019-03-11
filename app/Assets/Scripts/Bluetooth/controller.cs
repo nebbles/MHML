@@ -57,7 +57,6 @@ public class controller : MonoBehaviour
     public bool isConnected = false;
     public bool _readFound = false;
     public bool _readFound2 = false;
-    public bool _readFound3 = false; // Currently a redundant variable
     private bool _scanning = false;
     private bool _connecting = false;
     private bool _stuckConnecting = false;
@@ -79,13 +78,13 @@ public class controller : MonoBehaviour
     // Data storage
     private Dictionary<string, string> _peripheralList;
 
-    public Queue<int> _HR_data = new Queue<int>();
-    public Queue<int> _IBI_data = new Queue<int>();
-    public Queue<float> _Spo2_data = new Queue<float>();
-    public Queue<int> _ppgLocation_data = new Queue<int>();
-    public Queue<int> _skinConductance_data = new Queue<int>();
-    public Queue<int> _gsrLocation_data = new Queue<int>();
-    public Queue<string> _deviceInfo_data = new Queue<string>();
+    public List<int> _HR_data = new List<int>();
+    public List<int> _IBI_data = new List<int>();
+    public List<float> _Spo2_data = new List<float>();
+    public List<int> _ppgLocation_data = new List<int>();
+    public List<int> _skinConductance_data = new List<int>();
+    public List<int> _gsrLocation_data = new List<int>();
+    public List<string> _deviceInfo_data = new List<string>();
 
 	public bool _storeSubscribeData = false;
     public string storedAddress = null; // This is the device address that will get stored permanently, and only updated if the device is 'forgotten'. 
@@ -126,7 +125,6 @@ public class controller : MonoBehaviour
             isConnected = false;
             _readFound = false;
             _readFound2 = false;
-            _readFound3 = false;
             _HR_Notification = false;
             _IBI_Notification = false;
             _Spo2_Notification = false;
@@ -161,6 +159,17 @@ public class controller : MonoBehaviour
         
     }
 
+    // Called upon completion of a session. Data will not be further stored until _storeSubscribeData is set to true. 
+    // Clears all stored data to reduce memory usage, and allow the entire list of data to be sent off. 
+    public void clearDataAfterSession()
+    {
+        _storeSubscribeData = false;
+        _HR_data.Clear();
+        _IBI_data.Clear();
+        _Spo2_data.Clear();
+        _skinConductance_data.Clear();
+    }
+
     // Connect to the BLE peripheral
     void connectBluetooth(string nameID, string addr)
     {
@@ -177,8 +186,7 @@ public class controller : MonoBehaviour
 
             _readFound = true;
             _readFound2 = true;
-            _readFound3 = true;
-			_storeSubscribeData = true;
+			//_storeSubscribeData = true;
 
             if (_hasStoredBluetoothValues == false)
             {
@@ -469,7 +477,7 @@ public class controller : MonoBehaviour
     void receiveTextHR(int s)
     {
 		if (_storeSubscribeData == true) {
-			_HR_data.Enqueue (s);
+			_HR_data.Add(s);
 		}
 		txtReceive.text = s.ToString();
     }
@@ -478,7 +486,7 @@ public class controller : MonoBehaviour
     void receiveTextIBI(int s)
     {
 		if (_storeSubscribeData == true) {
-			_IBI_data.Enqueue (s);
+			_IBI_data.Add(s);
 		}
         txtReceive2.text = s.ToString();
     }
@@ -486,14 +494,14 @@ public class controller : MonoBehaviour
     void receiveTextSpo2(float s)
     {
 		if (_storeSubscribeData == true) {
-			_Spo2_data.Enqueue (s);
+			_Spo2_data.Add(s);
 		}
         txtReceive3.text = s.ToString();
     }
 
     void receiveText4PpgBody(int s)
     {
-		_ppgLocation_data.Enqueue (s);
+		_ppgLocation_data.Add(s);
         txtReceive4.text = s.ToString();
         _ppgBodyCheck = true;
         BluetoothLEHardwareInterface.Log("_ppgBodyCheck: " + _ppgBodyCheck.ToString());
@@ -502,14 +510,14 @@ public class controller : MonoBehaviour
     void receiveTextSClvl(int s)
     {
 		if (_storeSubscribeData == true) {
-			_skinConductance_data.Enqueue (s);
+			_skinConductance_data.Add(s);
 		}
         txtReceive5.text = s.ToString();
     }
 
     void receiveTextGsrBody(int s)
     {
-        _gsrLocation_data.Enqueue(s);
+        _gsrLocation_data.Add(s);
         txtReceive6.text = s.ToString();
         _gsrBodyCheck = true;
         BluetoothLEHardwareInterface.Log("GsrBodyCheck: " + _gsrBodyCheck.ToString());
@@ -517,7 +525,7 @@ public class controller : MonoBehaviour
 
     void receiveTextInfo(string s)
     {
-        _deviceInfo_data.Enqueue(s);
+        _deviceInfo_data.Add(s);
         txtReceive7.text = s;
         _DeviceInfoCheck = true;
         BluetoothLEHardwareInterface.Log("DeviceInfoCheck: " + _DeviceInfoCheck.ToString());
