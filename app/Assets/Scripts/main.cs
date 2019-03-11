@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI; // Required when Using UI elements.
+using VoxelBusters.NativePlugins;
 
 
 public class main : MonoBehaviour{
@@ -142,19 +143,9 @@ public class main : MonoBehaviour{
         else
         {
 
-
+            NPbinding.UI.ShowAl
 
         }
-        // if bluetoothConnected == true: // _allSubscribingComplete  //_allReadingComplete // isConnected
-
-        // TODO Make sure you add in the checks here to ensure the BLE device is connected and has data, otherwise one of three things could happen:
-        // 1. The app could freeze.
-        // 2. The app could 'stop working'. 
-        // 3. The 'Begin' button click will not permit a click. 
-
-        
-        
-        // else - pop up modal window
         
     }
 
