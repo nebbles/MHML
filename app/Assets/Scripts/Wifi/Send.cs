@@ -78,7 +78,6 @@ public class Wifi { // Class created to send user_data and session_data (based o
         webaddress = "mhml.greenberg.io/api/users/" ;
         key = "U";
         jsondata = session_json;
-
     }
 
 

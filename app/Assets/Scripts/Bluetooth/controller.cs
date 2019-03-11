@@ -178,7 +178,7 @@ public class controller : MonoBehaviour
             _readFound = true;
             _readFound2 = true;
             _readFound3 = true;
-			_storeSubscribeData = true;
+			//_storeSubscribeData = true;
 
             if (_hasStoredBluetoothValues == false)
             {
