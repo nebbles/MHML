@@ -110,9 +110,9 @@ void rf_heart_rate_and_oxygen_saturation(uint32_t *pun_ir_buffer, int32_t n_ir_b
   else
   {
     n_last_peak_interval = FS;
-    *pn_heart_rate = -999; // unable to calculate because signal looks aperiodic
+    *pn_heart_rate = 0; // unable to calculate because signal looks aperiodic
     *pch_hr_valid = 0;
-    *pn_spo2 = -999; // do not use SPO2 from this corrupt signal
+    *pn_spo2 = 0; // do not use SPO2 from this corrupt signal
     *pch_spo2_valid = 0;
   }
 
@@ -125,7 +125,7 @@ void rf_heart_rate_and_oxygen_saturation(uint32_t *pun_ir_buffer, int32_t n_ir_b
   }
   else
   {
-    *pn_spo2 = -999; // do not use SPO2 since signal an_ratio is out of range
+    *pn_spo2 = 0; // do not use SPO2 since signal an_ratio is out of range
     *pch_spo2_valid = 0;
     return;
   }
@@ -304,10 +304,6 @@ float raw_ir_read(uint32_t *pun_ir_buffer, int32_t n_ir_buffer_length, uint32_t 
   }
 
   return an_x[0];
-
-  // For SpO2 calculate RMS of both AC signals. In addition, pulse detector needs raw sum of squares for IR
-  f_y_ac = rf_rms(an_y, n_ir_buffer_length, &f_red_sumsq);
-  f_x_ac = rf_rms(an_x, n_ir_buffer_length, &f_ir_sumsq);
 }
 
 float raw_red_read(int32_t n_red_buffer_length, uint32_t *pun_red_buffer, float *pn_spo2,
@@ -344,8 +340,4 @@ float raw_red_read(int32_t n_red_buffer_length, uint32_t *pun_red_buffer, float 
   }
 
   return an_x[0];
-
-  // For SpO2 calculate RMS of both AC signals. In addition, pulse detector needs raw sum of squares for IR
-  f_y_ac = rf_rms(an_y, n_red_buffer_length, &f_red_sumsq);
-  f_x_ac = rf_rms(an_x, n_red_buffer_length, &f_ir_sumsq);
-}
+  }

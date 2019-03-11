@@ -252,12 +252,6 @@ void loop()
 #endif // DEBUG_GSR
   }
 
-  /* 
-   * Update data structure with latest values
-   */
-  DATA.heartRate = n_heart_rate;
-  DATA.spo2 = n_spo2;
-
   drawLcdSensorValues();
   drawLcdBleStatus();
 }

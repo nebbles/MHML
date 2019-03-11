@@ -38,10 +38,11 @@
 #include "algorithm_by_RF.h"
 #include "max30102.h"
 #include "Deque.h"
+#include "data.h"
 
 Deque<int> ppgDeque;
 
-// #define DEBUG_PPG // Uncomment for debug output to the Serial stream
+#define DEBUG_PPG // Uncomment for debug output to the Serial stream
 // #define showRed
 
 // Interrupt pin
@@ -168,6 +169,11 @@ void ppgCalc()
 {
   //calculate heart rate and SpO2 after BUFFER_SIZE samples (ST seconds of samples) using Robert's method
   rf_heart_rate_and_oxygen_saturation(aun_ir_buffer, BUFFER_SIZE, aun_red_buffer, &n_spo2, &ch_spo2_valid, &n_heart_rate, &ch_hr_valid, &ratio, &correl);
+
+  // update globals
+  DATA.heartRate = n_heart_rate; 
+  DATA.spo2 = n_spo2;
+
   // millis_to_hours(elapsedTime,hr_str); // Time in hh:mm:ss format
   elapsedTime = millis() - timeStart;
   elapsedTime /= 1000; // Time in seconds
