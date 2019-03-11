@@ -668,7 +668,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &55065436
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3191,9 +3191,15 @@ MonoBehaviour:
   isConnected: 0
   _readFound: 0
   _readFound2: 0
-  _readFound3: 0
   _allSubscribingComplete: 0
   _allReadingComplete: 0
+  _HR_data: 
+  _IBI_data: 
+  _Spo2_data: []
+  _ppgLocation_data: 
+  _skinConductance_data: 
+  _gsrLocation_data: 
+  _deviceInfo_data: []
   _storeSubscribeData: 0
   storedAddress: 
   storedName: 
@@ -12313,9 +12319,15 @@ MonoBehaviour:
   isConnected: 0
   _readFound: 0
   _readFound2: 0
-  _readFound3: 0
   _allSubscribingComplete: 0
   _allReadingComplete: 0
+  _HR_data: 
+  _IBI_data: 
+  _Spo2_data: []
+  _ppgLocation_data: 
+  _skinConductance_data: 
+  _gsrLocation_data: 
+  _deviceInfo_data: []
   _storeSubscribeData: 0
   storedAddress: 
   storedName: 

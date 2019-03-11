@@ -16,11 +16,12 @@ public class main : MonoBehaviour{
     public Text textspazz ; 
     string timestamp;
     bool deviceConnected = false; 
+    
 
     Networking login = new Networking();
     Wifi wifiPerson = new Wifi();
     Wifi wifiSession = new Wifi();
-
+    
     User person = new User();
     Session newSession = new Session();
     public controller bluetoothData; 
@@ -133,20 +134,40 @@ public class main : MonoBehaviour{
         
         if (bluetoothData.isConnected == true)
         {
+            bluetoothData._storeSubscribeData = true;
             newSession.session_id = System.DateTime.UtcNow.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
             newSession.firmwareRevision = bluetoothData._deviceInfo_data[bluetoothData._deviceInfo_data.Count - 1];
             textspazz.text = newSession.firmwareRevision;
-            bluetoothData._storeSubscribeData = true;
             anxious.SetActive(true);
         }
         
         else
         {
+            //NPBinding.UI.ShowShowAlertDialogWithSingleButton("Test", "This is a sample message.", "Ok", OnButtonPressed);
+            string[] _buttons = new string[]
+            {
+                "Cancel",
+                "Connect"
+            }; 
 
-            NPbinding.UI.ShowAl
-
+            NPBinding.UI.ShowAlertDialogWithMultipleButtons("Cannot start session", "Please connect to bluetooth device", _buttons, OnButtonPressed); 
         }
-        
+    }
+
+    private void OnButtonPressed(string _buttonPressed)
+    {
+        Debug.Log("Button pressed: " + _buttonPressed);
+        if (_buttonPressed == "Connect")
+        {
+            settings.SetActive(true);
+            logScreen.SetActive(false);
+        }
+        else
+        {
+            Debug.Log("Cancel");
+            logScreen.SetActive(false);
+            logScreen.SetActive(true);
+        }
     }
 
     public void logSelfReported()
@@ -217,13 +238,12 @@ public class main : MonoBehaviour{
         wifiSession.sessionUpload(person.username, newSession); 
         wifiSession.makeRequest(this);
 
-        bluetoothData._storeSubscribeData = false; 
+        bluetoothData._storeSubscribeData = false;
+        bluetoothData.clearDataAfterSession(); 
 
         if (wifiSession.dataUploaded == false)
         {
-            
             technicalDifficulties.SetActive(true); 
-
         }
 
         else
