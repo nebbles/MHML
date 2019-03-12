@@ -3,6 +3,7 @@
 
 #include <M5Stack.h>
 #include "Deque.h"
+#include "data.h"
 
 // #define DEBUG_GSR // use to enable debug functionality with GSR
 
@@ -36,11 +37,12 @@ void gsrRun()
         delay(5);
     }
     gsr_average = sum / 10;
+    DATA.scl = gsr_average;
 
     long pos = map(gsr_average, 0, 4095, 140, 0); // Mapping GSR values to screen height
     posInt = floor(pos);
     gsrDeque.popHead();
-    gsrDeque.pushTail(posInt);
+    gsrDeque.pushTail(posInt + 30);
 }
 
 #endif

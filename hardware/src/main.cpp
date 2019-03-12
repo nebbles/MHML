@@ -16,23 +16,36 @@
 #include "ble.h"
 #include "gsr.h"
 #include "ppg.h"
+#include "led.h"
 
-String FIRMWARE_REVISION = "0.3.0";
-String DEVICE_NAME = "MHML M5 B";
+#define DEBUG_MAIN // Uncomment whilst debugging for Serial debug stats.
+
 enum class Modes
 {
   FULL,
   BLE_ONLY
 } MODE;
 
-#define DEBUG_MAIN // Uncomment whilst debugging for Serial debug stats.
+void M5off()
+{
+  ledsOff();
+  M5.powerOFF();
+}
 
 void setup()
 {
+  DATA.FIRMWARE_REVISION = "0.4.0";
+  String DEVICE_NAME = "MHML M5 B";
+
   Serial.begin(115200);
   M5.begin();
   Wire.begin();
   M5.Speaker.mute();
+  // pinMode(25, OUTPUT); // speaker set as output
+  // dacWrite(25, 0);     // speaker drive low
+
+  ledInit();
+  // ledRunTest(); // for testing only
 
   M5.Lcd.fillScreen(BLACK);
   M5.Lcd.setTextColor(WHITE, BLACK);
@@ -42,8 +55,8 @@ void setup()
 
   M5.Lcd.setTextColor(GREEN, BLACK);
   M5.Lcd.setTextSize(2);
-  M5.Lcd.setCursor(124, 90);
-  M5.Lcd.print("v" + FIRMWARE_REVISION);
+  M5.Lcd.setCursor(64, 90);
+  M5.Lcd.print(DEVICE_NAME + " v" + DATA.FIRMWARE_REVISION);
 
   M5.Lcd.setTextColor(GREEN);
   M5.Lcd.setTextSize(2);
@@ -62,26 +75,31 @@ void setup()
 
   MODE = Modes::FULL;
   int button = 0;
+  long loopStartTimer = millis();
   while (true)
   {
-    if (M5.BtnA.isPressed() && M5.BtnC.isPressed())
-    {
-      // M5.powerOFF();
+    if (millis() > loopStartTimer + 60000)
+      M5off();
 
+    if (millis() > loopStartTimer + 10000)
+      ledStartScreen();
+
+    if (M5.BtnB.isPressed() && M5.BtnC.isPressed())
+    {
       MODE = Modes::BLE_ONLY;
       break;
     }
-    else if (M5.BtnA.pressedFor(50))
+    else if (M5.BtnA.pressedFor(100))
     {
       button = 3; // BSL = Finger (see BLE spec)
       break;
     }
-    else if (M5.BtnB.pressedFor(50))
+    else if (M5.BtnB.pressedFor(100))
     {
       button = 2; // BSL = Wrist (see BLE spec)
       break;
     }
-    else if (M5.BtnC.pressedFor(50))
+    else if (M5.BtnC.pressedFor(100))
     {
       button = 0; // BSL = Other (see BLE spec)
       break;
@@ -92,7 +110,7 @@ void setup()
   DATA.ppgBSL = button; // set PPG body sensor location
   DATA.gsrBSL = button; // set GSR body sensor location
 
-  bleInit(DEVICE_NAME, FIRMWARE_REVISION);
+  bleInit(DEVICE_NAME);
 
   // Reset Screen
   M5.Lcd.fillRect(0, 0, 320, 280, BLACK);
@@ -101,7 +119,7 @@ void setup()
   M5.Lcd.setTextColor(WHITE, BLACK);
   M5.Lcd.setTextSize(2);
   M5.Lcd.setCursor(0, 0);
-  M5.Lcd.print((String)DEVICE_NAME + " v" + FIRMWARE_REVISION);
+  M5.Lcd.print((String)DEVICE_NAME + " v" + DATA.FIRMWARE_REVISION);
 
   if (MODE == Modes::FULL)
   {
@@ -220,16 +238,22 @@ void drawLcdBleStatus()
   M5.Lcd.print(DATA.ppgBSL);
 }
 
+long dataSimulateTimer;
 void loop()
 {
+  if (deviceConnected)
+    ledBleConnected();
+  else
+    ledBleNoConnection();
+
   if (MODE == Modes::BLE_ONLY)
   {
     bleLCD(); // debug BLE information to LCD
     bleRun(); // general BLE activity
-    if (deviceConnected)
+    if (deviceConnected && millis() > dataSimulateTimer+800)
     {
       simulateDataChanges();
-      delay(800);
+      dataSimulateTimer = millis();
     }
     return;
   }
@@ -251,13 +275,6 @@ void loop()
     Serial.println((int)(timeStartGSR));
 #endif // DEBUG_GSR
   }
-
-  /* 
-   * Update data structure with latest values
-   */
-  DATA.heartRate = n_heart_rate;
-  DATA.spo2 = n_spo2;
-  DATA.scl = gsr_average;
 
   drawLcdSensorValues();
   drawLcdBleStatus();
