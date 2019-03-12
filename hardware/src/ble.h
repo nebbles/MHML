@@ -73,7 +73,7 @@ class customServerCallbacks : public BLEServerCallbacks
 /*
  * Initialises the BLE service and configures it appropriately. Call once.
  */
-void bleInit(String deviceName, String firmwareRevision)
+void bleInit(String deviceName)
 {
     /* 
      * Create and name the BLE Device
@@ -110,7 +110,7 @@ void bleInit(String deviceName, String firmwareRevision)
 
     pCharacteristicPPG_BSL = pServicePPG->createCharacteristic(
         CHARACTERISTIC_UUID_BSL,
-        BLECharacteristic::PROPERTY_READ);
+        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
 
     pCharacteristicGSR_SCL = pServiceGSR->createCharacteristic(
         CHARACTERISTIC_UUID_SCL,
@@ -118,11 +118,11 @@ void bleInit(String deviceName, String firmwareRevision)
 
     pCharacteristicGSR_BSL = pServiceGSR->createCharacteristic(
         CHARACTERISTIC_UUID_BSL,
-        BLECharacteristic::PROPERTY_READ);
+        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
 
     pCharacteristicFR = pServiceDevInfo->createCharacteristic(
         CHARACTERISTIC_UUID_FIRMWARE_REV,
-        BLECharacteristic::PROPERTY_READ);
+        BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
 
     /*
      * All characterstics with the the Notify property must also have the CCC 
@@ -133,6 +133,9 @@ void bleInit(String deviceName, String firmwareRevision)
     pCharacteristicPPG_IBI->addDescriptor(new BLE2902());
     pCharacteristicPPG_SPO2->addDescriptor(new BLE2902());
     pCharacteristicGSR_SCL->addDescriptor(new BLE2902());
+    pCharacteristicPPG_BSL->addDescriptor(new BLE2902());
+    pCharacteristicGSR_BSL->addDescriptor(new BLE2902());
+    pCharacteristicFR->addDescriptor(new BLE2902());
 
     /* 
      * Assign any additional descriptors to characteristics
@@ -144,8 +147,8 @@ void bleInit(String deviceName, String firmwareRevision)
     /* 
      * Set some initial characteristic values
      */
-    pCharacteristicFR->setValue(firmwareRevision.c_str());
-    pCharacteristicPPG_BSL->setValue(&DATA.ppgBSL, 1);
+    pCharacteristicFR->setValue(DATA.FIRMWARE_REVISION.c_str());
+    pCharacteristicPPG_BSL->setValue(&DATA.ppgBSL, 1); // 1 byte
     pCharacteristicGSR_BSL->setValue(&DATA.gsrBSL, 1);
 
     /* 
@@ -163,6 +166,7 @@ void bleInit(String deviceName, String firmwareRevision)
     Serial.println("Waiting for a client connection...");
 }
 
+int printState = 0;
 /*
  * Displays debug information on screen for BLE.
  */
@@ -173,15 +177,27 @@ void bleLCD()
     M5.Lcd.setCursor(0, 30);
     M5.Lcd.print("BLE Status:");
 
-    if (deviceConnected || oldDeviceConnected)
-        M5.Lcd.fillRect(140, 30, 320, 20 * 5, BLACK);
-    M5.Lcd.setCursor(140, 30);
+    if (deviceConnected && printState == 0)
+    {
+        M5.Lcd.fillRect(140, 30, 320, 20, BLACK);
+        printState = 1;
+    }
+    if (!deviceConnected && printState == 1)
+    {
+        M5.Lcd.fillRect(140, 30, 320, 20, BLACK);
+        printState = 0;
+    }
+
     if (deviceConnected)
+        M5.Lcd.fillRect(140, 50, 320, 20 * 4, BLACK);
+
+    M5.Lcd.setCursor(140, 30);
+    if (deviceConnected && printState == 1)
     {
         M5.Lcd.setTextColor(GREEN);
         M5.Lcd.print("Connected.");
     }
-    else
+    if (!deviceConnected && printState == 0)
     {
         M5.Lcd.setTextColor(RED);
         M5.Lcd.print("No connection.");
@@ -221,6 +237,8 @@ void bleLCD()
     M5.Lcd.print("Note: this data is simulated.");
 }
 
+long lastStaticValueUpdate;
+long lastDynamicValueUpdate;
 /*
  * When connected, will send notifications of data to client.
  * Handles connecting/disconnect activity.
@@ -229,17 +247,29 @@ void bleRun()
 {
     if (deviceConnected)
     {
-        pCharacteristicPPG_HR->setValue(&DATA.heartRate, 1);
-        pCharacteristicPPG_HR->notify();
+        if (millis() > lastStaticValueUpdate + 10000) // 10 sec update
+        {
+            // send notification for all static values
+            pCharacteristicFR->notify();
+            pCharacteristicPPG_BSL->notify();
+            pCharacteristicGSR_BSL->notify();
+            lastStaticValueUpdate = millis();
+        }
 
-        pCharacteristicPPG_IBI->setValue(DATA.interbeatInterval);
-        pCharacteristicPPG_IBI->notify();
+        if (millis() > lastDynamicValueUpdate + 1000) // 1 sec update
+        {
+            pCharacteristicPPG_HR->setValue(&DATA.heartRate, 1);
+            pCharacteristicPPG_IBI->setValue(DATA.interbeatInterval);
+            pCharacteristicPPG_SPO2->setValue(DATA.spo2);
+            pCharacteristicGSR_SCL->setValue(DATA.scl);
 
-        pCharacteristicPPG_SPO2->setValue(DATA.spo2);
-        pCharacteristicPPG_SPO2->notify();
+            pCharacteristicPPG_HR->notify();
+            pCharacteristicPPG_IBI->notify();
+            pCharacteristicPPG_SPO2->notify();
+            pCharacteristicGSR_SCL->notify();
 
-        pCharacteristicGSR_SCL->setValue(DATA.scl);
-        pCharacteristicGSR_SCL->notify();
+            lastDynamicValueUpdate = millis();
+        }
 
         // bluetooth stack will go into congestion if too many packets are sent.
         delay(5); // ensures loop is delayed.
