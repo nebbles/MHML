@@ -24,6 +24,10 @@ enum class Modes
   BLE_ONLY
 } MODE;
 
+void M5off()
+{
+  M5.powerOFF();
+}
 
 void setup()
 {
@@ -34,6 +38,8 @@ void setup()
   M5.begin();
   Wire.begin();
   M5.Speaker.mute();
+  // pinMode(25, OUTPUT); // speaker set as output
+  // dacWrite(25, 0);     // speaker drive low
 
   M5.Lcd.fillScreen(BLACK);
   M5.Lcd.setTextColor(WHITE, BLACK);
@@ -63,26 +69,28 @@ void setup()
 
   MODE = Modes::FULL;
   int button = 0;
+  long loopStartTimer = millis();
   while (true)
   {
-    if (M5.BtnA.isPressed() && M5.BtnC.isPressed())
-    {
-      // M5.powerOFF();
+    if (millis() > loopStartTimer + 60000)
+      M5off();
 
+    if (M5.BtnB.isPressed() && M5.BtnC.isPressed())
+    {
       MODE = Modes::BLE_ONLY;
       break;
     }
-    else if (M5.BtnA.pressedFor(50))
+    else if (M5.BtnA.pressedFor(100))
     {
       button = 3; // BSL = Finger (see BLE spec)
       break;
     }
-    else if (M5.BtnB.pressedFor(50))
+    else if (M5.BtnB.pressedFor(100))
     {
       button = 2; // BSL = Wrist (see BLE spec)
       break;
     }
-    else if (M5.BtnC.pressedFor(50))
+    else if (M5.BtnC.pressedFor(100))
     {
       button = 0; // BSL = Other (see BLE spec)
       break;
