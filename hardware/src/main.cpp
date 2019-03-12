@@ -229,16 +229,17 @@ void drawLcdBleStatus()
   M5.Lcd.print(DATA.ppgBSL);
 }
 
+long dataSimulateTimer;
 void loop()
 {
   if (MODE == Modes::BLE_ONLY)
   {
     bleLCD(); // debug BLE information to LCD
     bleRun(); // general BLE activity
-    if (deviceConnected)
+    if (deviceConnected && millis() > dataSimulateTimer+800)
     {
       simulateDataChanges();
-      delay(800);
+      dataSimulateTimer = millis();
     }
     return;
   }
