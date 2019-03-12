@@ -54,6 +54,9 @@ class Sessions(Resource):
   
     def post(self, username):
 
+        user_ref = database.document(u'users/'+username)
+        user = user_ref.get()
+
         if user.exists:
             user_ref = database.document(u'users/'+username)
             user = user_ref.get()
