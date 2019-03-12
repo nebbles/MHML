@@ -16,6 +16,8 @@
 #include "ble.h"
 #include "gsr.h"
 #include "ppg.h"
+#include "led.h"
+
 #define DEBUG_MAIN // Uncomment whilst debugging for Serial debug stats.
 
 enum class Modes
@@ -26,6 +28,7 @@ enum class Modes
 
 void M5off()
 {
+  ledsOff();
   M5.powerOFF();
 }
 
@@ -40,6 +43,9 @@ void setup()
   M5.Speaker.mute();
   // pinMode(25, OUTPUT); // speaker set as output
   // dacWrite(25, 0);     // speaker drive low
+
+  ledInit();
+  // ledRunTest(); // for testing only
 
   M5.Lcd.fillScreen(BLACK);
   M5.Lcd.setTextColor(WHITE, BLACK);
@@ -74,6 +80,9 @@ void setup()
   {
     if (millis() > loopStartTimer + 60000)
       M5off();
+
+    if (millis() > loopStartTimer + 10000)
+      ledStartScreen();
 
     if (M5.BtnB.isPressed() && M5.BtnC.isPressed())
     {
@@ -232,6 +241,11 @@ void drawLcdBleStatus()
 long dataSimulateTimer;
 void loop()
 {
+  if (deviceConnected)
+    ledBleConnected();
+  else
+    ledBleNoConnection();
+
   if (MODE == Modes::BLE_ONLY)
   {
     bleLCD(); // debug BLE information to LCD
