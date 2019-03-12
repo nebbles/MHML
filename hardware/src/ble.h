@@ -190,7 +190,7 @@ void bleLCD()
 
     if (deviceConnected)
         M5.Lcd.fillRect(140, 50, 320, 20 * 4, BLACK);
-    
+
     M5.Lcd.setCursor(140, 30);
     if (deviceConnected && printState == 1)
     {
@@ -238,6 +238,7 @@ void bleLCD()
 }
 
 long lastStaticValueUpdate;
+long lastDynamicValueUpdate;
 /*
  * When connected, will send notifications of data to client.
  * Handles connecting/disconnect activity.
@@ -246,25 +247,29 @@ void bleRun()
 {
     if (deviceConnected)
     {
-        if (millis() > lastStaticValueUpdate+10000)
+        if (millis() > lastStaticValueUpdate + 10000) // 10 sec update
         {
+            // send notification for all static values
             pCharacteristicFR->notify();
             pCharacteristicPPG_BSL->notify();
             pCharacteristicGSR_BSL->notify();
             lastStaticValueUpdate = millis();
         }
 
-        pCharacteristicPPG_HR->setValue(&DATA.heartRate, 1);
-        pCharacteristicPPG_HR->notify();
+        if (millis() > lastDynamicValueUpdate + 1000) // 1 sec update
+        {
+            pCharacteristicPPG_HR->setValue(&DATA.heartRate, 1);
+            pCharacteristicPPG_IBI->setValue(DATA.interbeatInterval);
+            pCharacteristicPPG_SPO2->setValue(DATA.spo2);
+            pCharacteristicGSR_SCL->setValue(DATA.scl);
 
-        pCharacteristicPPG_IBI->setValue(DATA.interbeatInterval);
-        pCharacteristicPPG_IBI->notify();
+            pCharacteristicPPG_HR->notify();
+            pCharacteristicPPG_IBI->notify();
+            pCharacteristicPPG_SPO2->notify();
+            pCharacteristicGSR_SCL->notify();
 
-        pCharacteristicPPG_SPO2->setValue(DATA.spo2);
-        pCharacteristicPPG_SPO2->notify();
-
-        pCharacteristicGSR_SCL->setValue(DATA.scl);
-        pCharacteristicGSR_SCL->notify();
+            lastDynamicValueUpdate = millis();
+        }
 
         // bluetooth stack will go into congestion if too many packets are sent.
         delay(5); // ensures loop is delayed.

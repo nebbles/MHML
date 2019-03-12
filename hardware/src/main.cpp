@@ -34,7 +34,7 @@ void M5off()
 
 void setup()
 {
-  DATA.FIRMWARE_REVISION = "0.4.0b";
+  DATA.FIRMWARE_REVISION = "0.4.0";
   String DEVICE_NAME = "MHML M5 B";
 
   Serial.begin(115200);
