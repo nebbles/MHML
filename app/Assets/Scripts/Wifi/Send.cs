@@ -46,7 +46,7 @@ public class User {
 	public string username;
 	public string name;
 	public float age;
-	public bool gender;
+	public int gender;
 	public string ethnicity;
 	public string location;
 	public string occupation;
@@ -82,20 +82,7 @@ public class Wifi { // Class created to send user_data and session_data (based o
 
     public void userUpload(object user)
     {
-        var userer = new User
-        {
-            username = "khangle27",
-            name = "Khang",
-            age = 25,
-            gender = false,
-            ethnicity = "Asian",
-            //location = "London",
-            //occupation = "Software Developer"
-
-        };
-
-
-        string user_json = JsonConvert.SerializeObject(userer);
+        string user_json = JsonConvert.SerializeObject(user);
         webaddress = "mhml.greenberg.io/api/users/" ;
         key = "User";
         jsondata = user_json;
@@ -107,23 +94,9 @@ public class Wifi { // Class created to send user_data and session_data (based o
 			Debug.Log("Starting Data Upload");					
 			WWWForm form = new WWWForm(); //Create a form object needed to be able to encapsulate data for Post method 
 
-            var user = new User
-            {
-                username = "khangle27",
-                name = "Khang",
-                age = 25,
-                gender = true,
-                ethnicity = "Asian",
-                //location = "London",
-                //occupation = "Software Developer"
+            //string user_json = JsonConvert.SerializeObject(jsondata);
 
-            };
-
-            string user_json = JsonConvert.SerializeObject(user);
-            
-
-
-            form.AddField("User", user_json); // We add the jsonified string to the form object
+            form.AddField(key, jsondata); // We add the jsonified string to the form object
 			UnityWebRequest www = UnityWebRequest.Post(webaddress, form); //We Post the form to the userwebaddress (set above)
 			yield return www.SendWebRequest();
 

@@ -17,7 +17,8 @@ public class main : MonoBehaviour{
     public float SP;
     public Text textspazz ; 
     string timestamp;
-    bool deviceConnected = false; 
+    bool deviceConnected = false;
+    public UnityEngine.UI.Extensions.UILineRenderer LineRenderer; 
     
 
     Networking login = new Networking();
@@ -103,15 +104,15 @@ public class main : MonoBehaviour{
 
         if (gender.ToString() == "Female")
         {
-            //person.gender = 1; 
+            person.gender = 1; 
         }
         else
         {
-            //person.gender = 0;
+            person.gender = 0;
         }
 
         //Creating Wifi person object
-        wifiPerson.userUpload( person);
+        wifiPerson.userUpload(person);
         wifiPerson.makeRequest(this);
 
         if (wifiPerson.dataUploaded == false)
@@ -145,7 +146,6 @@ public class main : MonoBehaviour{
         
         else
         {
-            //NPBinding.UI.ShowShowAlertDialogWithSingleButton("Test", "This is a sample message.", "Ok", OnButtonPressed);
             string[] _buttons = new string[]
             {
                 "Cancel",
@@ -266,6 +266,21 @@ public class main : MonoBehaviour{
             thankYou.SetActive(false);
         }
     }
+
+    public void graphData()
+    {
+        // need to normalise data between -400 & 400 == x values, -200 & 200 == y values 
+        float xval = 2;
+        float yval = 3;
+
+        var point = new Vector2() { x = xval, y = yval };
+        var pointlist = new List<Vector2>(LineRenderer.Points);
+        pointlist.Add(point);
+
+
+    }
+
+
 
 
 }
