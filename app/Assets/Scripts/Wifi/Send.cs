@@ -59,9 +59,9 @@ public class Wifi { // Class created to send user_data and session_data (based o
 	public string webaddress; // address to send the data to
   	public string key; // use "U" for user data and "S" for session data
 	public string jsondata; // jsonified object to be sent
-    
+    string timestamp;
 
-	public void SetUserRoute(string route) { // Use this function to set the data webaddress
+    public void SetUserRoute(string route) { // Use this function to set the data webaddress
 		webaddress = route;
 		}
 
@@ -72,12 +72,17 @@ public class Wifi { // Class created to send user_data and session_data (based o
     // This is the function used to upload the user_data and/or session_data depending on how the variables defined above are set. 
 
 
-    public void sessionUpload(string username, object newSession)
+    public void sessionUpload(object newSession)
     {
+        string username = "scottin";
+        timestamp = System.DateTime.UtcNow.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
+
+        username = "scottin"; 
         string session_json = JsonConvert.SerializeObject(newSession);
-        webaddress = "mhml.greenberg.io/api/users/" + username + "sessions";
+        webaddress = "mhml.greenberg.io/api/users/"+ username +"/sessions";
         key = "Session";
         jsondata = session_json;
+
     }
 
     public void userUpload(object user)
@@ -93,9 +98,6 @@ public class Wifi { // Class created to send user_data and session_data (based o
 			dataUploaded = false;
 			Debug.Log("Starting Data Upload");					
 			WWWForm form = new WWWForm(); //Create a form object needed to be able to encapsulate data for Post method 
-
-            //string user_json = JsonConvert.SerializeObject(jsondata);
-
             form.AddField(key, jsondata); // We add the jsonified string to the form object
 			UnityWebRequest www = UnityWebRequest.Post(webaddress, form); //We Post the form to the userwebaddress (set above)
 			yield return www.SendWebRequest();

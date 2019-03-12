@@ -74,6 +74,7 @@ public class main : MonoBehaviour{
         }
     }
 
+
     public void loginButton()
     {
         // add user name				
@@ -194,10 +195,13 @@ public class main : MonoBehaviour{
     {
         timestamp = System.DateTime.UtcNow.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
 
-       
+        newSession.session_id = timestamp;
+        newSession.firmwareRevision = bluetoothData._deviceInfo_data[bluetoothData._deviceInfo_data.Count -1];
+
         HR = bluetoothData._HR_data[bluetoothData._HR_data.Count - 1];
         IBI = bluetoothData._IBI_data[bluetoothData._IBI_data.Count - 1];
         SP = bluetoothData._Spo2_data[bluetoothData._Spo2_data.Count - 1];
+        SCL = bluetoothData._skinConductance_data[bluetoothData._skinConductance_data.Count - 1];
 
         var heartRateobj = new JObject();
         heartRateobj.Add(timestamp, HR);
@@ -209,7 +213,7 @@ public class main : MonoBehaviour{
         spO2_obj.Add(timestamp, SP);
 
         var scl_obj = new JObject();
-        scl_obj.Add(timestamp, SP);
+        scl_obj.Add(timestamp, SCL);
 
         //PPG Service
         newSession.ppg.heartRate = heartRateobj;
@@ -217,14 +221,15 @@ public class main : MonoBehaviour{
         newSession.ppg.spO2 = spO2_obj;
         ppgsensorLocation = bluetoothData._ppgLocation_data[bluetoothData._ppgLocation_data.Count - 1];
 
-
         //GSR Service
         gsrsensorLocation = bluetoothData._gsrLocation_data[bluetoothData._gsrLocation_data.Count - 1];
-        SCL = bluetoothData._skinConductance_data[bluetoothData._skinConductance_data.Count - 1];
+
         newSession.gsr.scl = scl_obj; 
 
         newSession.gsr.bodySensorLocation = gsrsensorLocation;
-        newSession.gsr.scl.Add(timestamp, SCL);
+        newSession.gsr.scl = scl_obj;
+
+        //submitSession(); 
     }
 
 
@@ -248,22 +253,23 @@ public class main : MonoBehaviour{
     public void submitSession()
     {
 
-        wifiSession.sessionUpload(person.username, newSession); 
+        wifiSession.sessionUpload(newSession); 
         wifiSession.makeRequest(this);
 
         bluetoothData._storeSubscribeData = false;
         bluetoothData.clearDataAfterSession(); 
 
-        if (wifiSession.dataUploaded == false)
-        {
-            technicalDifficulties.SetActive(true); 
-        }
-
-        else
+        //Async
+        if (wifiSession.dataUploaded == true)
         {
             wifiSession.dataUploaded = false;
             homeScreen.SetActive(true);
             thankYou.SetActive(false);
+        }
+
+        else
+        {
+            technicalDifficulties.SetActive(true);
         }
     }
 
@@ -276,8 +282,6 @@ public class main : MonoBehaviour{
         var point = new Vector2() { x = xval, y = yval };
         var pointlist = new List<Vector2>(LineRenderer.Points);
         pointlist.Add(point);
-
-
     }
 
 
