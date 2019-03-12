@@ -16,19 +16,20 @@
 #include "ble.h"
 #include "gsr.h"
 #include "ppg.h"
+#define DEBUG_MAIN // Uncomment whilst debugging for Serial debug stats.
 
-String FIRMWARE_REVISION = "0.3.0";
-String DEVICE_NAME = "MHML M5 B";
 enum class Modes
 {
   FULL,
   BLE_ONLY
 } MODE;
 
-#define DEBUG_MAIN // Uncomment whilst debugging for Serial debug stats.
 
 void setup()
 {
+  DATA.FIRMWARE_REVISION = "0.4.0b";
+  String DEVICE_NAME = "MHML M5 B";
+
   Serial.begin(115200);
   M5.begin();
   Wire.begin();
@@ -43,7 +44,7 @@ void setup()
   M5.Lcd.setTextColor(GREEN, BLACK);
   M5.Lcd.setTextSize(2);
   M5.Lcd.setCursor(64, 90);
-  M5.Lcd.print(DEVICE_NAME+" v" + FIRMWARE_REVISION);
+  M5.Lcd.print(DEVICE_NAME + " v" + DATA.FIRMWARE_REVISION);
 
   M5.Lcd.setTextColor(GREEN);
   M5.Lcd.setTextSize(2);
@@ -92,7 +93,7 @@ void setup()
   DATA.ppgBSL = button; // set PPG body sensor location
   DATA.gsrBSL = button; // set GSR body sensor location
 
-  bleInit(DEVICE_NAME, FIRMWARE_REVISION);
+  bleInit(DEVICE_NAME);
 
   // Reset Screen
   M5.Lcd.fillRect(0, 0, 320, 280, BLACK);
@@ -101,7 +102,7 @@ void setup()
   M5.Lcd.setTextColor(WHITE, BLACK);
   M5.Lcd.setTextSize(2);
   M5.Lcd.setCursor(0, 0);
-  M5.Lcd.print((String)DEVICE_NAME + " v" + FIRMWARE_REVISION);
+  M5.Lcd.print((String)DEVICE_NAME + " v" + DATA.FIRMWARE_REVISION);
 
   if (MODE == Modes::FULL)
   {
