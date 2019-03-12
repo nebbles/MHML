@@ -42,7 +42,7 @@
 
 Deque<int> ppgDeque;
 
-#define DEBUG_PPG // Uncomment for debug output to the Serial stream
+// #define DEBUG_PPG // Uncomment for debug output to the Serial stream
 // #define showRed
 
 // Interrupt pin

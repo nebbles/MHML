@@ -5,7 +5,7 @@
 #include "Deque.h"
 #include "data.h"
 
-// #define DEBUG_GSR // use to enable debug functionality with GSR
+#define DEBUG_GSR // use to enable debug functionality with GSR
 
 const int GSR = 35;
 int sensorValue = 0;
@@ -38,6 +38,11 @@ void gsrRun()
     }
     gsr_average = sum / 10;
     DATA.scl = gsr_average;
+
+    #ifdef DEBUG_GSR
+    Serial.print("[DEBUG] GSR Value: ");
+    Serial.println((int)(gsr_average));
+    #endif // DEBUG_GSR
 
     long pos = map(gsr_average, 0, 4095, 140, 0); // Mapping GSR values to screen height
     posInt = floor(pos);
