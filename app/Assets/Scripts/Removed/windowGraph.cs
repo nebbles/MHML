@@ -17,7 +17,7 @@ public class windowGraph : MonoBehaviour {
         CreateCircle(new Vector2 (200, 200)); 
 
         // get data from list 
-		List<int> valueList = new List<int>() {5, 98, 56, 45, 30, 22, 17, 15, 13, 25, 37, 40, 36, 33};
+		List<int> valueList = new List<int>() {1000, 2405, 2303, 2205, 3058, 2459, 3104, 3294, 3194, 2134, 2543, 2489, 2483, 2849};
 		ShowGraph(valueList);
 	}
 	private GameObject CreateCircle(Vector2 anchoredPosition) {
@@ -72,7 +72,7 @@ public class windowGraph : MonoBehaviour {
 	private void CreateDotConnection(Vector2 dotPositionA, Vector2 dotPositionB) {
 		GameObject gameObject = new GameObject("dotConnection", typeof(Image));
 		gameObject.transform.SetParent (graphContainer, false);
-        gameObject.GetComponent<Image>().color = new Color(1, 1, 1, .5f); 
+        gameObject.GetComponent<Image>().color = new Color(155, 255, 23, .5f); 
         RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
         Vector2 dir = (dotPositionB - dotPositionA).normalized;
         float distance = Vector2.Distance(dotPositionA, dotPositionB);
