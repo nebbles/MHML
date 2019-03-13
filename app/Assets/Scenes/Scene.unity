@@ -14739,6 +14739,7 @@ MonoBehaviour:
   stress: {fileID: 2022298938}
   fatigue: {fileID: 1535642666}
   anxiety: {fileID: 1543821673}
+  pleaseWaitSubmission: {fileID: 1596958973}
   ppgsensorLocation: 0
   gsrsensorLocation: 0
   HR: 0
@@ -14830,7 +14831,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1508407352
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15960,7 +15961,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1562979752
 RectTransform:
   m_ObjectHideFlags: 0
@@ -17224,7 +17225,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1761632709
 Transform:
   m_ObjectHideFlags: 0

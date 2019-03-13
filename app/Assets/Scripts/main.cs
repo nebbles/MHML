@@ -213,12 +213,20 @@ public class Main : MonoBehaviour
 
     public void SubmitSessionButton()
     {
+        Debug.Log("start");
+
         pleaseWaitSubmission.enabled = true;
         timestamp = System.DateTime.UtcNow.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
+
+        Debug.Log("start2");
 
         newSession.session_id = timestamp;
         //newSession.firmwareRevision = "don't have yet";
         newSession.firmwareRevision = bluetoothData._deviceInfo_data[0];
+
+
+        Debug.Log("start3");
+
 
         /*
          * Debug method without BLE >>>>>>>>>>>>
@@ -241,32 +249,47 @@ public class Main : MonoBehaviour
         // END DEBUG WITHOUT BLE  <<<<<<<<<<<<<<<<
 
 
+
         var heartRateobj = new JObject();
         for (int i = 0; i < bluetoothData._HR_data.Count; i++)
         {
+            timestamp = Random.Range(0.0f, 100.0f).ToString();
             heartRateobj.Add(timestamp, bluetoothData._HR_data[i]);
         }
+
+        Debug.Log("start4");
 
         var interbeatInterval_obj = new JObject();
         for (int i = 0; i < bluetoothData._IBI_data.Count; i++)
         {
+            timestamp = Random.Range(0.0f, 100.0f).ToString();
             interbeatInterval_obj.Add(timestamp, bluetoothData._IBI_data[i]);
         }
+
+        Debug.Log("start5");
 
         var spO2_obj = new JObject();
         for (int i = 0; i < bluetoothData._Spo2_data.Count; i++)
         {
+            timestamp = Random.Range(0.0f, 100.0f).ToString();
             spO2_obj.Add(timestamp, bluetoothData._Spo2_data[i]);
         }
+
+        Debug.Log("start6");
 
         var scl_obj = new JObject();
         for (int i = 0; i < bluetoothData._skinConductance_data.Count; i++)
         {
+            timestamp = Random.Range(0.0f, 100.0f).ToString();
             scl_obj.Add(timestamp, bluetoothData._skinConductance_data[i]);
         }
 
+        Debug.Log("star7t");
+
         //int bsl = 5;
         int bsl = bluetoothData._ppgLocation_data[0];
+
+        Debug.Log("start8");
 
         // PPG Service
         newSession.ppg.heartRate = heartRateobj;
@@ -276,7 +299,7 @@ public class Main : MonoBehaviour
 
         // GSR Service
         newSession.gsr.scl = scl_obj;
-        newSession.gsr.bodySensorLocation = gsrsensorLocation;
+        newSession.gsr.bodySensorLocation = bsl;
 
         // Submit session
 

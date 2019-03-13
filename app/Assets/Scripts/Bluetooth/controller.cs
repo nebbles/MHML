@@ -516,10 +516,8 @@ public class controller : MonoBehaviour
 
     void receiveText4PpgBody(int s)
     {
-        if (_storeSubscribeData == true)
-        {
-            _ppgLocation_data.Add(s);
-        }
+        _ppgLocation_data.Add(s);
+        
         txtReceive4.text = s.ToString();
         _ppgBodyCheck = true;
         BluetoothLEHardwareInterface.Log("_ppgBodyCheck: " + _ppgBodyCheck.ToString());
@@ -547,10 +545,8 @@ public class controller : MonoBehaviour
 
     void receiveTextInfo(string s)
     {
-        if (_storeSubscribeData == true)
-        {
-            _deviceInfo_data.Add(s);
-        }
+        _deviceInfo_data.Add(s);
+
         txtReceive7.text = s;
         _DeviceInfoCheck = true;
         BluetoothLEHardwareInterface.Log("DeviceInfoCheck: " + _DeviceInfoCheck.ToString());
