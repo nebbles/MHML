@@ -4752,7 +4752,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1490614495}
-        m_MethodName: logSelfReported
+        m_MethodName: StoreSelfReportedData
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -14236,7 +14236,6 @@ MonoBehaviour:
   IBI: 0
   SCL: 0
   SP: 0
-  textspazz: {fileID: 0}
   LineRenderer: {fileID: 0}
   bluetoothData: {fileID: 298862440}
 --- !u!1 &1508407351
@@ -17109,7 +17108,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1490614495}
-        m_MethodName: sensorData
+        m_MethodName: SubmitSessionButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
