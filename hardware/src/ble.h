@@ -247,7 +247,7 @@ void bleRun()
 {
     if (deviceConnected)
     {
-        if (millis() > lastStaticValueUpdate + 10000) // 10 sec update
+        if (millis() > lastStaticValueUpdate + 3000) // limit notify rate
         {
             // send notification for all static values
             pCharacteristicFR->notify();
@@ -256,7 +256,7 @@ void bleRun()
             lastStaticValueUpdate = millis();
         }
 
-        if (millis() > lastDynamicValueUpdate + 1000) // 1 sec update
+        if (millis() > lastDynamicValueUpdate + 1000) // limit notify rate
         {
             pCharacteristicPPG_HR->setValue(&DATA.heartRate, 1);
             pCharacteristicPPG_IBI->setValue(DATA.interbeatInterval);
