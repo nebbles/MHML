@@ -7,159 +7,183 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 
-public class main : MonoBehaviour{
-    GameObject loginScreen, homeScreen, createAccount, canvas, relaxScreen, logScreen, settings, thankYou, technicalDifficulties;
+public class Main : MonoBehaviour
+{
+    GameObject canvas;
+    GameObject settings;
+    GameObject loginScreen;
+    GameObject createAccount;
+    GameObject homeScreen;
+    GameObject logScreen;
+    GameObject thankYou;
+    GameObject technicalProblems;
+    GameObject accountDetails;
+
+    public Text accountDetailsName;
+    public Text accountDetailsAge;
+    public Text accountDetailsEthnicity;
+    public Text accountDetailsLocation;
+    public Text accountDetailsOccupation;
+
+    public Text createAccountUsernameField;
+
     public InputField usernameInput, createUsername, cname, ethnicity, location, occupation, age;
-    public GameObject  anxious ;
+    public GameObject anxious;
     public Dropdown gender;
     public Slider productivity, stress, fatigue, anxiety;
+    public Text pleaseWaitSubmission;
     public int ppgsensorLocation, gsrsensorLocation, HR, IBI, SCL;
     public float SP;
-    public Text textspazz ; 
+
+    string username;
     string timestamp;
-    bool deviceConnected = false;
-    public UnityEngine.UI.Extensions.UILineRenderer LineRenderer; 
-    
+    public UnityEngine.UI.Extensions.UILineRenderer LineRenderer;
 
     Networking login = new Networking();
-    Wifi wifiPerson = new Wifi();
-    Wifi wifiSession = new Wifi();
-    
+    Networking createUserRequest = new Networking();
+    Networking submitSessionRequest = new Networking();
+
+    //Wifi wifiSession = new Wifi();
+
     User person = new User();
     Session newSession = new Session();
-    public controller bluetoothData; 
+    public controller bluetoothData;
 
+    public Main()
+    {
 
-
-    public main() {
-
-	}
-
-	void Start(){
-		canvas = GameObject.Find("Canvas"); 
-        loginScreen = canvas.transform.Find("LogInScreen").gameObject;
-        homeScreen = canvas.transform.Find("HomeScreen").gameObject;
-		createAccount = canvas.transform.Find("CreateAccount").gameObject;
-		relaxScreen = canvas.transform.Find("RelaxScreen").gameObject;
-		logScreen = canvas.transform.Find("Log Screen").gameObject;
-		thankYou = canvas.transform.Find("Thank-you").gameObject;
-		settings = canvas.transform.Find("You Screen").gameObject;
-        technicalDifficulties = canvas.transform.Find("TechnicalProblems").gameObject;
-        
     }
-    
+
+    void Start()
+    {
+        canvas = GameObject.Find("Canvas");
+        settings = canvas.transform.Find("SettingsScreen").gameObject;
+        loginScreen = canvas.transform.Find("LogInScreen").gameObject;
+        createAccount = canvas.transform.Find("CreateAccount").gameObject;
+        homeScreen = canvas.transform.Find("HomeScreen").gameObject;
+        logScreen = canvas.transform.Find("LogScreen").gameObject;
+        thankYou = canvas.transform.Find("ThankYou").gameObject;
+        technicalProblems = canvas.transform.Find("TechnicalProblems").gameObject;
+        accountDetails = canvas.transform.Find("AccountDetails").gameObject;
+    }
+
     void Update()
     {
-        // Login screen update script
-        if (loginScreen.activeSelf) {
-            //Debug.Log("leahizcoo");
-            if (login.dataAvailable == true)
+        if (loginScreen.activeSelf) // Login screen background behaviour
+        {
+            if (login.requestStatus == Networking.RequestStates.success)
             {
-                Debug.Log("true");
-                loadUserData();
-                login.dataAvailable = false;
+                Debug.Log("Data was received for user.");
+                person = JsonUtility.FromJson<User>(login.responseData);
+                login.requestStatus = Networking.RequestStates.inactive;
+
+                //accountDetailsName.text = person.name;
 
                 loginScreen.SetActive(false);
                 homeScreen.SetActive(true);
             }
 
-            if (login.dataNotAvailable == true)
+            if (login.requestStatus == Networking.RequestStates.failed)
             {
-                Debug.Log("no user");
+                Debug.Log("No user data was found for username. Sending to <create account>.");
+                login.requestStatus = Networking.RequestStates.inactive;
+
+                createAccountUsernameField.text = username;
+
                 loginScreen.SetActive(false);
                 createAccount.SetActive(true);
-                login.dataNotAvailable = false;
-                createAnAccount(); 
+            }
+        }
+        if (createAccount.activeSelf)
+        {
+            if (createUserRequest.requestStatus == Networking.RequestStates.success)
+            {
+                homeScreen.SetActive(true);
+                createAccount.SetActive(false);
+                createUserRequest.requestStatus = Networking.RequestStates.inactive;
+            }
+            if (createUserRequest.requestStatus == Networking.RequestStates.failed)
+            {
+                technicalProblems.SetActive(true); // activate sorry technical issues page
+                createUserRequest.requestStatus = Networking.RequestStates.inactive;
+            }
+        }
+        if (logScreen.activeSelf)
+        {
+            if (submitSessionRequest.requestStatus == Networking.RequestStates.success)
+            {
+                pleaseWaitSubmission.enabled = false; // reset
+                thankYou.SetActive(true);
+                logScreen.SetActive(false);
+
+                // Clear session data
+                newSession = new Session();
+            }
+
+            if (submitSessionRequest.requestStatus == Networking.RequestStates.failed)
+            {
+                pleaseWaitSubmission.enabled = false; // reset
+                technicalProblems.SetActive(true);
+                logScreen.SetActive(false);
             }
         }
     }
 
-
-    public void loginButton()
+    public void LoginButton()
     {
-        // add user name				
-        Debug.Log(usernameInput.text);
-        
-        login.setRoute("mhml.greenberg.io/api/users/" + usernameInput.text );
-        Debug.Log(usernameInput);
-        login.makeRequest(this); 
-        
-	}
-
-	public void loadUserData()
-    {
-		//Debug.Log("loadUserData"); 
-		person = JsonUtility.FromJson<User>(login.dataWeb);
-		//Debug.Log(person.name);
+        Debug.Log("Login button pressed");
+        username = usernameInput.text;
+        Debug.Log("Username requested: " + username);
+        login.RequestUserData(this, username);
     }
 
-    public void createAnAccount()
+    public void CreateAnAccount()
     {
-        Debug.Log("creating account");
+        Debug.Log("Create account is being submitted.");
         person.username = createUsername.text;
         person.name = cname.text;
         person.ethnicity = ethnicity.text;
         person.location = location.text;
         person.occupation = occupation.text;
-        person.age = int.Parse(age.text); 
-
+        person.age = int.Parse(age.text);
         if (gender.ToString() == "Female")
         {
-            person.gender = 1; 
+            person.gender = 1;
         }
         else
         {
             person.gender = 0;
         }
-
-        //Creating Wifi person object
-        wifiPerson.userUpload(person);
-        wifiPerson.makeRequest(this);
-
-        if (wifiPerson.dataUploaded == false)
-        {
-            // activate sorry technical issues page
-            technicalDifficulties.SetActive(true);
-
-        }
-
-        else {
-            wifiPerson.dataUploaded = false ;
-            homeScreen.SetActive(true);
-            createAccount.SetActive(false); 
-
-        }
-
+        createUserRequest.UploadUser(this, person);
     }
 
 
-    public void startData()
+    public void StartSessionButton()
     {
-        
+
         if (bluetoothData.isConnected == true)
         {
             bluetoothData._storeSubscribeData = true;
-            newSession.session_id = System.DateTime.UtcNow.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
-            newSession.firmwareRevision = bluetoothData._deviceInfo_data[bluetoothData._deviceInfo_data.Count - 1];
-            textspazz.text = newSession.firmwareRevision;
+            //newSession.session_id = System.DateTime.UtcNow.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
+            //newSession.firmwareRevision = bluetoothData._deviceInfo_data[bluetoothData._deviceInfo_data.Count - 1];
             anxious.SetActive(true);
         }
-        
+
         else
         {
             string[] _buttons = new string[]
             {
                 "Cancel",
                 "Connect"
-            }; 
+            };
 
-            NPBinding.UI.ShowAlertDialogWithMultipleButtons("Cannot start session", "Please connect to bluetooth device", _buttons, OnButtonPressed); 
+            NPBinding.UI.ShowAlertDialogWithMultipleButtons("Cannot start session", "Please connect to bluetooth device", _buttons, OnModalPress);
         }
     }
 
-    private void OnButtonPressed(string _buttonPressed)
+    private void OnModalPress(string _buttonPressed)
     {
-        Debug.Log("Button pressed: " + _buttonPressed);
+        Debug.Log("Modal button pressed: " + _buttonPressed);
         if (_buttonPressed == "Connect")
         {
             settings.SetActive(true);
@@ -173,104 +197,118 @@ public class main : MonoBehaviour{
         }
     }
 
-    public void logSelfReported()
+    public void StoreSelfReportedData()
     {
         newSession.self_reported.anxiety = anxiety.value;
         newSession.self_reported.productivity = productivity.value;
         newSession.self_reported.stress = stress.value;
         newSession.self_reported.fatigue = fatigue.value;
 
-        resetSliders(); 
-    }
-
-    void resetSliders()
-    {
+        // reset sliders
         productivity.value = 0;
         stress.value = 0;
         fatigue.value = 0;
         anxiety.value = 0;
     }
 
-    public void sensorData()
+    public void SubmitSessionButton()
     {
+        pleaseWaitSubmission.enabled = true;
         timestamp = System.DateTime.UtcNow.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
 
         newSession.session_id = timestamp;
-        newSession.firmwareRevision = bluetoothData._deviceInfo_data[bluetoothData._deviceInfo_data.Count -1];
+        //newSession.firmwareRevision = "don't have yet";
+        newSession.firmwareRevision = bluetoothData._deviceInfo_data[0];
 
-        HR = bluetoothData._HR_data[bluetoothData._HR_data.Count - 1];
-        IBI = bluetoothData._IBI_data[bluetoothData._IBI_data.Count - 1];
-        SP = bluetoothData._Spo2_data[bluetoothData._Spo2_data.Count - 1];
-        SCL = bluetoothData._skinConductance_data[bluetoothData._skinConductance_data.Count - 1];
+        /*
+         * Debug method without BLE >>>>>>>>>>>>
+         */
+
+        //HR = 50;
+        //IBI = 50;
+        //SP = 50.5f;
+        //SCL = 50;
+
+        //var heartRateobj = new JObject();
+        //heartRateobj.Add(timestamp, HR);
+        //var interbeatInterval_obj = new JObject();
+        //interbeatInterval_obj.Add(timestamp, IBI);
+        //var spO2_obj = new JObject();
+        //spO2_obj.Add(timestamp, SP);
+        //var scl_obj = new JObject();
+        //scl_obj.Add(timestamp, SCL);
+
+        // END DEBUG WITHOUT BLE  <<<<<<<<<<<<<<<<
+
 
         var heartRateobj = new JObject();
-        heartRateobj.Add(timestamp, HR);
+        for (int i = 0; i < bluetoothData._HR_data.Count; i++)
+        {
+            heartRateobj.Add(timestamp, bluetoothData._HR_data[i]);
+        }
 
         var interbeatInterval_obj = new JObject();
-        interbeatInterval_obj.Add(timestamp, IBI);
+        for (int i = 0; i < bluetoothData._IBI_data.Count; i++)
+        {
+            interbeatInterval_obj.Add(timestamp, bluetoothData._IBI_data[i]);
+        }
 
         var spO2_obj = new JObject();
-        spO2_obj.Add(timestamp, SP);
+        for (int i = 0; i < bluetoothData._Spo2_data.Count; i++)
+        {
+            spO2_obj.Add(timestamp, bluetoothData._Spo2_data[i]);
+        }
 
         var scl_obj = new JObject();
-        scl_obj.Add(timestamp, SCL);
+        for (int i = 0; i < bluetoothData._skinConductance_data.Count; i++)
+        {
+            scl_obj.Add(timestamp, bluetoothData._skinConductance_data[i]);
+        }
 
-        //PPG Service
+        //int bsl = 5;
+        int bsl = bluetoothData._ppgLocation_data[0];
+
+        // PPG Service
         newSession.ppg.heartRate = heartRateobj;
         newSession.ppg.interbeatInterval = interbeatInterval_obj;
         newSession.ppg.spO2 = spO2_obj;
-        ppgsensorLocation = bluetoothData._ppgLocation_data[bluetoothData._ppgLocation_data.Count - 1];
+        newSession.ppg.bodySensorLocation = bsl;
 
-        //GSR Service
-        gsrsensorLocation = bluetoothData._gsrLocation_data[bluetoothData._gsrLocation_data.Count - 1];
-
-        newSession.gsr.scl = scl_obj; 
-
-        newSession.gsr.bodySensorLocation = gsrsensorLocation;
+        // GSR Service
         newSession.gsr.scl = scl_obj;
+        newSession.gsr.bodySensorLocation = gsrsensorLocation;
 
-        //submitSession(); 
+        // Submit session
+
+        //username = "scottin"; // DEBUG OVERRIDE
+        //timestamp = System.DateTime.UtcNow.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
+
+        submitSessionRequest.UploadSession(this, username, newSession);
+
+        //wifiSession.sessionUpload(newSession);
+        //wifiSession.makeRequest(this);
+
+        // Handle BLE disabling
+        bluetoothData._storeSubscribeData = false;
+        bluetoothData.clearDataAfterSession();
     }
 
 
-    public void technicalButton()
+    public void TechnicalButton()
     {
-        if (thankYou.activeSelf == true)
-        {
-            thankYou.SetActive(false);
-            logScreen.SetActive(true);
-        }
-
-        else if (createAccount == true)
+        if (createAccount.activeSelf == true)
         {
             loginScreen.SetActive(true);
-            createAccount.SetActive(false); 
+            createAccount.SetActive(false);
         }
-        technicalDifficulties.SetActive(false);
-    }
 
-
-    public void submitSession()
-    {
-
-        wifiSession.sessionUpload(newSession); 
-        wifiSession.makeRequest(this);
-
-        bluetoothData._storeSubscribeData = false;
-        bluetoothData.clearDataAfterSession(); 
-
-        //Async
-        if (wifiSession.dataUploaded == true)
+        if (logScreen.activeSelf == true)
         {
-            wifiSession.dataUploaded = false;
             homeScreen.SetActive(true);
-            thankYou.SetActive(false);
+            logScreen.SetActive(false);
         }
 
-        else
-        {
-            technicalDifficulties.SetActive(true);
-        }
+        technicalProblems.SetActive(false);
     }
 
     public void graphData()

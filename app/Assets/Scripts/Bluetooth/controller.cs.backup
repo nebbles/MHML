@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.Collections;
@@ -27,7 +27,7 @@ public class controller : MonoBehaviour
 
 
     // GSR Service
-    private string _gsrServiceUUID = "720f8954-ace5-41f7-acec-113b274bc54f";
+    private string _gsrServiceUUID = "720f8954-ace5-41f7-acec-113b274bc54f"; 
 
     // GSR Characteristics
     private string _skinConductanceLevelUUID = "3f18d911-bffd-4236-b5fc-94c9bf27d0e8"; // uint16 check
@@ -89,7 +89,7 @@ public class controller : MonoBehaviour
     public List<int> _gsrLocation_data = new List<int>();
     public List<string> _deviceInfo_data = new List<string>();
 
-    public bool _storeSubscribeData = false;
+	public bool _storeSubscribeData = false;
     public bool _storeReadFakeData = false;
     public string storedAddress = null; // This is the device address that will get stored permanently, and only updated if the device is 'forgotten'. 
     public string storedName = null; // This is the device name that will get stored permanently, and only updated if the device is 'forgotten'.
@@ -98,8 +98,8 @@ public class controller : MonoBehaviour
 
     // The three MHML M5 Device Addresses are as follows:
     public string scottSensorAddr = "B4:E6:2D:8B:92:F7"; // Scotts Hardware Wired Sensor Device
-    public string felixSensorAddr = "84:0D:8E:25:91:C2"; // Felix's Testing Device
-    public string benSensorAddr = "84:0D:8E:25:96:BA"; // Ben's Testing Device
+	public string felixSensorAddr = "84:0D:8E:25:91:C2"; // Felix's Testing Device
+	public string benSensorAddr =  "84:0D:8E:25:96:BA"; // Ben's Testing Device
     private string _permittedDeviceNameFelix = "MHML M5 F";
     private string _permittedDeviceNameBen = "MHML M5 B";
     private string _permittedDeviceNameScott = "MHML M5 S";
@@ -113,7 +113,7 @@ public class controller : MonoBehaviour
     private int _autoConnectTimer = 0;
 
     private bool _hasStoredBluetoothValues = false;
-
+     
     private GameObject panelScan;
     private GameObject panelConnected;
 
@@ -121,7 +121,7 @@ public class controller : MonoBehaviour
     public void disconnectBluetooth(bool _calledThroughForgetDevice)
     {
         //txtDebug.text = "Disconnection in Progress";
-        BluetoothLEHardwareInterface.DisconnectPeripheral(_connectedAddress, connectedDeviceAddress =>
+        BluetoothLEHardwareInterface.DisconnectPeripheral(_connectedAddress, connectedDeviceAddress=>
         {
             txtDebug.text = "Disconnect Successful";
 
@@ -163,7 +163,7 @@ public class controller : MonoBehaviour
         txtDebug.text = "Deleting Device Address";
         _permitAutoConnect = false;
         disconnectBluetooth(true); // This must go before clearing the Name and address, otherwise the BLE interface doesn't know what to disconnect from. 
-
+        
     }
 
     // Called upon completion of a session. Data will not be further stored until _storeSubscribeData is set to true. 
@@ -182,7 +182,7 @@ public class controller : MonoBehaviour
     void connectBluetooth(string nameID, string addr)
     {
         // System.Threading.Thread.Sleep(500);
-        BluetoothLEHardwareInterface.ConnectToPeripheral(addr, (address) =>
+        BluetoothLEHardwareInterface.ConnectToPeripheral(addr, (address) => 
         {
             _connecting = false;
             txtDebug.text = "Connection Successful";
@@ -195,7 +195,7 @@ public class controller : MonoBehaviour
             _readFound = true;
             _readFound2 = true;
 
-            //_storeSubscribeData = true;
+			//_storeSubscribeData = true;
 
             if (_hasStoredBluetoothValues == false)
             {
@@ -205,15 +205,15 @@ public class controller : MonoBehaviour
                 txtDebug.text = "Device Address Stored";
             }
             //txtDebug.text = "Beginning Data Receiving";
-
-        }, (address, serviceUUID) =>
+            
+        }, (address, serviceUUID) => 
         {
             //txtDebug.text = "service found";
         },
 
         // Callback initiated upon service characteristic discovery. Will be called 7 times in this case. 
-        (address, serviceUUID, characteristicUUID) => { },
-        (address) =>
+        (address, serviceUUID, characteristicUUID) => {}, 
+        (address) => 
         {
 
             // This will get called when the device disconnects be aware that this will also get called when the disconnect 
@@ -232,7 +232,7 @@ public class controller : MonoBehaviour
         // stop scanning 
         // Ensure we are only connecting to one of the MHML devices. 
         // This will attempt to connect to a device if clicked. However, the scan will refresh after a certain timeout (max 12.5 seconds) if the connection attempt is unsuccessful. 
-        if (sName == _permittedDeviceNameFelix || sName == _permittedDeviceNameBen || sName == _permittedDeviceNameScott)
+        if (sName==_permittedDeviceNameFelix || sName == _permittedDeviceNameBen || sName == _permittedDeviceNameScott)
         {
             txtDebug.text += "Beginning connecting";
             _connecting = true;
@@ -240,7 +240,7 @@ public class controller : MonoBehaviour
             connectBluetooth(sName, sAddress);
             txtDebug.text += "Tried Bluetooth Connect";
         }
-
+        
     }
 
     // Scan for BLE enabled devices
@@ -304,7 +304,7 @@ public class controller : MonoBehaviour
     }
 
     // Reads all the non-notify characteristics upon switching of a boolean value. This function must go in the update function. 
-    void readNonNotifyCharacteristics()
+    void readNonNotifyCharacteristics ()
     {
         _allReadingComplete = false;
         localReadCount += 1;
@@ -325,7 +325,7 @@ public class controller : MonoBehaviour
 
         if (localReadCount == 12)
         {
-
+            
             if (_ppgBodyCheck == true && _gsrBodyCheck == true && _DeviceInfoCheck == true)
             {
                 _readFound2 = false;
@@ -336,15 +336,15 @@ public class controller : MonoBehaviour
     }
 
     // Decoding byte[] array functions
-    void uint8_tDecode(byte[] raw_data, string service, string characteristic)
+    void uint8_tDecode (byte[] raw_data, string service, string characteristic)
     {
         int value_data = int.Parse(BitConverter.ToString(raw_data), System.Globalization.NumberStyles.HexNumber);
         BluetoothLEHardwareInterface.Log("data: " + value_data);
-        if (service == _ppgServiceUUID && characteristic == _HRmeasurementUUID)
+        if (service==_ppgServiceUUID && characteristic==_HRmeasurementUUID)
         {
             receiveTextHR(value_data);
         }
-        else if (service == _ppgServiceUUID && characteristic == _bodySensorLocationUUID)
+        else if (service==_ppgServiceUUID && characteristic==_bodySensorLocationUUID)
         {
             receiveText4PpgBody(value_data);
         }
@@ -414,7 +414,7 @@ public class controller : MonoBehaviour
             if (deviceAddress2.CompareTo(_connectedAddress) == 0)
             {
                 BluetoothLEHardwareInterface.Log(string.Format("data length: {0}", data.Length));
-                if (data.Length == 0) { }
+                if (data.Length == 0) {}
                 else
                 {
                     Decoder(data, serviceUUID, characteristicUUID);
@@ -449,7 +449,7 @@ public class controller : MonoBehaviour
         if (!_peripheralList.ContainsKey(address))
         {
             txtDebug.text = "Found " + name + "\n";
-
+            
             // Button prefab only created if the one of the MHML M5's exist. 
             if (name == _permittedDeviceNameFelix || name == _permittedDeviceNameBen || name == _permittedDeviceNameScott)
             {
@@ -472,7 +472,7 @@ public class controller : MonoBehaviour
 
                 _peripheralList[address] = name;
 
-                if (_hasStoredBluetoothValues == true && isConnected == false && _connecting == false) // Need to stop instantly assigning, and wait for a check to see if the peripheral is the one. 
+                if (_hasStoredBluetoothValues==true && isConnected == false && _connecting == false) // Need to stop instantly assigning, and wait for a check to see if the peripheral is the one. 
                 {
                     if (name == storedName)
                     {
@@ -488,35 +488,32 @@ public class controller : MonoBehaviour
     // Places the received text in the first textbox 
     void receiveTextHR(int s)
     {
-        if (_storeSubscribeData == true)
-        {
-            _HR_data.Add(s);
-        }
-        txtReceive.text = s.ToString();
+		if (_storeSubscribeData == true) {
+			_HR_data.Add(s);
+		}
+		txtReceive.text = s.ToString();
     }
 
     // Places the received text in the second textbox
     void receiveTextIBI(int s)
     {
-        if (_storeSubscribeData == true)
-        {
-            _IBI_data.Add(s);
-        }
+		if (_storeSubscribeData == true) {
+			_IBI_data.Add(s);
+		}
         txtReceive2.text = s.ToString();
     }
 
     void receiveTextSpo2(float s)
     {
-        if (_storeSubscribeData == true)
-        {
-            _Spo2_data.Add(s);
-        }
+		if (_storeSubscribeData == true) {
+			_Spo2_data.Add(s);
+		}
         txtReceive3.text = s.ToString();
     }
 
     void receiveText4PpgBody(int s)
     {
-        if (_storeSubscribeData == true)
+        if (_storeReadFakeData == true)
         {
             _ppgLocation_data.Add(s);
         }
@@ -527,16 +524,15 @@ public class controller : MonoBehaviour
 
     void receiveTextSClvl(int s)
     {
-        if (_storeSubscribeData == true)
-        {
-            _skinConductance_data.Add(s);
-        }
+		if (_storeSubscribeData == true) {
+			_skinConductance_data.Add(s);
+		}
         txtReceive5.text = s.ToString();
     }
 
     void receiveTextGsrBody(int s)
     {
-        if (_storeSubscribeData == true)
+        if (_storeReadFakeData == true)
         {
             _gsrLocation_data.Add(s);
         }
@@ -547,7 +543,7 @@ public class controller : MonoBehaviour
 
     void receiveTextInfo(string s)
     {
-        if (_storeSubscribeData == true)
+        if (_storeReadFakeData == true)
         {
             _deviceInfo_data.Add(s);
         }
@@ -616,10 +612,10 @@ public class controller : MonoBehaviour
 
     // Update is called once per frame. Currently unsure of the frame refresh rate. 
     void Update()
-    {
+    {      
         // The counts and boolean checks are implemented to prevent synchronous subscribe attempts. This ensures each subscribe method occurs subsequently
         // Ensuring all characteristics can be subscribed to. 
-        if (_readFound == true)
+        if (_readFound == true) 
         {
             _allSubscribingComplete = false;
             count += 1;
@@ -650,13 +646,18 @@ public class controller : MonoBehaviour
 
             if (count == 25)
             {
-                if (_FirmwareRevision_Notification != true) { subscribeToCharacteristic(_DeviceInfoUUID, _FirmwareRevisionUUID, UTF8Decode); }
+                if (_gsrBodyLocation_Notification != true) { subscribeToCharacteristic(_gsrServiceUUID, _bodySensorLocationGsrUUID, uint8_tDecode); }
             }
 
             if (count == 30)
             {
+                if (_FirmwareRevision_Notification != true) { subscribeToCharacteristic(_DeviceInfoUUID, _FirmwareRevisionUUID, UTF8Decode); }
+            }
+
+            if (count == 35)
+            {
                 count = 0;
-                if (_HR_Notification == true && _IBI_Notification == true && _Spo2_Notification == true && _SkinConductance_Notification == true && _ppgBodyLocation_Notification == true && _FirmwareRevision_Notification == true)
+                if (_HR_Notification == true && _IBI_Notification == true && _Spo2_Notification == true && _SkinConductance_Notification == true && _ppgBodyLocation_Notification==true && _gsrBodyLocation_Notification==true && _FirmwareRevision_Notification==true)
                 {
                     _readFound = false;
                     _allSubscribingComplete = true;
@@ -677,8 +678,8 @@ public class controller : MonoBehaviour
 
         if (_connectedName != null && _connectedAddress != null && isConnected == false && _connecting == false && _hasStoredBluetoothValues == true)
         {
-            _autoConnectTimer += 1;
-            if (_autoConnectTimer == 20 && _permitAutoConnect == true)
+            _autoConnectTimer += 1; 
+            if (_autoConnectTimer == 20 && _permitAutoConnect==true)
             {
                 txtDebug.text += "AutoConnect Entered";
                 txtDebug.text = storedName;
@@ -692,7 +693,7 @@ public class controller : MonoBehaviour
         }
 
         // Automatic Rescanning to update peripheral list every 12.5 seconds. Only called when not connected/connecting to a device. 
-        if (isConnected == false && _connecting == false && _scanning == false)
+        if (isConnected == false && _connecting==false && _scanning == false)
         {
             _reScanTimer += 1;
             if (_reScanTimer == 700)

@@ -7,51 +7,6 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-
-
-public class selfReported{
-	public float anxiety;
-	public float stress;
-	public float fatigue;
-	public float productivity;
-	}
-
-public class PPG
-{                                    
-	public int bodySensorLocation;
-    //public Dictionary<string, int> heartrate = new Dictionary<string, int>();
-    //public Dictionary<string, int> interbeatInterval = new Dictionary<string, int>();
-    //public Dictionary<string, float> sp = new Dictionary<string, float>();
-    public JObject heartRate;
-    public JObject interbeatInterval;
-    public JObject spO2;
-}
-
-public class GSR
-{                                    
-	public int bodySensorLocation;
-    //public Dictionary<string, int> scl = new Dictionary<string, int>();
-    public JObject scl;
-}
-
-public class Session {
-	public string session_id;
-	public string firmwareRevision;
-	public selfReported self_reported = new selfReported();
-	public PPG ppg = new PPG();
-	public GSR gsr = new GSR();
-	}
-
-public class User {
-	public string username;
-	public string name;
-	public float age;
-	public int gender;
-	public string ethnicity;
-	public string location;
-	public string occupation;
-	}
-
 public class Wifi { // Class created to send user_data and session_data (based on the classes User and Session defined above).
 	// These are all the variables or methods that can be accessed in main.cs to control the class as if it was a function.
 
@@ -82,7 +37,7 @@ public class Wifi { // Class created to send user_data and session_data (based o
         webaddress = "mhml.greenberg.io/api/users/"+ username +"/sessions";
         key = "Session";
         jsondata = session_json;
-
+       
     }
 
     public void userUpload(object user)
