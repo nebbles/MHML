@@ -18,7 +18,7 @@
 #include "ppg.h"
 #include "led.h"
 
-#define DEBUG_MAIN // Uncomment whilst debugging for Serial debug stats.
+// #define DEBUG_MAIN // Uncomment whilst debugging for Serial debug stats.
 
 enum class Modes
 {
@@ -34,8 +34,8 @@ void M5off()
 
 void setup()
 {
-  DATA.FIRMWARE_REVISION = "0.4.0";
-  String DEVICE_NAME = "MHML M5 B";
+  DATA.FIRMWARE_REVISION = "0.4.1";
+  String DEVICE_NAME = "MHML M5 S";
 
   Serial.begin(115200);
   M5.begin();

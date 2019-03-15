@@ -42,7 +42,7 @@
 
 Deque<int> ppgDeque;
 
-#define DEBUG_PPG // Uncomment for debug output to the Serial stream
+// #define DEBUG_PPG // Uncomment for debug output to the Serial stream
 // #define showRed
 
 // Interrupt pin
@@ -57,7 +57,7 @@ uint32_t aun_ir_buffer[BUFFER_SIZE];  //infrared LED sensor data
 uint32_t aun_red_buffer[BUFFER_SIZE]; //red LED sensor data
 float old_n_spo2;                     // Previous SPO2 value
 uint8_t uch_dummy, k;
-int bound = 500;
+int bound = 1000;
 
 // Variables from previous loop function
 float n_spo2, ratio, correl; //SPO2 value
@@ -171,8 +171,14 @@ void ppgCalc()
   rf_heart_rate_and_oxygen_saturation(aun_ir_buffer, BUFFER_SIZE, aun_red_buffer, &n_spo2, &ch_spo2_valid, &n_heart_rate, &ch_hr_valid, &ratio, &correl);
 
   // update globals
-  DATA.heartRate = n_heart_rate; 
-  DATA.spo2 = n_spo2;
+  if (n_heart_rate > 0)
+  {
+    if (DATA.heartRate == 0) DATA.heartRate = n_heart_rate;
+    else if (DATA.heartRate < 60 && abs(n_heart_rate - DATA.heartRate) < 20) DATA.heartRate = n_heart_rate;
+    else if (DATA.heartRate > 59 && DATA.heartRate < 99 && abs(n_heart_rate - DATA.heartRate) < 10) DATA.heartRate = n_heart_rate;
+    else if (DATA.heartRate > 100 && abs(n_heart_rate - DATA.heartRate) < 20) DATA.heartRate = n_heart_rate; 
+  }
+  if (n_spo2 > 95) DATA.spo2 = n_spo2;
 
   // millis_to_hours(elapsedTime,hr_str); // Time in hh:mm:ss format
   elapsedTime = millis() - timeStart;
