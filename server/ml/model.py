@@ -1,6 +1,8 @@
 
 print("This is the model module of the ml package being imported...")
 
+a = 3
+
 def main():
     print("Hello from the model module!")
 

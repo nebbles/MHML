@@ -1,10 +1,17 @@
-# VS Code
+# Filesystem
+.DS_Store
 
+# Virtual env
+server/backend_venv/
+
+# Keys
+server/api/mhml_key.json
+
+# VS Code
 .vscode/
 */.vscode
 
 # PlatformIO
-
 .pio
 .pioenvs
 .piolibdeps
@@ -14,7 +21,6 @@
 */.gitignore
 
 # Python
-
 __pycache__/
 *.pyc
 

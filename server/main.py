@@ -1,12 +1,12 @@
-import api.flask
+from api.flask import app
 import ml.model
 
-def main():
-    print("Hello from main!")
+@app.route('/api')
+def index():
+    return "MHML server working", 200
+@app.route('/api/teapot')
+def teapot():
+    return "I'm a teapot", 418
 
-if __name__ == "__main__":
-    main()
-    print("Main is now calling api.flask.main()")
-    api.flask.main()
-    print("Main is now calling ml.model.main()")
-    ml.model.main()
+if __name__ == '__main__':
+    app.run(host='localhost', port=5000)
