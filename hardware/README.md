@@ -18,3 +18,8 @@ The hardware is based on an ESP32 for which [Neil Kolban](https://github.com/nko
 
 The specification used for development of the BLE functionality can be found [here](https://github.com/nebbles/MHML/blob/develop/docs/BLE_Specification.md).
 
+### Sensors
+
+The sensors for this project are: [MAX30102 PPG and Pulse Oximetry Sensor](https://www.maximintegrated.com/en/products/sensors/MAX30102.html) and a [Seeed Studio GSR Sensor](https://www.seeedstudio.io/Grove-GSR-sensor-p-1614.html). The algorithm for the MAX30102 has been adapted from an algorithm created by [Robert Fraczkiewicz] in 2017, and is a significant improvement on the standard algorithms improved by Maxim. The algorithm for the Seeed Studio GSR Sensor is simple, using an averaging filter to remove jitter from the recordings.
+
+3D Printed components were used to house the sensors and breakout boards. These were printed on UPMini printers at Imperial College London. The CAD for the middle section of the stack was adapted from [module shells for M5Stack](https://www.thingiverse.com/thing:2834201) to include a port for the GSR connector and a cable outlet for the PPG Sensor. The CAD for the MAX30102 mount was developed entirely for this project. The CAD for both parts is availabe [here](Ben G, Drop us a link).
