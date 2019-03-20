@@ -1,6 +1,5 @@
+<p  align="center"><img width="150" src=".github/Logo.png" alt="cover"></p>
 <h1 align="center">
-	<img width="150" src=".github/Logo.png" alt="cover">
-  <br>
   Mobile Healthcare and Machine Learning
 </h1>
 
