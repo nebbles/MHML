@@ -4,3 +4,7 @@
 # Ignore Unity files
 app/* linguist-generated=true
 app/Assets/Scripts/* linguist-generated=false
+
+# Ignore external libraries in hardware
+hardware/lib/* linguist-vendored=true
+hardware/lib/Deque/* linguist-vendored=false
