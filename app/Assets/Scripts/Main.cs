@@ -118,6 +118,7 @@ public class Main : MonoBehaviour
 
                 // Clear session data
                 newSession = new Session();
+                submitSessionRequest.requestStatus = Networking.RequestStates.inactive;
             }
 
             if (submitSessionRequest.requestStatus == Networking.RequestStates.failed)
@@ -140,7 +141,7 @@ public class Main : MonoBehaviour
     public void CreateAnAccount()
     {
         Debug.Log("Create account is being submitted.");
-        person.username = createUsername.text;
+        person.username = username;
         person.name = cname.text;
         person.ethnicity = ethnicity.text;
         person.location = location.text;
