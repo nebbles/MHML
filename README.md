@@ -41,7 +41,21 @@
 
 **Sensa** is a mobile healthcare monitoring system which aims to use a blend of self reported measures and physiological signal analysis to detect stress and guide users to improve their state using personalised exercises.
 
-### Repository Structure 
+### Code Structure
+
+- The [hardware directory](https://github.com/nebbles/MHML/tree/develop/hardware) was used for firmware development of the M5Stack Fire, have a look at [the README](https://github.com/nebbles/MHML/tree/develop/hardware) for more info.
+- The [app directory](https://github.com/nebbles/MHML/tree/develop/app) was used for the app development (using Unity) for iOS/Android, have a look at [the README](https://github.com/nebbles/MHML/tree/develop/app) for more info.
+- The [server directory](https://github.com/nebbles/MHML/tree/develop/server) was used for backend server code such as the API (fronting the database) and machine learning elements, have a look at [the README](https://github.com/nebbles/MHML/tree/develop/server) for more info.
+
+### Documentation
+
+Throughout our code we have endeavored to leave useful comments and READMEs where suitable. In addition, to aid our cross-platform development within the team, we kept to project wide specifications.
+
+- [The BLE Specification](https://github.com/nebbles/MHML/blob/develop/docs/BLE_Specification.md) defines agreed implementation of the Bluetooth Low Energy server (on the M5Stack).
+- [The Data Specification](https://github.com/nebbles/MHML/blob/develop/docs/Data_Specification.md) defines agreed usage, type and structure of data throughout the system.  
+- [The API Specification](https://github.com/nebbles/MHML/blob/develop/docs/API_Specification.md) defines agreed implementation and usage of the API (for accessing database and ML).
+
+### Repository Structure Tree
 
 *Note: This is a 'light' version of the project structure. For more information on files, refer to the relevant subdirectory README.*
 
