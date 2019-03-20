@@ -1,5 +1,5 @@
 <h1 align="center">
-<!-- 	<img width="400" src=".github/cover.png" alt="cover"> -->
+	<img width="150" src=".github/Logo.png" alt="cover">
   <br>
   Mobile Healthcare and Machine Learning
 </h1>
@@ -22,11 +22,11 @@
 </sup></sup>
 </p>
 
-<h4 align="center">
+<!-- <h4 align="center">
   <a href="#">More information coming soon...</a>
   <br><br>
-<!--   <img width="80" src="http://readthedocs.org/projects/de3-rob1-chess/badge/?version=latest" alt="Documentation Status"> -->
-</h4>
+ <img width="80" src="http://readthedocs.org/projects/de3-rob1-chess/badge/?version=latest" alt="Documentation Status"> 
+</h4> -->
 
 <!-- 
 <p align="center">
@@ -40,22 +40,36 @@
 <br>
 -->
 
+**Sensa** is a mobile healthcare monitoring system which aims to use a blend of self reported measures and physiological signal analysis to detect stress and guide users to improve their state using personalised exercises.
+
+
 ### Project Structure 
+
+*Note: This is a 'light' version of the project structure. For more information on files, refer to the relevant subdirectory README.*
 
 ```
 MHML/
-  ├─ .github/               GitHub configuration
-  ├─ app/                   Unity app development is stored
-  ├─ hardware/              Firmware development for M5Stack Fire 
-  │    └─ src/              
-  │         ├─ ble.h        BLE server development
-  │         ├─ gsr.h        GSR sensor development
-  │         ├─ ppg.h        PPG sensor development
-  │         └─ main.cpp     
+  ├─ .github/                     GitHub configuration files
+  ├─ docs/API_Specification.md    Documentation on API usage
+  ├─ docs/BLE_Specification.md    Documentation on BLE configuration and usage
+  ├─ docs/Data_Specification.md   Documentation on cross platform data usage
+  │
+  ├─ app/                         Unity app development is stored
+  │
+  ├─ hardware/                    Firmware development for M5Stack Fire            
+  │    ├─ lib/                    Custom and 3rd party libraries
+  │    ├─ src/ble.h               BLE server logic
+  │    ├─ src/data.h              Definition of central data structure
+  │    ├─ src/gsr.h               GSR sensor development
+  │    ├─ src/main.cpp            Main firmware runtime
+  │    ├─ src/ppg.h               PPG sensor development
+  │    └─ README.md               Hardware specific readme
+  │
   ├─ server/
-  │    ├─ api/              Flask application for server API
-  │    ├─ ml/               Development of machine learning models
+  │    ├─ api/                    Flask application for server API
+  │    ├─ ml/                     Development of machine learning models
   │    └─ main.py     
+  │
   ├─ LICENSE
-  └─ README
+  └─ README.md
 ```
