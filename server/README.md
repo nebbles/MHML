@@ -36,3 +36,9 @@ To start the Flask app from your Ubuntu server (assuming you have followed the [
 ```bash
 gunicorn main:app
 ```
+
+### ML directory
+
+The `ml/` directory holds the machine learning modules that generates predictions for user's stress levels using a blend of self reported measures and sensor readings. This directory contains both a primitive model and user specific models that are generated after multiple application uses.
+
+ml.py holds the ML class, it features two methods. The first one, predict retrieves the pickle from the model folder and applies it to the session data. Secondly, train generates a predictive model from user specific data and saves the model in a pickle.  
