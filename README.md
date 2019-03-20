@@ -54,6 +54,13 @@ MHML/
   ├─ docs/Data_Specification.md   Documentation on cross platform data usage
   │
   ├─ app/                         Unity app development is stored
+  │    ├─ Assets/Scripts/                    
+  │    │  ├─ Main.cs              Main app logic
+  │    │  ├─ Wifi/            
+  │    │  │  └─ Networking.cs     Networking logic for communicating with API
+  │    │  └─ Bluetooth/
+  │    │     └─ controller.cs     BLE client logic for receiving from hardware
+  │    └─ README.md               App specific readme
   │
   ├─ hardware/                    Firmware development for M5Stack Fire            
   │    ├─ lib/                    Custom and 3rd party libraries
