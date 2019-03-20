@@ -42,8 +42,7 @@
 
 **Sensa** is a mobile healthcare monitoring system which aims to use a blend of self reported measures and physiological signal analysis to detect stress and guide users to improve their state using personalised exercises.
 
-
-### Project Structure 
+### Repository Structure 
 
 *Note: This is a 'light' version of the project structure. For more information on files, refer to the relevant subdirectory README.*
 
@@ -73,3 +72,14 @@ MHML/
   ├─ LICENSE
   └─ README.md
 ```
+
+### System Overview
+
+<p align="center"><img width="700" src=".github/SystemOverview.png" alt="cover"></p>
+
+### Project Development
+
+From the early stages of the project, we anticipated how the division of development should operate in order to maximise our modularity and reduce interdependencies. This made integration at the later stages far more efficient. See below for a simple graphic of the process.
+
+<p align="center"><img width="700" src=".github/ProcessMap.gif" alt="cover"></p>
+
