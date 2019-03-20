@@ -4,6 +4,7 @@
 # Ignore Unity files
 app/* linguist-generated=true
 app/Assets/Scripts/* linguist-generated=false
+app/Assets/Scripts/Gradients/* linguist-generated=true
 
 # Ignore external libraries in hardware
 hardware/lib/* linguist-vendored=true
