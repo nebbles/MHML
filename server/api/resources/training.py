@@ -45,6 +45,6 @@ class Training(Resource):
             ML.train(username, df)
 
             
-            #eturn res.OK(username, session_ids)
+            return None, 200
         else:
             return res.NOT_FOUND(username)

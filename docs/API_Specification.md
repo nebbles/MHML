@@ -22,7 +22,9 @@
 
 ### POST /api/users
 
-**Required**: `'username'` key of the `User` object.
+**Required**: 
+- `'username'` key of the `User` object.
+- The User JSON object must be enclosed into the outer-most key `'User'`
 
 
 | Response code| Response body |
@@ -87,6 +89,7 @@ This request adds a new `User` object to the database.
 - `"selfReported"`
 - `"ppg"`
 - `"gsr"`
+- The Session JSON object must be enclosed into the outer-most key `'Session'`
 
 Each of the keys' value must be of the correct type according to the [Data Specification](https://github.com/nebbles/MHML/blob/develop/docs/Data_Specification.md). 
 
@@ -129,6 +132,7 @@ Each of the keys' value must be of the correct type according to the [Data Speci
 - `"ppg"`
 - `"gsr"`
 - `"session_id"` key of a `Session` object.
+- The Session JSON object must be enclosed into the outer-most key `'Session'`
 
 Each of the keys’ value must be of the correct type according to the [Data Specification](https://github.com/nebbles/MHML/blob/develop/docs/Data_Specification.md).
 Note that the request body parameter `"session_id"` and the URL parameter `<session_id>` must match.
@@ -161,3 +165,52 @@ Note that the request body parameter `"session_id"` and the URL parameter `<sess
 - If no such user exists, a 404 error is thrown.
 - Similarly, if the user exists but has no `Session` object under `<session_id>`, a 404 error is thrown.
 - If the request body does not comply with the `Session` object as defined in [Data Specification](https://github.com/nebbles/MHML/blob/develop/docs/Data_Specification.md), a 400 error is thrown.
+
+
+## Training Resource
+
+### POST /api/train/users/\<username>
+
+**Required**: `None`
+
+| Response code | Response body |
+|--|--|
+| **200** Ok| `None`
+| **404** Not Found| `{"error": "User <username> not found"}`
+
+- This request trains a Machine Learning model for the user registered under `<username>`, given its associated data in the database and saves it on the server as a separate pikle (.pkl) file.
+- If no such user exists, a 404 error is thrown.
+
+
+
+## Training Resource
+
+### POST /api/train/users/\<username>
+
+**Required**: `None`
+
+| Response code | Response body |
+|--|--|
+| **200** Ok| `None`
+| **404** Not Found| `{"error": "User <username> not found"}`
+
+- This request trains a Machine Learning model for the user registered under `<username>`, given its associated data in the database and saves it on the server as a separate pikle (.pkl) file.
+- If no such user exists, a 404 error is thrown.
+
+
+## Classification Resource
+
+### GET /api/classify/users/\<username>/sessions/\<session_id>
+
+**Required**: `None`
+
+| Response code | Response body |
+|--|--|
+| **200** Ok| `{"user": "<username>", "session_id": "<session_id>", "prediction": prediction}`
+| **404** Not Found| `{"error": "User <username> not found"}`
+| | `{"error": "Session ID <session_id> for user <username> not found"}`
+
+- This request asks for a stress score (a prediction) for a particular session of a particular user, making use of the user-specific pikle model.
+- If no such user exists, a 404 error is thrown.
+- Similarly, if the user exists but has no `Session` object under `<session_id>`, a 404 error is thrown.
+
