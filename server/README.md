@@ -40,3 +40,5 @@ gunicorn main:app
 The `ml/` directory holds the machine learning modules that generate predictions for users' stress levels using a blend of self reported measures and sensor readings. This directory contains both a primitive model and user specific models that are generated after multiple application uses.
 
 `ml.py` holds the `ML` class, it features two methods. The first one, `predict()`, retrieves the pickle from the model folder and applies it to the session data. The second, `train()`, generates a predictive model from user specific data and saves the model in a pickle.  
+
+The ML analysis was initially conducted offline in a Jupyer Notebook. [That can be viewed here](https://github.com/nebbles/MHML/blob/develop/server/ml/jupyter-notebook/data_analysis_2.0.ipynb).
