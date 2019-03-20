@@ -1,8 +1,6 @@
 # Ignore Jupyter Notebooks files
-*.ipynb linguist-vendored 
+*.ipynb linguist-detectable=false 
 
 # Ignore Unity files
 app/* linguist-generated=true
 app/Assets/Scripts/* linguist-generated=false
-
-
